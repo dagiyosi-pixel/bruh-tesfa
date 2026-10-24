@@ -189,9 +189,10 @@ export function generateTrackedLink(
   path: string,
   campaign: string = 'telegram_channel',
   medium: string = 'channel',
-  source: string = 'telegram'
+  source: string = 'telegram',
+  baseUrlOverride?: string
 ): string {
-  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://bruhtesfa.et').replace(/\/+$/, '');
+  const baseUrl = (baseUrlOverride || process.env.NEXT_PUBLIC_APP_URL || 'https://bruhtesfa.et').replace(/\/+$/, '');
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   const separator = cleanPath.includes('?') ? '&' : '?';
 
@@ -1132,7 +1133,7 @@ export function renderContentStudioPost(
   const tpl = templates.find((t) => t.key === templateKey) || templates[0];
   const baseUrl = (params.customBaseUrl || process.env.NEXT_PUBLIC_APP_URL || 'https://bruhtesfa.et').replace(/\/+$/, '');
 
-  const targetUrl = generateTrackedLink(tpl.target_url_path, tpl.default_campaign, 'channel');
+  const targetUrl = generateTrackedLink(tpl.target_url_path, tpl.default_campaign, 'channel', 'telegram', baseUrl);
 
   let caption = tpl.default_caption_en;
 
@@ -1145,7 +1146,7 @@ export function renderContentStudioPost(
       .replace(/{{GRADE}}/g, v.grade_level)
       .replace(/{{HOURLY_RATE}}/g, String(v.hourly_rate_etb))
       .replace(/{{SCHEDULE}}/g, `${v.lesson_frequency} • ${v.time_window || 'Afternoon'}`)
-      .replace(/{{APPLY_URL}}/g, generateTrackedLink(`/vacancies/${v.vacancy_code}`, tpl.default_campaign, 'channel'));
+      .replace(/{{APPLY_URL}}/g, generateTrackedLink(`/vacancies/${v.vacancy_code}`, tpl.default_campaign, 'channel', 'telegram', baseUrl));
   }
 
   if (params.vacanciesList && params.vacanciesList.length > 0) {
@@ -1155,7 +1156,7 @@ export function renderContentStudioPost(
         (v, i) =>
           `📌 ${i + 1}. *${v.title}* (${v.vacancy_code})\n` +
           `   📍 ${v.sub_city} • 💰 ${v.hourly_rate_etb} ETB/hr • ⏱ ${v.hours_per_session} hrs/lesson\n` +
-          `   🔗 [Apply Online](${generateTrackedLink(`/vacancies/${v.vacancy_code}`, 'weekly_roundup_item', 'channel')})`
+          `   🔗 [Apply Online](${generateTrackedLink(`/vacancies/${v.vacancy_code}`, 'weekly_roundup_item', 'channel', 'telegram', baseUrl)})`
       )
       .join('\n\n');
     caption = caption.replace(/{{VACANCY_LIST}}/g, listStr);
