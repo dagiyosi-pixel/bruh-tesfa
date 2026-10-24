@@ -347,7 +347,7 @@ export async function submitTutorApplication(
   }
 
   const db = loadDatabase();
-  const id = `tut-${Date.now()}`;
+  const id = `tut-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const seq = (db.tutors.length + 1).toString().padStart(4, '0');
   const reference_number = `BT-TUT-2026-${seq}`;
   const now = new Date().toISOString();
@@ -365,7 +365,7 @@ export async function submitTutorApplication(
 
   // Log audit
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: data.full_legal_name,
     role: 'applicant',
     action: 'tutor_application_submitted',
@@ -400,7 +400,7 @@ export async function submitParentRequest(
   }
 
   const db = loadDatabase();
-  const id = `req-${Date.now()}`;
+  const id = `req-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const seq = (db.parent_requests.length + 1).toString().padStart(4, '0');
   const reference_number = `BT-REQ-2026-${seq}`;
   const now = new Date().toISOString();
@@ -417,7 +417,7 @@ export async function submitParentRequest(
   db.parent_requests.push(newRequest);
 
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: data.parent_name,
     role: 'parent',
     action: 'parent_request_submitted',
@@ -435,7 +435,7 @@ export async function submitComplaint(
   data: Omit<Complaint, 'id' | 'reference_number' | 'status' | 'created_at'>
 ): Promise<{ success: boolean; reference_number: string }> {
   const db = loadDatabase();
-  const id = `cmp-${Date.now()}`;
+  const id = `cmp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const seq = (db.complaints.length + 1).toString().padStart(4, '0');
   const reference_number = `BT-CMP-2026-${seq}`;
   const now = new Date().toISOString();
@@ -457,7 +457,7 @@ export async function submitDataDeletionRequest(
   data: Omit<DataDeletionRequest, 'id' | 'reference_number' | 'status' | 'created_at'>
 ): Promise<{ success: boolean; reference_number: string }> {
   const db = loadDatabase();
-  const id = `del-${Date.now()}`;
+  const id = `del-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const seq = (db.data_deletion_requests.length + 1).toString().padStart(4, '0');
   const reference_number = `BT-DEL-2026-${seq}`;
 
@@ -596,7 +596,7 @@ export async function updateTutorApplicationStatus(
 
   // Audit log
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: reviewedBy,
     role: 'admin',
     action: `tutor_status_changed_to_${status}`,
@@ -630,7 +630,7 @@ export async function updateParentRequestStatus(
   req.updated_at = now;
 
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: 'Staff Admin',
     role: 'admin',
     action: `parent_request_status_changed_to_${status}`,
@@ -668,7 +668,7 @@ export async function proposeCandidateMatch(
   const matchEvaluation = evaluateCandidateMatch(req, tutor);
 
   const newMatch: MatchProposal = {
-    id: `match-${Date.now()}`,
+    id: `match-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     request_id: requestId,
     tutor_id: tutorId,
     match_score: matchScore || matchEvaluation.total_score,
@@ -686,7 +686,7 @@ export async function proposeCandidateMatch(
   req.status = 'candidates_proposed';
 
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: 'Staff Admin',
     role: 'admin',
     action: 'match_proposed',
@@ -739,7 +739,7 @@ export async function createPlacementRecord(input: {
 
   const now = new Date().toISOString();
   const placement: Placement = {
-    id: `plc-${Date.now()}`,
+    id: `plc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     match_id: input.matchId,
     request_id: match.request_id,
     tutor_id: match.tutor_id,
@@ -763,7 +763,7 @@ export async function createPlacementRecord(input: {
   req.status = 'matched';
 
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: 'Staff Admin',
     role: 'admin',
     action: 'placement_created',
@@ -807,7 +807,7 @@ export async function updatePlacementPayment(
   placement.updated_at = now;
 
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: 'Staff Admin',
     role: 'admin',
     action: `placement_payment_updated_${paymentStatus}`,
@@ -1047,7 +1047,7 @@ export async function submitVacancyApplication(
   }
 
   const now = new Date().toISOString();
-  const id = `vapp-${Date.now()}`;
+  const id = `vapp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
   const application: VacancyApplication = {
     ...data,
@@ -1066,7 +1066,7 @@ export async function submitVacancyApplication(
 
   // Audit log
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: data.applicant_name,
     role: 'tutor_applicant',
     action: 'vacancy_application_submitted',
@@ -1091,7 +1091,7 @@ export async function createVacancy(
   const db = loadDatabase();
   if (!db.vacancies) db.vacancies = [];
 
-  const id = `vac-${Date.now()}`;
+  const id = `vac-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const seq = (db.vacancies.length + 1).toString().padStart(4, '0');
   const vacancy_code = `BT-VAC-2026-${seq}`;
   const now = new Date().toISOString();
@@ -1109,7 +1109,7 @@ export async function createVacancy(
   db.vacancies.push(newVacancy);
 
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: 'Staff Admin',
     role: 'admin',
     action: 'vacancy_created',
@@ -1157,7 +1157,7 @@ export async function updateVacancyStatus(
   }
 
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: 'Staff Admin',
     role: 'admin',
     action: `vacancy_status_changed_to_${status}`,
@@ -1349,7 +1349,7 @@ export async function updateTutorAvailability(
   }
 
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor: tutor.public_display_name,
     role: 'tutor',
     action: 'tutor_availability_updated',
@@ -1382,7 +1382,7 @@ export async function confirmTutorAvailability(
   tutor.updated_at = now;
 
   db.audit_logs.push({
-    id: `log-${Date.now()}`,
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     actor,
     role: 'admin',
     action: 'tutor_availability_confirmed_by_coordinator',

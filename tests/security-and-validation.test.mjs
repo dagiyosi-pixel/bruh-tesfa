@@ -2,6 +2,8 @@
 // BRUH TESFA - Security, Malformed Inputs & Boundary Validation Tests
 // =============================================================================
 
+process.env.IS_TEST = 'true';
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
