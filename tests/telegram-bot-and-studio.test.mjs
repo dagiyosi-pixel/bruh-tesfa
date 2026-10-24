@@ -14,8 +14,6 @@ import {
   generateTrackedLink,
   getMainBotMenuKeyboard,
   getAlertPreferencesKeyboard,
-} from '../src/lib/telegram.ts';
-import {
   upsertTelegramSubscriber,
   getTelegramSubscriber,
   unsubscribeTelegramSubscriber,
@@ -23,7 +21,7 @@ import {
   recordTelegramBroadcastLog,
   hasVacancyBeenBroadcast,
   getTelegramMarketingMetrics,
-} from '../src/lib/db/storage.ts';
+} from '../src/lib/telegram.ts';
 
 // -----------------------------------------------------------------------------
 // TEST 1: WEBHOOK SECURITY & TIMING-SAFE VALIDATION

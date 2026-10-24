@@ -16,7 +16,19 @@ import {
   getActiveTelegramSubscribers,
   recordTelegramBroadcastLog,
   getAdminVacancies,
+  hasVacancyBeenBroadcast,
+  getTelegramMarketingMetrics,
 } from './db/storage';
+
+export {
+  getTelegramSubscriber,
+  upsertTelegramSubscriber,
+  unsubscribeTelegramSubscriber,
+  getActiveTelegramSubscribers,
+  recordTelegramBroadcastLog,
+  hasVacancyBeenBroadcast,
+  getTelegramMarketingMetrics,
+};
 import {
   DEFAULT_TELEGRAM_COMMUNITY_URL,
   DEFAULT_TELEGRAM_CHANNEL_URL,

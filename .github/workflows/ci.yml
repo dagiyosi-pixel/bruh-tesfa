@@ -24,6 +24,9 @@ jobs:
 
       - name: Run automated test suite
         run: npm test
+        env:
+          PERSISTENCE_MODE: local
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
 
       - name: Run TypeScript type check
         run: npx tsc --noEmit
