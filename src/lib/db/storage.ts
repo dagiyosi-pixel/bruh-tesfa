@@ -216,7 +216,7 @@ function loadDatabase(): DatabaseSchema {
 
 function saveDatabase(db: DatabaseSchema): void {
   memoryDb = db;
-  if (process.env.NODE_ENV === 'test' || process.env.IS_TEST === 'true') {
+  if (process.env.NODE_ENV === 'test' || process.env.IS_TEST === 'true' || process.argv.some((arg) => arg.includes('test'))) {
     return;
   }
   ensureDataDirectory();

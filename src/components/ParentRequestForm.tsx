@@ -9,6 +9,9 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   SUB_CITIES_ADDIS_ABABA,
+  SubCityName,
+  ADDIS_ABABA_SUB_CITIES_DIRECTORY,
+  resolveSubCityForNeighborhood,
   POPULAR_NEIGHBORHOODS,
   SUBJECTS_TAXONOMY,
   GRADE_LEVELS,
@@ -391,7 +394,7 @@ export default function ParentRequestForm({ initialTutorId, initialTutorName }: 
                   <option value="">-- Choose Sub-City --</option>
                   {SUB_CITIES_ADDIS_ABABA.map((sc) => (
                     <option key={sc} value={sc}>
-                      {sc}
+                      {sc} ({ADDIS_ABABA_SUB_CITIES_DIRECTORY[sc]?.amharic || ''})
                     </option>
                   ))}
                 </select>
@@ -403,11 +406,90 @@ export default function ParentRequestForm({ initialTutorId, initialTutorName }: 
                 </label>
                 <input
                   type="text"
+                  list="popular-neighborhoods-list"
                   value={formData.general_area}
-                  onChange={(e) => setFormData({ ...formData, general_area: e.target.value })}
-                  placeholder="e.g. Bole Medhanialem, CMC near Sunshine"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const autoSubCity = !formData.sub_city ? resolveSubCityForNeighborhood(val) : null;
+                    setFormData((prev) => ({
+                      ...prev,
+                      general_area: val,
+                      ...(autoSubCity ? { sub_city: autoSubCity } : {}),
+                    }));
+                  }}
+                  placeholder="e.g. Mexico, 4 Kilo, CMC Michael, Sarbet"
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
                 />
+                <datalist id="popular-neighborhoods-list">
+                  {POPULAR_NEIGHBORHOODS.map((item) => (
+                    <option key={item} value={item} />
+                  ))}
+                </datalist>
+              </div>
+            </div>
+
+            {/* Quick-Pick Neighborhood Chips */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-slate-700">
+                  {formData.sub_city && ADDIS_ABABA_SUB_CITIES_DIRECTORY[formData.sub_city as SubCityName]
+                    ? `Popular ${formData.sub_city} (${ADDIS_ABABA_SUB_CITIES_DIRECTORY[formData.sub_city as SubCityName].amharic}) Hubs:`
+                    : 'Popular Addis Ababa Hubs (Click to auto-fill):'}
+                </span>
+                {formData.general_area && (
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, general_area: '' }))}
+                    className="text-amber-700 hover:underline text-[11px]"
+                  >
+                    Clear area
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {(formData.sub_city && ADDIS_ABABA_SUB_CITIES_DIRECTORY[formData.sub_city as SubCityName]
+                  ? ADDIS_ABABA_SUB_CITIES_DIRECTORY[formData.sub_city as SubCityName].neighborhoods.slice(0, 10)
+                  : [
+                      'Mexico',
+                      '4 Kilo',
+                      '6 Kilo',
+                      'Piazza',
+                      'CMC',
+                      'Sarbet',
+                      'Ayat',
+                      'Summit',
+                      'Kazanchis',
+                      'Megenagna',
+                      'Lebu',
+                      'Jemo',
+                      'Bole Medhanialem',
+                      'Shiro Meda',
+                      'Tor Hailoch',
+                    ]
+                ).map((hood) => {
+                  const isSelected = formData.general_area.toLowerCase() === hood.toLowerCase();
+                  return (
+                    <button
+                      type="button"
+                      key={hood}
+                      onClick={() => {
+                        const targetSubCity = formData.sub_city || resolveSubCityForNeighborhood(hood) || '';
+                        setFormData((prev) => ({
+                          ...prev,
+                          general_area: hood,
+                          sub_city: targetSubCity || prev.sub_city,
+                        }));
+                      }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                        isSelected
+                          ? 'bg-amber-600 text-white font-bold shadow-xs'
+                          : 'bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-900 border border-slate-200/80'
+                      }`}
+                    >
+                      {hood}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

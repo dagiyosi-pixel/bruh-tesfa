@@ -4,6 +4,7 @@
 
 import { ParentRequest, TutorApplication, TutorPublicProfile, CandidateMatch, MatchBreakdown } from './types';
 import { evaluateScheduleCompatibility } from './availability';
+import { resolveSubCityForNeighborhood } from './constants';
 
 /**
  * Calculates a transparent, explainable compatibility score (0-100)
@@ -109,9 +110,15 @@ export function evaluateCandidateMatch(
     const tutorAreas = ('travel_areas' in tutor ? tutor.travel_areas : tutor.service_areas) || [];
     const tutorSubcity = ('sub_city' in tutor ? tutor.sub_city : '') || '';
     const reqSubcity = request.sub_city.toLowerCase();
+    const resolvedFromArea = request.general_area ? resolveSubCityForNeighborhood(request.general_area)?.toLowerCase() : null;
 
-    const areaMatch = tutorAreas.some((a) => a.toLowerCase().includes(reqSubcity) || reqSubcity.includes(a.toLowerCase()))
-      || tutorSubcity.toLowerCase().includes(reqSubcity);
+    const areaMatch =
+      tutorAreas.some((a) => {
+        const al = a.toLowerCase();
+        return al.includes(reqSubcity) || reqSubcity.includes(al) || (resolvedFromArea && (al.includes(resolvedFromArea) || resolvedFromArea.includes(al)));
+      }) ||
+      tutorSubcity.toLowerCase().includes(reqSubcity) ||
+      (resolvedFromArea ? tutorSubcity.toLowerCase().includes(resolvedFromArea) : false);
 
     if (areaMatch) {
       breakdown.location_score = 15;

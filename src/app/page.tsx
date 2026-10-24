@@ -15,6 +15,8 @@ import {
 import {
   DEFAULT_TELEGRAM_COMMUNITY_URL,
   SUB_CITIES_ADDIS_ABABA,
+  SubCityName,
+  ADDIS_ABABA_SUB_CITIES_DIRECTORY,
   POPULAR_NEIGHBORHOODS,
 } from '@/lib/constants';
 
@@ -245,26 +247,47 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {SUB_CITIES_ADDIS_ABABA.map((subCity) => (
-              <Link
-                key={subCity}
-                href={`/tutors?subCity=${encodeURIComponent(subCity)}`}
-                className="bg-slate-800/80 hover:bg-amber-600/20 border border-slate-700 hover:border-amber-500/50 p-3 rounded-xl text-center transition-all group"
-              >
-                <MapPinIcon className="w-4 h-4 text-amber-400 mx-auto mb-1 group-hover:scale-110 transition-transform" />
-                <span className="text-sm font-semibold text-slate-200 group-hover:text-amber-300">
-                  {subCity}
-                </span>
-              </Link>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {SUB_CITIES_ADDIS_ABABA.map((subCity) => {
+              const entry = ADDIS_ABABA_SUB_CITIES_DIRECTORY[subCity as SubCityName];
+              return (
+                <Link
+                  key={subCity}
+                  href={`/tutors?subCity=${encodeURIComponent(subCity)}`}
+                  className="bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/60 p-4 rounded-2xl transition-all group flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <MapPinIcon className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-sm font-bold text-slate-100 group-hover:text-amber-300">
+                          {subCity}
+                        </span>
+                      </div>
+                      <span className="text-xs font-semibold text-amber-400/90 bg-amber-400/10 px-2 py-0.5 rounded-md">
+                        {entry?.amharic}
+                      </span>
+                    </div>
+                    {entry && (
+                      <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
+                        {entry.neighborhoods.slice(0, 4).join(' • ')}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mt-3 pt-2.5 border-t border-slate-700/60 flex items-center justify-between text-[11px] text-slate-400">
+                    <span className="line-clamp-1">{entry?.prominentLandmarks[0] || 'Vetted Tutors Available'}</span>
+                    <ArrowRightIcon className="w-3 h-3 text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
 
           <div className="mt-8 pt-8 border-t border-slate-800 text-center">
             <p className="text-xs text-slate-400">
               Popular residential hubs covered:{' '}
               <span className="text-slate-300">
-                {POPULAR_NEIGHBORHOODS.slice(0, 8).join(' • ')}
+                {POPULAR_NEIGHBORHOODS.slice(0, 16).join(' • ')}
               </span>
             </p>
           </div>

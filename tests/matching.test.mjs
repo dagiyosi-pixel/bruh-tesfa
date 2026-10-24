@@ -6,6 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { evaluateCandidateMatch, rankCandidatesForRequest } from '../src/lib/matching.ts';
+import { resolveSubCityForNeighborhood } from '../src/lib/constants.ts';
 
 test('Matching Engine: Unapproved or suspended tutor is marked ineligible with 0 score', () => {
   const request = {
@@ -185,4 +186,86 @@ test('Matching Engine: Online requests grant full location score regardless of s
   const result = evaluateCandidateMatch(onlineRequest, onlineTutor);
   assert.equal(result.breakdown.location_score, 15);
   assert.ok(result.breakdown.reasons.some((r) => r.includes('Online session — location independent')));
+});
+
+test('Matching Engine: Resolves iconic Addis Ababa neighborhoods and landmarks accurately', () => {
+  assert.equal(resolveSubCityForNeighborhood('Mexico'), 'Kirkos');
+  assert.equal(resolveSubCityForNeighborhood('Mexico Square'), 'Kirkos');
+  assert.equal(resolveSubCityForNeighborhood('4 Kilo'), 'Arada');
+  assert.equal(resolveSubCityForNeighborhood('Arat Kilo AAU Science'), 'Arada');
+  assert.equal(resolveSubCityForNeighborhood('6 Kilo'), 'Arada');
+  assert.equal(resolveSubCityForNeighborhood('Sidist Kilo'), 'Arada');
+  assert.equal(resolveSubCityForNeighborhood('Piazza'), 'Arada');
+  assert.equal(resolveSubCityForNeighborhood('Piassa Churchill Road'), 'Arada');
+  assert.equal(resolveSubCityForNeighborhood('CMC Michael'), 'Lemi Kura');
+  assert.equal(resolveSubCityForNeighborhood('Ayat Zone 3'), 'Lemi Kura');
+  assert.equal(resolveSubCityForNeighborhood('Summit Condominium'), 'Lemi Kura');
+  assert.equal(resolveSubCityForNeighborhood('Sarbet'), 'Nifas Silk-Lafto');
+  assert.equal(resolveSubCityForNeighborhood('Lebu Mebrat'), 'Nifas Silk-Lafto');
+  assert.equal(resolveSubCityForNeighborhood('Jemo 1'), 'Nifas Silk-Lafto');
+  assert.equal(resolveSubCityForNeighborhood('Shiro Meda'), 'Gullele');
+  assert.equal(resolveSubCityForNeighborhood('Megenagna Roundabout'), 'Yeka');
+  assert.equal(resolveSubCityForNeighborhood('Hayahulet 22'), 'Yeka');
+  assert.equal(resolveSubCityForNeighborhood('Bole Medhanialem'), 'Bole');
+  assert.equal(resolveSubCityForNeighborhood('Merkato'), 'Addis Ketema');
+  assert.equal(resolveSubCityForNeighborhood('Tor Hailoch'), 'Kolfe Keranio');
+  assert.equal(resolveSubCityForNeighborhood('Kality Dry Port'), 'Akaki Kality');
+});
+
+test('Matching Engine: Grants location score when parent request general_area matches tutor travel coverage via landmark resolution', () => {
+  const requestWithLandmark = {
+    id: 'req-mexico',
+    reference_number: 'BT-REQ-MEX',
+    parent_name: 'Abebech',
+    phone: '+251 91 777 6655',
+    preferred_contact_method: 'Phone',
+    city: 'Addis Ababa',
+    sub_city: 'Addis Ababa', // Unspecified sub-city or generic
+    general_area: 'Mexico near Commerce College', // Specific landmark
+    subjects: ['Mathematics'],
+    grade_level: 'Grades 9-10 (Secondary School)',
+    curriculum: 'Ethiopian National Curriculum',
+    teaching_mode: 'in_person',
+    preferred_language: 'English & Amharic',
+    privacy_consent: true,
+    status: 'new',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  const kirkosTutor = {
+    id: 'tut-kirkos',
+    reference_number: 'BT-TUT-KIRKOS',
+    full_legal_name: 'Yared T.',
+    public_display_name: 'Teacher Yared',
+    phone: '+251 91 111 2233',
+    email: 'yared@example.com',
+    preferred_contact_channel: 'Phone',
+    city: 'Addis Ababa',
+    sub_city: 'Kirkos',
+    subjects: ['Mathematics'],
+    grade_levels: ['Grades 9-10 (Secondary School)'],
+    curricula: ['Ethiopian National Curriculum'],
+    education_level: 'B.Sc. Mathematics',
+    institution: 'AAU',
+    field_of_study: 'Mathematics',
+    years_of_experience: 4,
+    teaching_approach: 'Structured algebra and geometry',
+    bio: 'Math specialist',
+    teaching_languages: ['English', 'Amharic (አማርኛ)'],
+    available_days: ['Monday'],
+    available_time_windows: ['Afternoon'],
+    teaching_modes: ['in_person'],
+    travel_areas: ['Kirkos'], // Travels to Kirkos where Mexico is located
+    hourly_rate_etb: 400,
+    privacy_consent: true,
+    code_of_conduct_agreed: true,
+    status: 'approved',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  const result = evaluateCandidateMatch(requestWithLandmark, kirkosTutor);
+  assert.equal(result.breakdown.location_score, 15);
+  assert.ok(result.total_score >= 80);
 });

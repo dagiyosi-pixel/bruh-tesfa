@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   SUB_CITIES_ADDIS_ABABA,
+  SubCityName,
+  ADDIS_ABABA_SUB_CITIES_DIRECTORY,
+  POPULAR_NEIGHBORHOODS,
   SUBJECTS_TAXONOMY,
   GRADE_LEVELS,
   CURRICULA,
@@ -379,7 +382,7 @@ export default function TutorApplicationForm() {
                   <option value="">Select your sub-city...</option>
                   {SUB_CITIES_ADDIS_ABABA.map((sc) => (
                     <option key={sc} value={sc}>
-                      {sc}
+                      {sc} ({ADDIS_ABABA_SUB_CITIES_DIRECTORY[sc]?.amharic || ''})
                     </option>
                   ))}
                 </select>
@@ -391,11 +394,17 @@ export default function TutorApplicationForm() {
                 </label>
                 <input
                   type="text"
+                  list="tutor-neighborhoods-list"
                   value={formData.specific_neighborhood}
                   onChange={(e) => updateField('specific_neighborhood', e.target.value)}
-                  placeholder="e.g. Bole Atlas, CMC Michael, Sarbet"
+                  placeholder="e.g. Mexico, 4 Kilo, CMC Michael, Sarbet"
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
                 />
+                <datalist id="tutor-neighborhoods-list">
+                  {POPULAR_NEIGHBORHOODS.map((hood) => (
+                    <option key={hood} value={hood} />
+                  ))}
+                </datalist>
               </div>
             </div>
           </div>
@@ -720,21 +729,30 @@ export default function TutorApplicationForm() {
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 Sub-Cities You Are Willing to Travel To (In-Person)
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
                 {SUB_CITIES_ADDIS_ABABA.map((sc) => {
                   const selected = formData.travel_areas.includes(sc);
+                  const entry = ADDIS_ABABA_SUB_CITIES_DIRECTORY[sc as SubCityName];
                   return (
                     <button
                       type="button"
                       key={sc}
                       onClick={() => toggleArrayItem('travel_areas', sc)}
-                      className={`text-left p-2.5 rounded-xl border text-xs font-medium transition-all ${
+                      className={`text-left p-3 rounded-xl border transition-all ${
                         selected
-                          ? 'bg-amber-50 border-amber-500 text-amber-900 font-bold'
+                          ? 'bg-amber-50 border-amber-500 text-amber-950 font-bold shadow-xs'
                           : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                       }`}
                     >
-                      {sc}
+                      <div className="flex items-center justify-between text-xs font-bold">
+                        <span>{sc}</span>
+                        <span className="text-[11px] font-normal text-slate-500">{entry?.amharic}</span>
+                      </div>
+                      {entry && (
+                        <p className="text-[11px] font-normal text-slate-500 mt-1 line-clamp-1">
+                          {entry.neighborhoods.slice(0, 3).join(', ')}
+                        </p>
+                      )}
                     </button>
                   );
                 })}
