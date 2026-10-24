@@ -55,10 +55,6 @@ export default function Navbar() {
             <Link href="/tutors/schedule" className="text-amber-400 hover:text-white hidden sm:inline text-[11px] font-semibold">
               Tutor Portal
             </Link>
-            <span className="text-slate-600 hidden sm:inline">|</span>
-            <Link href="/admin/login" className="text-slate-400 hover:text-white hidden sm:inline text-[11px]">
-              Operator Login
-            </Link>
           </div>
         </div>
       </div>
@@ -183,15 +179,6 @@ export default function Navbar() {
               <TelegramIcon className="w-4 h-4 text-sky-500" />
               <span>Join Telegram Community</span>
             </a>
-            <div className="text-center pt-2">
-              <Link
-                href="/admin/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-xs text-slate-500 hover:text-slate-700"
-              >
-                Operator Admin Login
-              </Link>
-            </div>
           </div>
         </div>
       )}

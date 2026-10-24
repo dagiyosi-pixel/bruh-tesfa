@@ -142,18 +142,21 @@ export default function Footer() {
               <TelegramIcon className="w-4 h-4" />
               <span>Join Telegram Community</span>
             </a>
-            <div className="pt-2 border-t border-slate-800">
-              <Link href="/admin/login" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
-                Staff Administration Portal
-              </Link>
-            </div>
           </div>
         </div>
 
         {/* Bottom Disclaimers & Copyright */}
         <div className="mt-12 pt-8 border-t border-slate-800 text-xs text-slate-500 flex flex-col md:flex-row items-center justify-between gap-4">
           <p>
-            &copy; {new Date().getFullYear()} BRUH TESFA (ብሩህ ተስፋ). All rights reserved. Addis Ababa, Ethiopia.
+            &copy; {new Date().getFullYear()} BRUH TESFA (ብሩህ ተስፋ). All rights reserved. Addis Ababa, Ethiopia
+            <Link
+              href="/admin/login"
+              className="text-slate-500 hover:text-amber-500 transition-colors select-none font-bold"
+              aria-label="Staff Portal Doorway"
+              title=""
+            >
+              .
+            </Link>
           </p>
           <p className="text-[11px] text-slate-500 text-center md:text-right max-w-xl">
             Important Notice: Bruh Tesfa facilitates matches between independent tutors and families. We conduct identity and credential verification, but we do not guarantee exam score outcomes. Terms and policies are subject to formal Ethiopian legal review.

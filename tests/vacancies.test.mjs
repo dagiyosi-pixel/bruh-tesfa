@@ -2,6 +2,8 @@
 // BRUH TESFA (ብሩህ ተስፋ) - Tutoring Vacancy & Telegram Module Test Suite
 // =============================================================================
 
+process.env.IS_TEST = 'true';
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 

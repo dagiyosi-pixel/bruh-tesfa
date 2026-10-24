@@ -4,6 +4,8 @@
 // date-specific blackouts, schedule matching, and unauthorized portal editing.
 // =============================================================================
 
+process.env.IS_TEST = 'true';
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 

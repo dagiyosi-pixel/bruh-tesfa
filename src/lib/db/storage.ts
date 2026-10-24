@@ -216,6 +216,9 @@ function loadDatabase(): DatabaseSchema {
 
 function saveDatabase(db: DatabaseSchema): void {
   memoryDb = db;
+  if (process.env.NODE_ENV === 'test' || process.env.IS_TEST === 'true') {
+    return;
+  }
   ensureDataDirectory();
   const tmpFile = `${DB_FILE}.${process.pid}.${Date.now()}.${Math.random().toString(36).substring(2, 7)}.tmp`;
   try {

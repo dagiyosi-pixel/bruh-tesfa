@@ -2,6 +2,8 @@
 // BRUH TESFA - Storage Isolation & Security Access Tests
 // =============================================================================
 
+process.env.IS_TEST = 'true';
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 

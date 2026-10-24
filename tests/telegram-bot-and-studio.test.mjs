@@ -2,6 +2,8 @@
 // BRUH TESFA (ብሩህ ተስፋ) - Telegram Bot, Alerts & Studio Test Suite
 // =============================================================================
 
+process.env.IS_TEST = 'true';
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
