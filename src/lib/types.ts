@@ -288,4 +288,105 @@ export interface AdminMetrics {
   totalCommissionDueETB: number;
   totalCommissionPaidETB: number;
   openComplaints: number;
+  // Vacancy stats
+  totalVacancies: number;
+  openVacancies: number;
+  totalVacancyApplications: number;
+  totalVacancyViews: number;
+}
+
+export type VacancyStatus = 
+  | 'draft'
+  | 'open'
+  | 'closing_soon'
+  | 'filled'
+  | 'closed'
+  | 'archived';
+
+export type VacancyApplicationStatus = 
+  | 'submitted'
+  | 'under_review'
+  | 'shortlisted'
+  | 'interview_discussion'
+  | 'selected'
+  | 'not_selected'
+  | 'withdrawn';
+
+export interface TutoringVacancy {
+  id: string;
+  vacancy_code: string; // e.g. BT-VAC-2026-0001
+  title: string;
+  parent_request_id?: string;
+  
+  // General location (Strictly no exact address)
+  city: string;
+  sub_city: string;
+  general_area?: string;
+  
+  // Academic criteria
+  grade_level: string;
+  curriculum: string;
+  subjects: string[];
+  
+  // Teaching format & timing
+  teaching_format: TeachingMode;
+  schedule_days: string[];
+  time_window: string;
+  lesson_frequency: string;
+  hours_per_session: number;
+  expected_duration_months: number;
+  
+  // Compensation
+  hourly_rate_etb: number;
+  total_estimated_budget_etb?: number;
+  
+  // Requirements & Preferences
+  required_qualifications: string;
+  languages: string[];
+  parent_preferences?: string;
+  
+  // Deadline & instructions
+  application_deadline?: string;
+  application_instructions?: string;
+  
+  // Lifecycle
+  status: VacancyStatus;
+  
+  // Growth & Distribution Metrics
+  view_count: number;
+  application_count: number;
+  telegram_message_id?: string;
+  telegram_published_at?: string;
+  
+  published_at?: string;
+  closed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface VacancyApplication {
+  id: string;
+  vacancy_id: string;
+  tutor_id?: string;
+  
+  applicant_name: string;
+  applicant_phone: string;
+  applicant_email?: string;
+  applicant_education: string;
+  applicant_institution: string;
+  years_of_experience: number;
+  
+  proposed_rate_etb?: number;
+  available_schedule?: string;
+  cover_note: string;
+  
+  status: VacancyApplicationStatus;
+  admin_review_notes?: string;
+  
+  referral_source?: string;
+  utm_source?: string;
+  utm_campaign?: string;
+  
+  created_at: string;
+  updated_at: string;
 }

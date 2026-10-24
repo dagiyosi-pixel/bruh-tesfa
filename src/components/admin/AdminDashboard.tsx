@@ -15,6 +15,10 @@ import {
   ApplicationStatus,
   ParentRequestStatus,
   PaymentStatus,
+  TutoringVacancy,
+  VacancyApplication,
+  VacancyStatus,
+  VacancyApplicationStatus,
 } from '@/lib/types';
 import {
   ShieldCheckIcon,
@@ -27,6 +31,7 @@ import {
   GraduationCapIcon,
   ArrowRightIcon,
   SlidersIcon,
+  TelegramIcon,
 } from '../Icons';
 
 interface AdminDashboardProps {
@@ -38,6 +43,8 @@ interface AdminDashboardProps {
   initialFeeConfig: FeeConfiguration;
   initialComplaints: Complaint[];
   initialAuditLogs: AuditLog[];
+  initialVacancies: TutoringVacancy[];
+  initialVacancyApplications: VacancyApplication[];
 }
 
 export default function AdminDashboard({
@@ -49,9 +56,11 @@ export default function AdminDashboard({
   initialFeeConfig,
   initialComplaints,
   initialAuditLogs,
+  initialVacancies = [],
+  initialVacancyApplications = [],
 }: AdminDashboardProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'overview' | 'tutors' | 'requests' | 'placements' | 'complaints' | 'fee-config' | 'audit'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'tutors' | 'requests' | 'vacancies' | 'placements' | 'complaints' | 'fee-config' | 'audit'>('overview');
 
   // State collections
   const [metrics, setMetrics] = useState<AdminMetrics>(initialMetrics);
@@ -62,6 +71,21 @@ export default function AdminDashboard({
   const [feeConfig, setFeeConfig] = useState<FeeConfiguration>(initialFeeConfig);
   const [complaints, setComplaints] = useState<Complaint[]>(initialComplaints);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(initialAuditLogs);
+  const [vacancies, setVacancies] = useState<TutoringVacancy[]>(initialVacancies);
+  const [vacancyApplications, setVacancyApplications] = useState<VacancyApplication[]>(initialVacancyApplications);
+
+  // Vacancy & Telegram Modal States
+  const [vacancyFilterStatus, setVacancyFilterStatus] = useState<string>('all');
+  const [vacancySearch, setVacancySearch] = useState<string>('');
+  const [selectedVacancyForTelegram, setSelectedVacancyForTelegram] = useState<TutoringVacancy | null>(null);
+  const [telegramAnnouncementText, setTelegramAnnouncementText] = useState<string>('');
+  const [telegramCopySuccess, setTelegramCopySuccess] = useState<boolean>(false);
+  const [telegramBotLoading, setTelegramBotLoading] = useState<boolean>(false);
+  const [telegramBotMsg, setTelegramBotMsg] = useState<{ success: boolean; message: string } | null>(null);
+  const [selectedVacancyForApplications, setSelectedVacancyForApplications] = useState<TutoringVacancy | null>(null);
+  const [vacancyApplicantsList, setVacancyApplicantsList] = useState<VacancyApplication[]>([]);
+  const [loadingApplicants, setLoadingApplicants] = useState<boolean>(false);
+  const [convertingRequestId, setConvertingRequestId] = useState<string | null>(null);
 
   // Modal & Selection States
   const [selectedTutor, setSelectedTutor] = useState<TutorApplication | null>(null);
@@ -316,6 +340,157 @@ export default function AdminDashboard({
     return true;
   });
 
+  // Vacancy Handlers
+  const handleConvertRequestToVacancy = async (requestId: string) => {
+    setConvertingRequestId(requestId);
+    try {
+      const res = await fetch('/api/admin/vacancies/convert-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId }),
+      });
+      const data = await res.json();
+      if (data.success && data.vacancy) {
+        setVacancies((prev) => [data.vacancy, ...prev]);
+        setActiveTab('vacancies');
+        refreshMetrics();
+        alert(`Successfully converted request into public vacancy draft: ${data.vacancy.vacancy_code}`);
+      } else {
+        alert(data.error || 'Failed to convert request to vacancy draft.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error converting parent request.');
+    } finally {
+      setConvertingRequestId(null);
+    }
+  };
+
+  const handleUpdateVacancyStatus = async (id: string, status: VacancyStatus) => {
+    try {
+      const res = await fetch('/api/admin/vacancies', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      });
+      const data = await res.json();
+      if (data.success && data.vacancy) {
+        setVacancies((prev) => prev.map((v) => (v.id === id ? data.vacancy : v)));
+        refreshMetrics();
+      } else {
+        alert(data.error || 'Failed to update vacancy status');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleOpenTelegramModal = async (vacancy: TutoringVacancy) => {
+    setSelectedVacancyForTelegram(vacancy);
+    setTelegramAnnouncementText('Generating verified announcement text...');
+    setTelegramCopySuccess(false);
+    setTelegramBotMsg(null);
+    try {
+      const res = await fetch(`/api/admin/vacancies/${vacancy.id}/telegram`);
+      const data = await res.json();
+      if (data.success) {
+        setTelegramAnnouncementText(data.announcementText);
+      } else {
+        setTelegramAnnouncementText('Failed to generate Telegram text.');
+      }
+    } catch (err) {
+      console.error(err);
+      setTelegramAnnouncementText('Error loading Telegram announcement text.');
+    }
+  };
+
+  const handleCopyTelegramText = async () => {
+    try {
+      await navigator.clipboard.writeText(telegramAnnouncementText);
+      setTelegramCopySuccess(true);
+      setTimeout(() => setTelegramCopySuccess(false), 3000);
+    } catch {
+      alert('Could not copy automatically. Please select the text and copy manually.');
+    }
+  };
+
+  const handlePublishViaTelegramBot = async (vacancyId: string) => {
+    setTelegramBotLoading(true);
+    setTelegramBotMsg(null);
+    try {
+      const res = await fetch(`/api/admin/vacancies/${vacancyId}/telegram`, {
+        method: 'POST',
+      });
+      const data = await res.json();
+      setTelegramBotMsg({
+        success: !!data.success,
+        message: data.message || (data.success ? 'Published to Telegram channel successfully!' : 'Telegram publishing requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHANNEL_ID configuration.'),
+      });
+      if (data.success && data.vacancy) {
+        setVacancies((prev) => prev.map((v) => (v.id === vacancyId ? data.vacancy : v)));
+      }
+    } catch (err) {
+      console.error(err);
+      setTelegramBotMsg({ success: false, message: 'Telegram request failed.' });
+    } finally {
+      setTelegramBotLoading(false);
+    }
+  };
+
+  const handleOpenApplicationsModal = async (vacancy: TutoringVacancy) => {
+    setSelectedVacancyForApplications(vacancy);
+    setLoadingApplicants(true);
+    setVacancyApplicantsList([]);
+    try {
+      const res = await fetch(`/api/admin/vacancies/${vacancy.id}/applications`);
+      const data = await res.json();
+      if (data.success) {
+        setVacancyApplicantsList(data.applications || []);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingApplicants(false);
+    }
+  };
+
+  const handleUpdateApplicantStatus = async (appId: string, status: VacancyApplicationStatus, reviewNotes?: string) => {
+    if (!selectedVacancyForApplications) return;
+    try {
+      const res = await fetch(`/api/admin/vacancies/${selectedVacancyForApplications.id}/applications`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ applicationId: appId, status, reviewNotes }),
+      });
+      const data = await res.json();
+      if (data.success && data.application) {
+        setVacancyApplicantsList((prev) =>
+          prev.map((a) => (a.id === appId ? data.application : a))
+        );
+        setVacancyApplications((prev) =>
+          prev.map((a) => (a.id === appId ? data.application : a))
+        );
+        refreshMetrics();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Filtered vacancies
+  const filteredVacancies = vacancies.filter((v) => {
+    if (vacancyFilterStatus !== 'all' && v.status !== vacancyFilterStatus) return false;
+    if (vacancySearch) {
+      const q = vacancySearch.toLowerCase();
+      const matchCode = v.vacancy_code.toLowerCase().includes(q);
+      const matchTitle = v.title.toLowerCase().includes(q);
+      const matchSubCity = v.sub_city.toLowerCase().includes(q);
+      const matchSub = v.subjects.some((s) => s.toLowerCase().includes(q));
+      return matchCode || matchTitle || matchSubCity || matchSub;
+    }
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Admin Top Navigation */}
@@ -373,6 +548,14 @@ export default function AdminDashboard({
             Parent Requests ({requests.length})
           </button>
           <button
+            onClick={() => setActiveTab('vacancies')}
+            className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors ${
+              activeTab === 'vacancies' ? 'bg-amber-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Tutoring Vacancies ({vacancies.length})
+          </button>
+          <button
             onClick={() => setActiveTab('placements')}
             className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors ${
               activeTab === 'placements' ? 'bg-amber-600 text-white font-bold' : 'text-slate-400 hover:text-white'
@@ -418,7 +601,7 @@ export default function AdminDashboard({
               <p className="text-xs text-slate-500">Live operational counts from persistent database.</p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4">
               <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
                 <span className="text-xs text-slate-500 font-semibold uppercase block">Total Tutors</span>
                 <span className="text-2xl font-black text-slate-900">{metrics.totalTutorApplications}</span>
@@ -458,6 +641,22 @@ export default function AdminDashboard({
                 </span>
                 <span className="text-[11px] text-slate-500 block mt-1">
                   of {metrics.totalCommissionDueETB.toLocaleString()} ETB due
+                </span>
+              </div>
+
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                <span className="text-xs text-slate-500 font-semibold uppercase block">Tutoring Vacancies</span>
+                <span className="text-2xl font-black text-slate-900">{vacancies.length}</span>
+                <span className="text-[11px] text-emerald-600 block mt-1">
+                  {vacancies.filter((v) => v.status === 'open' || v.status === 'closing_soon').length} open / closing soon
+                </span>
+              </div>
+
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                <span className="text-xs text-slate-500 font-semibold uppercase block">Vacancy Applicants</span>
+                <span className="text-2xl font-black text-sky-600">{vacancyApplications.length}</span>
+                <span className="text-[11px] text-slate-500 block mt-1">
+                  across {vacancies.reduce((acc, v) => acc + (v.view_count || 0), 0)} tracked views
                 </span>
               </div>
             </div>
@@ -638,6 +837,14 @@ export default function AdminDashboard({
                         </td>
                         <td className="p-3 text-right space-x-2">
                           <button
+                            onClick={() => handleConvertRequestToVacancy(r.id)}
+                            disabled={convertingRequestId === r.id}
+                            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition-colors"
+                            title="Convert into a sanitized public vacancy draft (strips private family phone, parent full name, and exact address)"
+                          >
+                            {convertingRequestId === r.id ? 'Converting...' : 'Draft Vacancy'}
+                          </button>
+                          <button
                             onClick={() => handleFindCandidates(r)}
                             className="px-3 py-1 rounded-lg font-bold text-xs bg-amber-600 hover:bg-amber-700 text-white shadow-xs"
                           >
@@ -736,6 +943,167 @@ export default function AdminDashboard({
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* TAB 3.5: TUTORING VACANCIES & TELEGRAM DISTRIBUTION */}
+        {activeTab === 'vacancies' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-xl font-extrabold text-slate-900">Tutoring Vacancies & Job Board</h1>
+                <p className="text-xs text-slate-500">
+                  Publish sanitized parent openings, generate Telegram announcements, and review tutor applications.
+                </p>
+              </div>
+
+              {/* Status filter tabs */}
+              <div className="flex flex-wrap gap-1 bg-white p-1 rounded-xl border border-slate-200 text-xs">
+                {['all', 'open', 'closing_soon', 'filled', 'closed', 'draft', 'archived'].map((st) => (
+                  <button
+                    key={st}
+                    onClick={() => setVacancyFilterStatus(st)}
+                    className={`px-3 py-1 rounded-lg capitalize transition-colors ${
+                      vacancyFilterStatus === st ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    {st.replace('_', ' ')}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Search filter */}
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+              <input
+                type="text"
+                placeholder="Search vacancies by code, title, sub-city, subject..."
+                value={vacancySearch}
+                onChange={(e) => setVacancySearch(e.target.value)}
+                className="w-full sm:max-w-md px-4 py-2 rounded-xl border border-slate-200 text-xs bg-white"
+              />
+              <span className="text-xs text-slate-400">
+                Showing <strong>{filteredVacancies.length}</strong> of {vacancies.length} vacancies
+              </span>
+            </div>
+
+            {/* Vacancies Table */}
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 font-bold text-slate-700 border-b border-slate-200">
+                    <tr>
+                      <th className="p-3">Vacancy Code</th>
+                      <th className="p-3">Title & Modality</th>
+                      <th className="p-3">Location</th>
+                      <th className="p-3">Grade & Curriculum</th>
+                      <th className="p-3">Rate / Budget</th>
+                      <th className="p-3">Views / Apps</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredVacancies.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="p-8 text-center text-slate-500">
+                          No tutoring vacancies found matching your current filter. Convert a parent request or create a new vacancy.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredVacancies.map((v) => {
+                        const appCount = vacancyApplications.filter((a) => a.vacancy_id === v.id).length;
+                        return (
+                          <tr key={v.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="p-3 font-mono font-bold text-slate-900">
+                              <a
+                                href={`/vacancies/${v.vacancy_code}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="hover:text-amber-600 underline decoration-dotted"
+                                title="Open public vacancy page"
+                              >
+                                {v.vacancy_code}
+                              </a>
+                            </td>
+                            <td className="p-3 font-semibold text-slate-900">
+                              <div>{v.title}</div>
+                              <span className="text-[10px] text-slate-500 capitalize">
+                                {v.teaching_format.replace('_', ' ')} • {v.subjects.join(', ')}
+                              </span>
+                            </td>
+                            <td className="p-3 text-slate-600">
+                              {v.sub_city}
+                              {v.general_area ? ` (${v.general_area})` : ''}
+                            </td>
+                            <td className="p-3 text-slate-600">
+                              <div>{v.grade_level}</div>
+                              <span className="text-[10px] text-slate-400 capitalize">{v.curriculum.replace('_', ' ')}</span>
+                            </td>
+                            <td className="p-3 font-bold text-slate-900">
+                              {v.hourly_rate_etb ? `${v.hourly_rate_etb} ETB/hr` : `${v.total_estimated_budget_etb?.toLocaleString()} ETB/mo`}
+                            </td>
+                            <td className="p-3 text-slate-600 font-mono">
+                              <span className="text-slate-500">{v.view_count || 0} views</span>
+                              <span className="mx-1">•</span>
+                              <strong className="text-amber-700">{appCount} apps</strong>
+                            </td>
+                            <td className="p-3">
+                              <select
+                                value={v.status}
+                                onChange={(e) => handleUpdateVacancyStatus(v.id, e.target.value as VacancyStatus)}
+                                className={`px-2 py-1 rounded-lg text-[10px] font-bold border uppercase tracking-wider ${
+                                  v.status === 'open'
+                                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                                    : v.status === 'closing_soon'
+                                    ? 'bg-amber-50 text-amber-800 border-amber-300'
+                                    : v.status === 'filled'
+                                    ? 'bg-purple-50 text-purple-800 border-purple-300'
+                                    : v.status === 'draft'
+                                    ? 'bg-blue-50 text-blue-800 border-blue-300'
+                                    : 'bg-slate-100 text-slate-700 border-slate-300'
+                                }`}
+                              >
+                                <option value="draft">Draft</option>
+                                <option value="open">Open</option>
+                                <option value="closing_soon">Closing Soon</option>
+                                <option value="filled">Filled</option>
+                                <option value="closed">Closed</option>
+                                <option value="archived">Archived</option>
+                              </select>
+                            </td>
+                            <td className="p-3 text-right space-x-1.5 whitespace-nowrap">
+                              <button
+                                onClick={() => handleOpenTelegramModal(v)}
+                                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition-colors inline-flex items-center gap-1"
+                                title="Copy or post Telegram announcement"
+                              >
+                                <TelegramIcon className="w-3.5 h-3.5" />
+                                <span>Telegram</span>
+                              </button>
+                              <button
+                                onClick={() => handleOpenApplicationsModal(v)}
+                                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 transition-colors"
+                              >
+                                Applicants ({appCount})
+                              </button>
+                              <a
+                                href={`/vacancies/${v.vacancy_code}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-2 py-1 rounded-lg text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 inline-block"
+                              >
+                                View Live &rarr;
+                              </a>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
 
@@ -1381,6 +1749,238 @@ export default function AdminDashboard({
                   Mark Concern Resolved
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 6: Telegram Announcement Generator & Bot Broadcast */}
+      {selectedVacancyForTelegram && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[11px] font-bold text-amber-600 uppercase tracking-widest flex items-center gap-1.5">
+                  <TelegramIcon className="w-3.5 h-3.5" />
+                  Telegram Announcement Generator
+                </span>
+                <h2 className="text-base font-bold text-slate-900 mt-0.5">
+                  {selectedVacancyForTelegram.vacancy_code} • {selectedVacancyForTelegram.title}
+                </h2>
+              </div>
+              <button
+                onClick={() => setSelectedVacancyForTelegram(null)}
+                className="text-slate-400 hover:text-slate-700 text-lg font-bold"
+              >
+                &times;
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600">
+              Formatted according to Ethiopian tutoring Telegram channel standards with verified emojis, location, requirements, and privacy protections.
+            </p>
+
+            {/* Announcement Text Box */}
+            <div className="flex-1 overflow-y-auto bg-slate-900 text-slate-100 p-4 rounded-2xl font-mono text-xs whitespace-pre-wrap select-all leading-relaxed border border-slate-800">
+              {telegramAnnouncementText}
+            </div>
+
+            {/* Status / Bot message */}
+            {telegramBotMsg && (
+              <div
+                className={`p-3 rounded-xl text-xs font-medium border ${
+                  telegramBotMsg.success
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                    : 'bg-amber-50 text-amber-900 border-amber-200'
+                }`}
+              >
+                {telegramBotMsg.message}
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCopyTelegramText}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 ${
+                    telegramCopySuccess
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-slate-900 hover:bg-slate-800 text-white'
+                  }`}
+                >
+                  <CheckCircleIcon className="w-4 h-4" />
+                  <span>{telegramCopySuccess ? 'Copied to Clipboard!' : 'Copy Announcement Text'}</span>
+                </button>
+
+                <a
+                  href={`https://t.me/share/url?url=${encodeURIComponent(
+                    typeof window !== 'undefined'
+                      ? `${window.location.origin}/vacancies/${selectedVacancyForTelegram.vacancy_code}?utm_source=telegram`
+                      : `https://bruhtesfa.et/vacancies/${selectedVacancyForTelegram.vacancy_code}`
+                  )}&text=${encodeURIComponent(
+                    `✨ New Tutoring Opportunity at Bruh Tesfa: ${selectedVacancyForTelegram.title} (${selectedVacancyForTelegram.sub_city})`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-500 hover:bg-sky-600 text-white transition-colors flex items-center gap-1.5 shadow-xs"
+                >
+                  <TelegramIcon className="w-3.5 h-3.5" />
+                  <span>Share via Telegram</span>
+                </a>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handlePublishViaTelegramBot(selectedVacancyForTelegram.id)}
+                  disabled={telegramBotLoading}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-300 hover:bg-slate-50 text-slate-700 transition-colors disabled:opacity-50"
+                  title="Automated dispatch via Telegram Bot API (requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHANNEL_ID)"
+                >
+                  {telegramBotLoading ? 'Broadcasting...' : 'Bot Auto-Publish'}
+                </button>
+                <button
+                  onClick={() => setSelectedVacancyForTelegram(null)}
+                  className="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 7: Vacancy Applicants Review & Shortlisting */}
+      {selectedVacancyForApplications && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-3xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">
+                  Candidate Pipeline
+                </span>
+                <h2 className="text-base font-bold text-slate-900 mt-0.5">
+                  Applicants for {selectedVacancyForApplications.vacancy_code}: {selectedVacancyForApplications.title}
+                </h2>
+                <p className="text-xs text-slate-500">
+                  {selectedVacancyForApplications.sub_city} • {selectedVacancyForApplications.grade_level} •{' '}
+                  {selectedVacancyForApplications.hourly_rate_etb
+                    ? `${selectedVacancyForApplications.hourly_rate_etb} ETB/hr`
+                    : `${selectedVacancyForApplications.total_estimated_budget_etb?.toLocaleString()} ETB/mo`}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedVacancyForApplications(null)}
+                className="text-slate-400 hover:text-slate-700 text-lg font-bold"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Applicants List */}
+            <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+              {loadingApplicants ? (
+                <div className="p-8 text-center text-xs text-slate-500">Loading vacancy applicants...</div>
+              ) : vacancyApplicantsList.length === 0 ? (
+                <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-500 space-y-2">
+                  <p className="font-semibold text-slate-700">No applications received yet for this vacancy.</p>
+                  <p>Share this vacancy to Telegram or direct link to invite qualified tutors.</p>
+                </div>
+              ) : (
+                vacancyApplicantsList.map((app) => (
+                  <div
+                    key={app.id}
+                    className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-3"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2.5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-sm text-slate-900">{app.applicant_name}</h3>
+                          <a
+                            href={`tel:${app.applicant_phone}`}
+                            className="font-mono text-xs text-amber-700 hover:underline"
+                          >
+                            {app.applicant_phone}
+                          </a>
+                        </div>
+                        <p className="text-[11px] text-slate-500">
+                          {app.applicant_education} • {app.applicant_institution} •{' '}
+                          {app.years_of_experience ? `${app.years_of_experience} yrs experience` : 'Experienced tutor'}
+                        </p>
+                      </div>
+
+                      {/* Status Selector */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-slate-400 font-medium">Stage:</span>
+                        <select
+                          value={app.status}
+                          onChange={(e) =>
+                            handleUpdateApplicantStatus(app.id, e.target.value as VacancyApplicationStatus)
+                          }
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold border uppercase tracking-wider ${
+                            app.status === 'selected'
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                              : app.status === 'shortlisted'
+                              ? 'bg-amber-50 text-amber-800 border-amber-300'
+                              : app.status === 'interview_discussion'
+                              ? 'bg-blue-50 text-blue-800 border-blue-300'
+                              : app.status === 'not_selected'
+                              ? 'bg-red-50 text-red-700 border-red-200'
+                              : app.status === 'withdrawn'
+                              ? 'bg-slate-100 text-slate-500 border-slate-200'
+                              : 'bg-white text-slate-700 border-slate-300'
+                          }`}
+                        >
+                          <option value="submitted">Submitted</option>
+                          <option value="under_review">Under Review</option>
+                          <option value="shortlisted">Shortlisted</option>
+                          <option value="interview_discussion">Interview / Discussion</option>
+                          <option value="selected">Selected (Matched)</option>
+                          <option value="not_selected">Not Selected</option>
+                          <option value="withdrawn">Withdrawn</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Application Details */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600">
+                      <div>
+                        <span className="font-semibold text-slate-700">Schedule: </span>
+                        <span>{app.available_schedule || 'Flexible'}</span>
+                      </div>
+                      <div>
+                        <span className="font-semibold text-slate-700">Proposed Rate: </span>
+                        <span>{app.proposed_rate_etb ? `${app.proposed_rate_etb} ETB/hr` : 'Negotiable within budget'}</span>
+                      </div>
+                    </div>
+
+                    {app.cover_note && (
+                      <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 italic">
+                        &quot;{app.cover_note}&quot;
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+                      <span>Submitted: {new Date(app.created_at).toLocaleString()}</span>
+                      {app.status === 'selected' && (
+                        <span className="font-bold text-emerald-700">
+                          ✓ Candidate Selected. Record agreement under Placements tab.
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-slate-100">
+              <button
+                onClick={() => setSelectedVacancyForApplications(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200"
+              >
+                Done Reviewing
+              </button>
             </div>
           </div>
         </div>

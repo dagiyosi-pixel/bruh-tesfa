@@ -21,12 +21,18 @@ import {
   ApplicationStatus,
   ParentRequestStatus,
   PaymentStatus,
+  TutoringVacancy,
+  VacancyApplication,
+  VacancyStatus,
+  VacancyApplicationStatus,
 } from '../types';
 import {
   INITIAL_TUTORS,
   INITIAL_PUBLIC_PROFILES,
   INITIAL_PARENT_REQUESTS,
   INITIAL_FEE_CONFIG,
+  INITIAL_VACANCIES,
+  INITIAL_VACANCY_APPLICATIONS,
 } from './seed';
 import { evaluateCandidateMatch, rankCandidatesForRequest } from '../matching';
 import { calculatePlacementFee } from '../fees';
@@ -41,6 +47,8 @@ interface DatabaseSchema {
   complaints: Complaint[];
   audit_logs: AuditLog[];
   data_deletion_requests: DataDeletionRequest[];
+  vacancies: TutoringVacancy[];
+  vacancy_applications: VacancyApplication[];
 }
 
 // Local persistent file location
@@ -69,6 +77,12 @@ function loadDatabase(): DatabaseSchema {
     try {
       const raw = fs.readFileSync(DB_FILE, 'utf-8');
       memoryDb = JSON.parse(raw);
+      if (!memoryDb!.vacancies) {
+        memoryDb!.vacancies = [...INITIAL_VACANCIES];
+      }
+      if (!memoryDb!.vacancy_applications) {
+        memoryDb!.vacancy_applications = [...INITIAL_VACANCY_APPLICATIONS];
+      }
       return memoryDb!;
     } catch (err) {
       console.warn('Could not parse local DB file, initializing with seeds:', err);
@@ -151,6 +165,8 @@ function loadDatabase(): DatabaseSchema {
       },
     ],
     data_deletion_requests: [],
+    vacancies: [...INITIAL_VACANCIES],
+    vacancy_applications: [...INITIAL_VACANCY_APPLICATIONS],
   };
 
   saveDatabase(memoryDb);
@@ -161,9 +177,15 @@ function saveDatabase(db: DatabaseSchema): void {
   memoryDb = db;
   ensureDataDirectory();
   try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf-8');
-  } catch (err) {
-    console.warn('Failed to write database to disk (operating in-memory):', err);
+    const tmpFile = `${DB_FILE}.${process.pid}.${Date.now()}.tmp`;
+    fs.writeFileSync(tmpFile, JSON.stringify(db, null, 2), 'utf-8');
+    fs.renameSync(tmpFile, DB_FILE);
+  } catch {
+    try {
+      fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf-8');
+    } catch (err) {
+      console.warn('Failed to write database to disk (operating in-memory):', err);
+    }
   }
 }
 
@@ -365,6 +387,11 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
 
   const openComplaints = db.complaints.filter((c) => c.status === 'open' || c.status === 'under_investigation').length;
 
+  const totalVacancies = db.vacancies ? db.vacancies.length : 0;
+  const openVacancies = db.vacancies ? db.vacancies.filter((v) => v.status === 'open' || v.status === 'closing_soon').length : 0;
+  const totalVacancyApplications = db.vacancy_applications ? db.vacancy_applications.length : 0;
+  const totalVacancyViews = db.vacancies ? db.vacancies.reduce((sum, v) => sum + (v.view_count || 0), 0) : 0;
+
   return {
     totalTutorApplications,
     pendingTutorReviews,
@@ -377,6 +404,10 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
     totalCommissionDueETB,
     totalCommissionPaidETB,
     openComplaints,
+    totalVacancies,
+    openVacancies,
+    totalVacancyApplications,
+    totalVacancyViews,
   };
 }
 
@@ -712,4 +743,341 @@ export async function getAuditLogs(): Promise<AuditLog[]> {
 export async function getDataDeletionRequests(): Promise<DataDeletionRequest[]> {
   const db = loadDatabase();
   return [...db.data_deletion_requests].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
+
+// -----------------------------------------------------------------------------
+// VACANCIES & JOB BOARD DATA ACCESS
+// -----------------------------------------------------------------------------
+
+export async function getPublicVacancies(filters?: {
+  subCity?: string;
+  grade?: string;
+  subject?: string;
+  modality?: string;
+  minRate?: number;
+  search?: string;
+}): Promise<TutoringVacancy[]> {
+  const db = loadDatabase();
+  let list = (db.vacancies || []).filter(
+    (v) => v.status === 'open' || v.status === 'closing_soon' || v.status === 'filled'
+  );
+
+  if (!filters) return list;
+
+  if (filters.subCity) {
+    const sc = filters.subCity.toLowerCase();
+    list = list.filter((v) => v.sub_city.toLowerCase().includes(sc));
+  }
+
+  if (filters.grade) {
+    const g = filters.grade.toLowerCase();
+    list = list.filter((v) => v.grade_level.toLowerCase().includes(g));
+  }
+
+  if (filters.subject) {
+    const sub = filters.subject.toLowerCase();
+    list = list.filter((v) => v.subjects.some((s) => s.toLowerCase().includes(sub)));
+  }
+
+  if (filters.modality) {
+    const m = filters.modality.toLowerCase();
+    list = list.filter((v) => v.teaching_format.toLowerCase() === m || v.teaching_format === 'hybrid');
+  }
+
+  if (filters.minRate) {
+    list = list.filter((v) => Number(v.hourly_rate_etb) >= Number(filters.minRate));
+  }
+
+  if (filters.search) {
+    const q = filters.search.toLowerCase();
+    list = list.filter(
+      (v) =>
+        v.title.toLowerCase().includes(q) ||
+        v.vacancy_code.toLowerCase().includes(q) ||
+        v.sub_city.toLowerCase().includes(q) ||
+        v.subjects.some((s) => s.toLowerCase().includes(q))
+    );
+  }
+
+  return list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
+
+export async function getPublicVacancyByCode(code: string, incrementView: boolean = true): Promise<TutoringVacancy | null> {
+  const db = loadDatabase();
+  const vacancy = (db.vacancies || []).find((v) => v.vacancy_code.toUpperCase() === code.toUpperCase());
+  if (!vacancy) return null;
+
+  if (incrementView) {
+    vacancy.view_count = (vacancy.view_count || 0) + 1;
+    saveDatabase(db);
+  }
+
+  return vacancy;
+}
+
+export async function submitVacancyApplication(
+  data: Omit<VacancyApplication, 'id' | 'status' | 'created_at' | 'updated_at'>
+): Promise<{ success: boolean; id: string; reference_number: string }> {
+  const db = loadDatabase();
+  const vacancy = (db.vacancies || []).find((v) => v.id === data.vacancy_id);
+  if (!vacancy) {
+    throw new Error('Tutoring vacancy not found.');
+  }
+
+  if (vacancy.status !== 'open' && vacancy.status !== 'closing_soon') {
+    throw new Error('This vacancy is no longer accepting new applications.');
+  }
+
+  // Prevent duplicate active applications from the same applicant phone or tutorId
+  const normalizedPhone = data.applicant_phone.replace(/\s+/g, '');
+  const existingActive = (db.vacancy_applications || []).find(
+    (app) =>
+      app.vacancy_id === data.vacancy_id &&
+      (app.applicant_phone.replace(/\s+/g, '') === normalizedPhone ||
+        (data.tutor_id && app.tutor_id === data.tutor_id)) &&
+      app.status !== 'withdrawn' &&
+      app.status !== 'not_selected'
+  );
+
+  if (existingActive) {
+    throw new Error('You have already submitted an active application for this vacancy.');
+  }
+
+  const now = new Date().toISOString();
+  const id = `vapp-${Date.now()}`;
+
+  const application: VacancyApplication = {
+    ...data,
+    id,
+    status: 'submitted',
+    created_at: now,
+    updated_at: now,
+  };
+
+  if (!db.vacancy_applications) db.vacancy_applications = [];
+  db.vacancy_applications.push(application);
+
+  // Increment application count on the vacancy
+  vacancy.application_count = (vacancy.application_count || 0) + 1;
+  vacancy.updated_at = now;
+
+  // Audit log
+  db.audit_logs.push({
+    id: `log-${Date.now()}`,
+    actor: data.applicant_name,
+    role: 'tutor_applicant',
+    action: 'vacancy_application_submitted',
+    resource_type: 'vacancy_application',
+    resource_id: id,
+    details: { vacancy_code: vacancy.vacancy_code, applicant_phone: data.applicant_phone },
+    created_at: now,
+  });
+
+  saveDatabase(db);
+  return { success: true, id, reference_number: vacancy.vacancy_code };
+}
+
+export async function getAdminVacancies(): Promise<TutoringVacancy[]> {
+  const db = loadDatabase();
+  return [...(db.vacancies || [])].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
+
+export async function createVacancy(
+  data: Omit<TutoringVacancy, 'id' | 'vacancy_code' | 'view_count' | 'application_count' | 'created_at' | 'updated_at'>
+): Promise<TutoringVacancy> {
+  const db = loadDatabase();
+  if (!db.vacancies) db.vacancies = [];
+
+  const id = `vac-${Date.now()}`;
+  const seq = (db.vacancies.length + 1).toString().padStart(4, '0');
+  const vacancy_code = `BT-VAC-2026-${seq}`;
+  const now = new Date().toISOString();
+
+  const newVacancy: TutoringVacancy = {
+    ...data,
+    id,
+    vacancy_code,
+    view_count: 0,
+    application_count: 0,
+    created_at: now,
+    updated_at: now,
+  };
+
+  db.vacancies.push(newVacancy);
+
+  db.audit_logs.push({
+    id: `log-${Date.now()}`,
+    actor: 'Staff Admin',
+    role: 'admin',
+    action: 'vacancy_created',
+    resource_type: 'tutoring_vacancy',
+    resource_id: id,
+    details: { vacancy_code, title: data.title },
+    created_at: now,
+  });
+
+  saveDatabase(db);
+  return newVacancy;
+}
+
+export async function updateVacancy(
+  id: string,
+  data: Partial<Omit<TutoringVacancy, 'id' | 'vacancy_code' | 'created_at'>>
+): Promise<TutoringVacancy | null> {
+  const db = loadDatabase();
+  const v = (db.vacancies || []).find((item) => item.id === id);
+  if (!v) return null;
+
+  Object.assign(v, data);
+  v.updated_at = new Date().toISOString();
+
+  saveDatabase(db);
+  return v;
+}
+
+export async function updateVacancyStatus(
+  id: string,
+  status: VacancyStatus
+): Promise<TutoringVacancy | null> {
+  const db = loadDatabase();
+  const v = (db.vacancies || []).find((item) => item.id === id);
+  if (!v) return null;
+
+  const now = new Date().toISOString();
+  v.status = status;
+  v.updated_at = now;
+
+  if (status === 'open' && !v.published_at) {
+    v.published_at = now;
+  } else if (status === 'closed' || status === 'filled') {
+    v.closed_at = now;
+  }
+
+  db.audit_logs.push({
+    id: `log-${Date.now()}`,
+    actor: 'Staff Admin',
+    role: 'admin',
+    action: `vacancy_status_changed_to_${status}`,
+    resource_type: 'tutoring_vacancy',
+    resource_id: id,
+    details: { vacancy_code: v.vacancy_code, status },
+    created_at: now,
+  });
+
+  saveDatabase(db);
+  return v;
+}
+
+/**
+ * Converts a private parent request into a sanitized, moderated vacancy draft.
+ * Strips family's private phone number, parent name, and exact street details!
+ */
+export async function convertParentRequestToVacancy(requestId: string): Promise<TutoringVacancy | null> {
+  const db = loadDatabase();
+  const req = db.parent_requests.find((r) => r.id === requestId);
+  if (!req) return null;
+
+  const subjectsTitle = req.subjects.slice(0, 2).join(' & ');
+  const title = `${req.grade_level} ${subjectsTitle} Home Tutor - ${req.sub_city}`;
+  const rate = req.budget_range_max ? Number(req.budget_range_max) : 450;
+  const days = req.schedule_preference ? [req.schedule_preference] : ['3 days per week'];
+
+  // Strict Privacy Sanitization: Strip exact house, flat, door, or building unit numbers from general area
+  let sanitizedArea: string | undefined = req.general_area ? req.general_area.trim() : undefined;
+  if (sanitizedArea) {
+    sanitizedArea = sanitizedArea
+      .replace(/,?\s*(?:house|apt|apartment|flat|door|unit|villa|compound|block)\s*(?:no\.?|#|number)?\s*[\w\d-]+/gi, '')
+      .replace(/,\s*,/g, ',')
+      .trim()
+      .replace(/^,\s*|,\s*$/g, '');
+  }
+
+  // Moderate parent preferences (remove private prefix tags)
+  let moderatedPreferences = req.learning_goals ? req.learning_goals.trim() : undefined;
+  if (moderatedPreferences) {
+    moderatedPreferences = moderatedPreferences
+      .replace(/^(?:private\s*note:?|internal:?|confidential:?)\s*/gi, '')
+      .trim();
+  }
+
+  const vacancy = await createVacancy({
+    title,
+    parent_request_id: req.id,
+    city: req.city || 'Addis Ababa',
+    sub_city: req.sub_city,
+    general_area: sanitizedArea || undefined,
+    grade_level: req.grade_level,
+    curriculum: req.curriculum || 'Ethiopian National Curriculum',
+    subjects: req.subjects,
+    teaching_format: req.teaching_mode || 'in_person',
+    schedule_days: days,
+    time_window: 'Afternoon / Evening',
+    lesson_frequency: req.lesson_frequency || '3 days per week (1.5 hrs each)',
+    hours_per_session: 1.5,
+    expected_duration_months: 3,
+    hourly_rate_etb: rate,
+    total_estimated_budget_etb: rate * 1.5 * 3 * 4,
+    required_qualifications: `Qualified educator with degree in ${req.subjects.join(', ')} or related discipline with proven track record.`,
+    languages: req.preferred_language ? [req.preferred_language] : ['English', 'Amharic (አማርኛ)'],
+    parent_preferences: moderatedPreferences || undefined,
+    application_instructions: 'Submit your profile and approach. Shortlisted educators will be introduced to the family.',
+    status: 'draft', // Saved in draft for operator review before public publishing
+  });
+
+  // Update parent request status to indicate vacancy created
+  req.status = 'matching';
+  req.admin_notes = `Converted to Vacancy draft ${vacancy.vacancy_code}.`;
+  saveDatabase(db);
+
+  return vacancy;
+}
+
+export async function getVacancyApplications(vacancyId: string): Promise<VacancyApplication[]> {
+  const db = loadDatabase();
+  return (db.vacancy_applications || [])
+    .filter((a) => a.vacancy_id === vacancyId)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
+
+export async function getAllVacancyApplications(): Promise<VacancyApplication[]> {
+  const db = loadDatabase();
+  return [...(db.vacancy_applications || [])].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+}
+
+export async function updateVacancyApplicationStatus(
+  applicationId: string,
+  status: VacancyApplicationStatus,
+  adminReviewNotes?: string
+): Promise<VacancyApplication | null> {
+  const db = loadDatabase();
+  const app = (db.vacancy_applications || []).find((a) => a.id === applicationId);
+  if (!app) return null;
+
+  app.status = status;
+  if (adminReviewNotes !== undefined) app.admin_review_notes = adminReviewNotes;
+  app.updated_at = new Date().toISOString();
+
+  // If status is selected, also mark vacancy as filled
+  if (status === 'selected') {
+    const vac = (db.vacancies || []).find((v) => v.id === app.vacancy_id);
+    if (vac) {
+      vac.status = 'filled';
+      vac.closed_at = new Date().toISOString();
+    }
+  }
+
+  saveDatabase(db);
+  return app;
+}
+
+export async function recordTelegramBroadcast(vacancyId: string, messageId: string): Promise<void> {
+  const db = loadDatabase();
+  const vac = (db.vacancies || []).find((v) => v.id === vacancyId);
+  if (vac) {
+    vac.telegram_message_id = messageId;
+    vac.telegram_published_at = new Date().toISOString();
+    saveDatabase(db);
+  }
 }

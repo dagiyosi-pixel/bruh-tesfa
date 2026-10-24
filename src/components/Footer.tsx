@@ -74,6 +74,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/vacancies" className="hover:text-amber-400 transition-colors font-medium text-amber-300">
+                  Tutoring Vacancies Board
+                </Link>
+              </li>
+              <li>
                 <Link href="/safety" className="hover:text-amber-400 transition-colors">
                   Safety & Safeguarding
                 </Link>

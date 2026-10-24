@@ -378,118 +378,14 @@
       "hourly_rate_etb": 300,
       "privacy_consent": true,
       "code_of_conduct_agreed": true,
-      "id": "tut-1792850616225",
+      "id": "tut-1792853293681",
       "reference_number": "BT-TUT-2026-0006",
       "status": "suspended",
-      "created_at": "2026-10-24T14:03:36.225Z",
-      "updated_at": "2026-10-24T14:03:36.334Z",
+      "created_at": "2026-10-24T14:48:13.681Z",
+      "updated_at": "2026-10-24T14:48:13.698Z",
       "admin_review_notes": "Temporary leave of absence",
       "reviewed_by": "Staff Admin",
-      "reviewed_at": "2026-10-24T14:03:36.334Z"
-    },
-    {
-      "full_legal_name": "Test Candidate Abebe",
-      "public_display_name": "Teacher Abebe",
-      "phone": "+251 91 777 6655",
-      "email": "abebe@example.com",
-      "preferred_contact_channel": "Telegram",
-      "city": "Addis Ababa",
-      "sub_city": "Arada",
-      "specific_neighborhood": "Piazza",
-      "subjects": [
-        "History & Geography"
-      ],
-      "grade_levels": [
-        "Grades 7-8 (Middle School / Ministry Prep)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum"
-      ],
-      "education_level": "B.A. History",
-      "institution": "AAU 6 Kilo",
-      "field_of_study": "History",
-      "years_of_experience": 2,
-      "teaching_approach": "Interactive historical timelines and source evaluation",
-      "bio": "Experienced social studies mentor",
-      "teaching_languages": [
-        "English",
-        "Amharic (አማርኛ)"
-      ],
-      "available_days": [
-        "Monday"
-      ],
-      "available_time_windows": [
-        "Afternoon"
-      ],
-      "teaching_modes": [
-        "in_person"
-      ],
-      "travel_areas": [
-        "Arada"
-      ],
-      "hourly_rate_etb": 300,
-      "privacy_consent": true,
-      "code_of_conduct_agreed": true,
-      "id": "tut-1792850901377",
-      "reference_number": "BT-TUT-2026-0007",
-      "status": "suspended",
-      "created_at": "2026-10-24T14:08:21.377Z",
-      "updated_at": "2026-10-24T14:08:21.414Z",
-      "admin_review_notes": "Temporary leave of absence",
-      "reviewed_by": "Staff Admin",
-      "reviewed_at": "2026-10-24T14:08:21.414Z"
-    },
-    {
-      "full_legal_name": "Test Candidate Abebe",
-      "public_display_name": "Teacher Abebe",
-      "phone": "+251 91 777 6655",
-      "email": "abebe@example.com",
-      "preferred_contact_channel": "Telegram",
-      "city": "Addis Ababa",
-      "sub_city": "Arada",
-      "specific_neighborhood": "Piazza",
-      "subjects": [
-        "History & Geography"
-      ],
-      "grade_levels": [
-        "Grades 7-8 (Middle School / Ministry Prep)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum"
-      ],
-      "education_level": "B.A. History",
-      "institution": "AAU 6 Kilo",
-      "field_of_study": "History",
-      "years_of_experience": 2,
-      "teaching_approach": "Interactive historical timelines and source evaluation",
-      "bio": "Experienced social studies mentor",
-      "teaching_languages": [
-        "English",
-        "Amharic (አማርኛ)"
-      ],
-      "available_days": [
-        "Monday"
-      ],
-      "available_time_windows": [
-        "Afternoon"
-      ],
-      "teaching_modes": [
-        "in_person"
-      ],
-      "travel_areas": [
-        "Arada"
-      ],
-      "hourly_rate_etb": 300,
-      "privacy_consent": true,
-      "code_of_conduct_agreed": true,
-      "id": "tut-1792850925711",
-      "reference_number": "BT-TUT-2026-0008",
-      "status": "suspended",
-      "created_at": "2026-10-24T14:08:45.712Z",
-      "updated_at": "2026-10-24T14:08:45.754Z",
-      "admin_review_notes": "Temporary leave of absence",
-      "reviewed_by": "Staff Admin",
-      "reviewed_at": "2026-10-24T14:08:45.754Z"
+      "reviewed_at": "2026-10-24T14:48:13.698Z"
     }
   ],
   "public_profiles": [
@@ -729,24 +625,32 @@
       "updated_at": "2026-03-03T14:40:00Z"
     },
     {
-      "parent_name": "W/ro Genet",
-      "phone": "+251 91 333 4455",
-      "preferred_contact_method": "Phone",
+      "parent_name": "Woizero Aster Tesfaye (PRIVATE)",
+      "phone": "+251 91 999 8888",
+      "preferred_contact_method": "Phone Call",
       "city": "Addis Ababa",
       "sub_city": "Yeka",
+      "general_area": "Megenagna behind Diaspora square, House #402",
       "subjects": [
-        "Biology"
+        "Mathematics",
+        "English"
       ],
-      "grade_level": "Grades 9-10 (Secondary School)",
+      "grade_level": "Grade 8 (Ministry Exam Prep)",
       "curriculum": "Ethiopian National Curriculum",
+      "student_count": 1,
       "teaching_mode": "in_person",
-      "preferred_language": "English & Amharic",
+      "preferred_language": "Amharic (አማርኛ)",
+      "schedule_preference": "Monday, Wednesday, Friday after 4 PM",
+      "lesson_frequency": "3 days per week",
+      "budget_range_max": 450,
+      "learning_goals": "Private note: Student struggles with algebra word problems and needs gentle patience.",
       "privacy_consent": true,
-      "id": "req-1792850616339",
+      "id": "req-1792853216064",
       "reference_number": "BT-REQ-2026-0003",
-      "status": "new",
-      "created_at": "2026-10-24T14:03:36.339Z",
-      "updated_at": "2026-10-24T14:03:36.339Z"
+      "status": "matching",
+      "created_at": "2026-10-24T14:46:56.064Z",
+      "updated_at": "2026-10-24T14:46:56.064Z",
+      "admin_notes": "Converted to Vacancy draft BT-VAC-2026-0006."
     },
     {
       "parent_name": "W/ro Genet",
@@ -762,31 +666,39 @@
       "teaching_mode": "in_person",
       "preferred_language": "English & Amharic",
       "privacy_consent": true,
-      "id": "req-1792850901453",
+      "id": "req-1792853293705",
       "reference_number": "BT-REQ-2026-0004",
       "status": "new",
-      "created_at": "2026-10-24T14:08:21.453Z",
-      "updated_at": "2026-10-24T14:08:21.453Z"
+      "created_at": "2026-10-24T14:48:13.705Z",
+      "updated_at": "2026-10-24T14:48:13.705Z"
     },
     {
-      "parent_name": "W/ro Genet",
-      "phone": "+251 91 333 4455",
-      "preferred_contact_method": "Phone",
+      "parent_name": "Woizero Aster Tesfaye (PRIVATE)",
+      "phone": "+251 91 999 8888",
+      "preferred_contact_method": "Phone Call",
       "city": "Addis Ababa",
       "sub_city": "Yeka",
+      "general_area": "Megenagna behind Diaspora square, House #402",
       "subjects": [
-        "Biology"
+        "Mathematics",
+        "English"
       ],
-      "grade_level": "Grades 9-10 (Secondary School)",
+      "grade_level": "Grade 8 (Ministry Exam Prep)",
       "curriculum": "Ethiopian National Curriculum",
+      "student_count": 1,
       "teaching_mode": "in_person",
-      "preferred_language": "English & Amharic",
+      "preferred_language": "Amharic (አማርኛ)",
+      "schedule_preference": "Monday, Wednesday, Friday after 4 PM",
+      "lesson_frequency": "3 days per week",
+      "budget_range_max": 450,
+      "learning_goals": "Private note: Student struggles with algebra word problems and needs gentle patience.",
       "privacy_consent": true,
-      "id": "req-1792850925758",
+      "id": "req-1792853293778",
       "reference_number": "BT-REQ-2026-0005",
-      "status": "new",
-      "created_at": "2026-10-24T14:08:45.758Z",
-      "updated_at": "2026-10-24T14:08:45.758Z"
+      "status": "matching",
+      "created_at": "2026-10-24T14:48:13.778Z",
+      "updated_at": "2026-10-24T14:48:13.778Z",
+      "admin_notes": "Converted to Vacancy draft BT-VAC-2026-0010."
     }
   ],
   "matches": [
@@ -866,109 +778,162 @@
       "details": {
         "message": "BRUH TESFA local database initialized with production seeds"
       },
-      "created_at": "2026-10-24T14:03:36.197Z"
+      "created_at": "2026-10-24T14:46:55.997Z"
     },
     {
-      "id": "log-1792850616225",
-      "actor": "Test Candidate Abebe",
-      "role": "applicant",
-      "action": "tutor_application_submitted",
-      "resource_type": "tutor_application",
-      "resource_id": "tut-1792850616225",
-      "details": {
-        "reference_number": "BT-TUT-2026-0006",
-        "public_display_name": "Teacher Abebe"
-      },
-      "created_at": "2026-10-24T14:03:36.225Z"
-    },
-    {
-      "id": "log-1792850616271",
+      "id": "log-1792853216025",
       "actor": "Staff Admin",
       "role": "admin",
-      "action": "tutor_status_changed_to_approved",
-      "resource_type": "tutor_application",
-      "resource_id": "tut-1792850616225",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792853216025",
       "details": {
-        "status": "approved",
-        "adminReviewNotes": "Documents verified successfully"
+        "vacancy_code": "BT-VAC-2026-0005",
+        "title": "Grade 10 IGCSE Chemistry & Physics Tutor - Old Airport"
       },
-      "created_at": "2026-10-24T14:03:36.271Z"
+      "created_at": "2026-10-24T14:46:56.025Z"
     },
     {
-      "id": "log-1792850616334",
-      "actor": "Staff Admin",
-      "role": "admin",
-      "action": "tutor_status_changed_to_suspended",
-      "resource_type": "tutor_application",
-      "resource_id": "tut-1792850616225",
-      "details": {
-        "status": "suspended",
-        "adminReviewNotes": "Temporary leave of absence"
-      },
-      "created_at": "2026-10-24T14:03:36.334Z"
-    },
-    {
-      "id": "log-1792850616339",
-      "actor": "W/ro Genet",
+      "id": "log-1792853216065",
+      "actor": "Woizero Aster Tesfaye (PRIVATE)",
       "role": "parent",
       "action": "parent_request_submitted",
       "resource_type": "parent_request",
-      "resource_id": "req-1792850616339",
+      "resource_id": "req-1792853216064",
       "details": {
         "reference_number": "BT-REQ-2026-0003",
         "sub_city": "Yeka",
         "subjects": [
-          "Biology"
+          "Mathematics",
+          "English"
         ]
       },
-      "created_at": "2026-10-24T14:03:36.339Z"
+      "created_at": "2026-10-24T14:46:56.064Z"
     },
     {
-      "id": "log-1792850901379",
+      "id": "log-1792853216096",
+      "actor": "Staff Admin",
+      "role": "admin",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792853216096",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0006",
+        "title": "Grade 8 (Ministry Exam Prep) Mathematics & English Home Tutor - Yeka"
+      },
+      "created_at": "2026-10-24T14:46:56.096Z"
+    },
+    {
+      "id": "log-1792853216156",
+      "actor": "Staff Admin",
+      "role": "admin",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792853216156",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0007",
+        "title": "Grade 12 EUEE Biology Tutor - Bole"
+      },
+      "created_at": "2026-10-24T14:46:56.156Z"
+    },
+    {
+      "id": "log-1792853216198",
+      "actor": "Dr. Yared Bekele",
+      "role": "tutor_applicant",
+      "action": "vacancy_application_submitted",
+      "resource_type": "vacancy_application",
+      "resource_id": "vapp-1792853216198",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0007",
+        "applicant_phone": "+251 94 411 2233"
+      },
+      "created_at": "2026-10-24T14:46:56.198Z"
+    },
+    {
+      "id": "log-1792853216301",
+      "actor": "Dr. Yared Bekele",
+      "role": "tutor_applicant",
+      "action": "vacancy_application_submitted",
+      "resource_type": "vacancy_application",
+      "resource_id": "vapp-1792853216301",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0007",
+        "applicant_phone": "+251 94 411 2233"
+      },
+      "created_at": "2026-10-24T14:46:56.301Z"
+    },
+    {
+      "id": "log-1792853216308",
+      "actor": "Staff Admin",
+      "role": "admin",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792853216307",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0008",
+        "title": "Grade 6 Primary Math & English - Sarbet"
+      },
+      "created_at": "2026-10-24T14:46:56.307Z"
+    },
+    {
+      "id": "log-1792853216356",
+      "actor": "Bethlehem Tadesse",
+      "role": "tutor_applicant",
+      "action": "vacancy_application_submitted",
+      "resource_type": "vacancy_application",
+      "resource_id": "vapp-1792853216356",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0008",
+        "applicant_phone": "+251 92 333 4455"
+      },
+      "created_at": "2026-10-24T14:46:56.356Z"
+    },
+    {
+      "id": "log-1792853293683",
       "actor": "Test Candidate Abebe",
       "role": "applicant",
       "action": "tutor_application_submitted",
       "resource_type": "tutor_application",
-      "resource_id": "tut-1792850901377",
+      "resource_id": "tut-1792853293681",
       "details": {
-        "reference_number": "BT-TUT-2026-0007",
+        "reference_number": "BT-TUT-2026-0006",
         "public_display_name": "Teacher Abebe"
       },
-      "created_at": "2026-10-24T14:08:21.377Z"
+      "created_at": "2026-10-24T14:48:13.681Z"
     },
     {
-      "id": "log-1792850901382",
+      "id": "log-1792853293691",
       "actor": "Staff Admin",
       "role": "admin",
       "action": "tutor_status_changed_to_approved",
       "resource_type": "tutor_application",
-      "resource_id": "tut-1792850901377",
+      "resource_id": "tut-1792853293681",
       "details": {
         "status": "approved",
         "adminReviewNotes": "Documents verified successfully"
       },
-      "created_at": "2026-10-24T14:08:21.382Z"
+      "created_at": "2026-10-24T14:48:13.691Z"
     },
     {
-      "id": "log-1792850901414",
+      "id": "log-1792853293699",
       "actor": "Staff Admin",
       "role": "admin",
       "action": "tutor_status_changed_to_suspended",
       "resource_type": "tutor_application",
-      "resource_id": "tut-1792850901377",
+      "resource_id": "tut-1792853293681",
       "details": {
         "status": "suspended",
         "adminReviewNotes": "Temporary leave of absence"
       },
-      "created_at": "2026-10-24T14:08:21.414Z"
+      "created_at": "2026-10-24T14:48:13.698Z"
     },
     {
-      "id": "log-1792850901453",
+      "id": "log-1792853293706",
       "actor": "W/ro Genet",
       "role": "parent",
       "action": "parent_request_submitted",
       "resource_type": "parent_request",
-      "resource_id": "req-1792850901453",
+      "resource_id": "req-1792853293705",
       "details": {
         "reference_number": "BT-REQ-2026-0004",
         "sub_city": "Yeka",
@@ -976,63 +941,698 @@
           "Biology"
         ]
       },
-      "created_at": "2026-10-24T14:08:21.453Z"
+      "created_at": "2026-10-24T14:48:13.705Z"
     },
     {
-      "id": "log-1792850925714",
-      "actor": "Test Candidate Abebe",
-      "role": "applicant",
-      "action": "tutor_application_submitted",
-      "resource_type": "tutor_application",
-      "resource_id": "tut-1792850925711",
-      "details": {
-        "reference_number": "BT-TUT-2026-0008",
-        "public_display_name": "Teacher Abebe"
-      },
-      "created_at": "2026-10-24T14:08:45.712Z"
-    },
-    {
-      "id": "log-1792850925718",
+      "id": "log-1792853293758",
       "actor": "Staff Admin",
       "role": "admin",
-      "action": "tutor_status_changed_to_approved",
-      "resource_type": "tutor_application",
-      "resource_id": "tut-1792850925711",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792853293756",
       "details": {
-        "status": "approved",
-        "adminReviewNotes": "Documents verified successfully"
+        "vacancy_code": "BT-VAC-2026-0009",
+        "title": "Grade 10 IGCSE Chemistry & Physics Tutor - Old Airport"
       },
-      "created_at": "2026-10-24T14:08:45.718Z"
+      "created_at": "2026-10-24T14:48:13.756Z"
     },
     {
-      "id": "log-1792850925754",
-      "actor": "Staff Admin",
-      "role": "admin",
-      "action": "tutor_status_changed_to_suspended",
-      "resource_type": "tutor_application",
-      "resource_id": "tut-1792850925711",
-      "details": {
-        "status": "suspended",
-        "adminReviewNotes": "Temporary leave of absence"
-      },
-      "created_at": "2026-10-24T14:08:45.754Z"
-    },
-    {
-      "id": "log-1792850925758",
-      "actor": "W/ro Genet",
+      "id": "log-1792853293778",
+      "actor": "Woizero Aster Tesfaye (PRIVATE)",
       "role": "parent",
       "action": "parent_request_submitted",
       "resource_type": "parent_request",
-      "resource_id": "req-1792850925758",
+      "resource_id": "req-1792853293778",
       "details": {
         "reference_number": "BT-REQ-2026-0005",
         "sub_city": "Yeka",
         "subjects": [
-          "Biology"
+          "Mathematics",
+          "English"
         ]
       },
-      "created_at": "2026-10-24T14:08:45.758Z"
+      "created_at": "2026-10-24T14:48:13.778Z"
+    },
+    {
+      "id": "log-1792853293785",
+      "actor": "Staff Admin",
+      "role": "admin",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792853293785",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0010",
+        "title": "Grade 8 (Ministry Exam Prep) Mathematics & English Home Tutor - Yeka"
+      },
+      "created_at": "2026-10-24T14:48:13.785Z"
+    },
+    {
+      "id": "log-1792853293795",
+      "actor": "Staff Admin",
+      "role": "admin",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792853293795",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0011",
+        "title": "Grade 12 EUEE Biology Tutor - Bole"
+      },
+      "created_at": "2026-10-24T14:48:13.795Z"
+    },
+    {
+      "id": "log-1792853293803",
+      "actor": "Dr. Yared Bekele",
+      "role": "tutor_applicant",
+      "action": "vacancy_application_submitted",
+      "resource_type": "vacancy_application",
+      "resource_id": "vapp-1792853293803",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0011",
+        "applicant_phone": "+251 94 411 2233"
+      },
+      "created_at": "2026-10-24T14:48:13.803Z"
+    },
+    {
+      "id": "log-1792853293813",
+      "actor": "Dr. Yared Bekele",
+      "role": "tutor_applicant",
+      "action": "vacancy_application_submitted",
+      "resource_type": "vacancy_application",
+      "resource_id": "vapp-1792853293813",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0011",
+        "applicant_phone": "+251 94 411 2233"
+      },
+      "created_at": "2026-10-24T14:48:13.813Z"
+    },
+    {
+      "id": "log-1792853293821",
+      "actor": "Staff Admin",
+      "role": "admin",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792853293821",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0012",
+        "title": "Grade 6 Primary Math & English - Sarbet"
+      },
+      "created_at": "2026-10-24T14:48:13.821Z"
+    },
+    {
+      "id": "log-1792853293825",
+      "actor": "Bethlehem Tadesse",
+      "role": "tutor_applicant",
+      "action": "vacancy_application_submitted",
+      "resource_type": "vacancy_application",
+      "resource_id": "vapp-1792853293825",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0012",
+        "applicant_phone": "+251 92 333 4455"
+      },
+      "created_at": "2026-10-24T14:48:13.825Z"
     }
   ],
-  "data_deletion_requests": []
+  "data_deletion_requests": [],
+  "vacancies": [
+    {
+      "id": "vac-001",
+      "vacancy_code": "BT-VAC-2026-0001",
+      "title": "Grade 8 Physics & Mathematics Home Tutor",
+      "parent_request_id": "req-002",
+      "city": "Addis Ababa",
+      "sub_city": "Bole",
+      "general_area": "Bole Medhanialem / Rwanda Area",
+      "grade_level": "Grades 7-8 (Middle School / Ministry Prep)",
+      "curriculum": "Ethiopian National Curriculum",
+      "subjects": [
+        "Physics",
+        "Mathematics"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Tuesday",
+        "Thursday",
+        "Saturday"
+      ],
+      "time_window": "Late Afternoon (4:30 PM - 6:00 PM)",
+      "lesson_frequency": "3 days per week (1.5 hrs each)",
+      "hours_per_session": 1.5,
+      "expected_duration_months": 4,
+      "hourly_rate_etb": 450,
+      "total_estimated_budget_etb": 8100,
+      "required_qualifications": "B.Sc. in STEM / Engineering or certified middle school educator with proven Grade 8 ministry exam preparation experience.",
+      "languages": [
+        "English",
+        "Amharic (አማርኛ)"
+      ],
+      "parent_preferences": "Patient educator skilled in SQ3R active recall and past ministry exam drills.",
+      "application_deadline": "2026-04-15",
+      "application_instructions": "Submit your profile and brief statement of methodology. Shortlisted candidates are invited for an introductory family interview.",
+      "status": "open",
+      "view_count": 142,
+      "application_count": 3,
+      "telegram_message_id": "9841",
+      "telegram_published_at": "2026-03-10T09:00:00Z",
+      "published_at": "2026-03-10T09:00:00Z",
+      "created_at": "2026-03-09T14:00:00Z",
+      "updated_at": "2026-03-10T09:00:00Z"
+    },
+    {
+      "id": "vac-002",
+      "vacancy_code": "BT-VAC-2026-0002",
+      "title": "Grade 12 EUEE University Entrance STEM Mentor",
+      "parent_request_id": "req-001",
+      "city": "Addis Ababa",
+      "sub_city": "Yeka",
+      "general_area": "CMC Road / Sunshine Real Estate",
+      "grade_level": "Grades 11-12 (University Entrance / EUEE Prep)",
+      "curriculum": "Ethiopian National Curriculum",
+      "subjects": [
+        "Mathematics",
+        "Physics",
+        "SQ3R Study Skills & Exam Strategy"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Monday",
+        "Wednesday",
+        "Friday"
+      ],
+      "time_window": "5:00 PM - 7:00 PM",
+      "lesson_frequency": "3 days per week (2 hrs each)",
+      "hours_per_session": 2,
+      "expected_duration_months": 5,
+      "hourly_rate_etb": 500,
+      "total_estimated_budget_etb": 12000,
+      "required_qualifications": "AAU / ASTU engineering or physics graduate who scored 550+ on the Ethiopian University Entrance Examination.",
+      "languages": [
+        "English",
+        "Amharic (አማርኛ)"
+      ],
+      "parent_preferences": "High focus on calculus derivatives, electromagnetism, and timed exam simulation sets.",
+      "application_deadline": "2026-04-10",
+      "application_instructions": "Include your university major and past EUEE results or student pass track record.",
+      "status": "open",
+      "view_count": 218,
+      "application_count": 5,
+      "telegram_message_id": "9845",
+      "telegram_published_at": "2026-03-11T11:30:00Z",
+      "published_at": "2026-03-11T11:30:00Z",
+      "created_at": "2026-03-11T10:00:00Z",
+      "updated_at": "2026-03-11T11:30:00Z"
+    },
+    {
+      "id": "vac-003",
+      "vacancy_code": "BT-VAC-2026-0003",
+      "title": "Cambridge IGCSE Chemistry & Biology Specialist",
+      "city": "Addis Ababa",
+      "sub_city": "Kirkos",
+      "general_area": "Sarbet / AU Area",
+      "grade_level": "Cambridge IGCSE / O-Levels",
+      "curriculum": "Cambridge International (IGCSE / A-Levels)",
+      "subjects": [
+        "Chemistry",
+        "Biology"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Tuesday",
+        "Thursday"
+      ],
+      "time_window": "4:30 PM - 6:30 PM",
+      "lesson_frequency": "2 days per week (2 hrs each)",
+      "hours_per_session": 2,
+      "expected_duration_months": 6,
+      "hourly_rate_etb": 650,
+      "total_estimated_budget_etb": 10400,
+      "required_qualifications": "Deep familiarity with Cambridge International syllabus 0620 (Chemistry) and 0610 (Biology) and mark schemes.",
+      "languages": [
+        "English"
+      ],
+      "parent_preferences": "Strictly English medium instruction. Assistance with Paper 4 theory and Paper 6 alternative to practical.",
+      "application_deadline": "2026-04-05",
+      "status": "closing_soon",
+      "view_count": 95,
+      "application_count": 2,
+      "published_at": "2026-03-12T15:00:00Z",
+      "created_at": "2026-03-12T14:00:00Z",
+      "updated_at": "2026-03-12T15:00:00Z"
+    },
+    {
+      "id": "vac-004",
+      "vacancy_code": "BT-VAC-2026-0004",
+      "title": "Foundational Primary Literacy & Numeracy Tutor",
+      "city": "Addis Ababa",
+      "sub_city": "Nifas Silk-Lafto",
+      "general_area": "Lebu Varnero",
+      "grade_level": "Grades 1-4 (Foundational Primary)",
+      "curriculum": "Ethiopian National Curriculum",
+      "subjects": [
+        "English Language & Literature",
+        "Amharic (አማርኛ)",
+        "Mathematics"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Monday",
+        "Wednesday",
+        "Friday"
+      ],
+      "time_window": "3:30 PM - 5:00 PM",
+      "lesson_frequency": "3 days per week",
+      "hours_per_session": 1.5,
+      "expected_duration_months": 3,
+      "hourly_rate_etb": 380,
+      "total_estimated_budget_etb": 6840,
+      "required_qualifications": "B.Ed. primary educator or experienced foundational reading mentor.",
+      "languages": [
+        "Amharic (አማርኛ)",
+        "English"
+      ],
+      "status": "filled",
+      "view_count": 87,
+      "application_count": 4,
+      "published_at": "2026-03-01T10:00:00Z",
+      "closed_at": "2026-03-08T16:00:00Z",
+      "created_at": "2026-02-28T09:00:00Z",
+      "updated_at": "2026-03-08T16:00:00Z"
+    },
+    {
+      "title": "Grade 10 IGCSE Chemistry & Physics Tutor - Old Airport",
+      "city": "Addis Ababa",
+      "sub_city": "Kirkos",
+      "general_area": "Old Airport, near ICS",
+      "grade_level": "Grade 9-10 (IGCSE / Secondary)",
+      "curriculum": "Cambridge IGCSE / International",
+      "subjects": [
+        "Chemistry",
+        "Physics"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Tuesday",
+        "Thursday",
+        "Saturday"
+      ],
+      "time_window": "5:00 PM - 6:30 PM",
+      "lesson_frequency": "3 days per week (1.5 hrs each)",
+      "hours_per_session": 1.5,
+      "expected_duration_months": 6,
+      "hourly_rate_etb": 600,
+      "total_estimated_budget_etb": 10800,
+      "required_qualifications": "B.Sc. in Chemistry/Physics with Cambridge IGCSE track record",
+      "languages": [
+        "English"
+      ],
+      "parent_preferences": "Focus on laboratory past papers and exam technique.",
+      "application_instructions": "Apply online with IGCSE tutoring experience.",
+      "status": "open",
+      "id": "vac-1792853216025",
+      "vacancy_code": "BT-VAC-2026-0005",
+      "view_count": 1,
+      "application_count": 0,
+      "created_at": "2026-10-24T14:46:56.025Z",
+      "updated_at": "2026-10-24T14:46:56.025Z"
+    },
+    {
+      "title": "Grade 8 (Ministry Exam Prep) Mathematics & English Home Tutor - Yeka",
+      "parent_request_id": "req-1792853216064",
+      "city": "Addis Ababa",
+      "sub_city": "Yeka",
+      "general_area": "Megenagna behind Diaspora square",
+      "grade_level": "Grade 8 (Ministry Exam Prep)",
+      "curriculum": "Ethiopian National Curriculum",
+      "subjects": [
+        "Mathematics",
+        "English"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Monday, Wednesday, Friday after 4 PM"
+      ],
+      "time_window": "Afternoon / Evening",
+      "lesson_frequency": "3 days per week",
+      "hours_per_session": 1.5,
+      "expected_duration_months": 3,
+      "hourly_rate_etb": 450,
+      "total_estimated_budget_etb": 8100,
+      "required_qualifications": "Qualified educator with degree in Mathematics, English or related discipline with proven track record.",
+      "languages": [
+        "Amharic (አማርኛ)"
+      ],
+      "parent_preferences": "Student struggles with algebra word problems and needs gentle patience.",
+      "application_instructions": "Submit your profile and approach. Shortlisted educators will be introduced to the family.",
+      "status": "draft",
+      "id": "vac-1792853216096",
+      "vacancy_code": "BT-VAC-2026-0006",
+      "view_count": 0,
+      "application_count": 0,
+      "created_at": "2026-10-24T14:46:56.096Z",
+      "updated_at": "2026-10-24T14:46:56.096Z"
+    },
+    {
+      "title": "Grade 12 EUEE Biology Tutor - Bole",
+      "city": "Addis Ababa",
+      "sub_city": "Bole",
+      "general_area": "Bole Atlas",
+      "grade_level": "Grade 11-12 (University Entrance / EUEE Prep)",
+      "curriculum": "Ethiopian National Curriculum",
+      "subjects": [
+        "Biology"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_window": "Morning 9:00 AM",
+      "lesson_frequency": "2 days per week (2 hrs each)",
+      "hours_per_session": 2,
+      "expected_duration_months": 4,
+      "hourly_rate_etb": 500,
+      "required_qualifications": "Medical or Biology degree with high EUEE score",
+      "languages": [
+        "Amharic (አማርኛ)",
+        "English"
+      ],
+      "status": "open",
+      "id": "vac-1792853216156",
+      "vacancy_code": "BT-VAC-2026-0007",
+      "view_count": 0,
+      "application_count": 2,
+      "created_at": "2026-10-24T14:46:56.156Z",
+      "updated_at": "2026-10-24T14:46:56.301Z"
+    },
+    {
+      "title": "Grade 6 Primary Math & English - Sarbet",
+      "city": "Addis Ababa",
+      "sub_city": "Nifas Silk-Lafto",
+      "grade_level": "Grade 5-6 (Upper Primary)",
+      "curriculum": "Ethiopian National Curriculum",
+      "subjects": [
+        "Mathematics",
+        "English"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Monday",
+        "Wednesday"
+      ],
+      "time_window": "4:30 PM",
+      "lesson_frequency": "2 days per week",
+      "hours_per_session": 1.5,
+      "expected_duration_months": 3,
+      "hourly_rate_etb": 400,
+      "required_qualifications": "Degree in Education or English",
+      "languages": [
+        "English",
+        "Amharic (አማርኛ)"
+      ],
+      "status": "filled",
+      "id": "vac-1792853216307",
+      "vacancy_code": "BT-VAC-2026-0008",
+      "view_count": 0,
+      "application_count": 1,
+      "created_at": "2026-10-24T14:46:56.307Z",
+      "updated_at": "2026-10-24T14:46:56.356Z",
+      "closed_at": "2026-10-24T14:46:56.464Z"
+    },
+    {
+      "title": "Grade 10 IGCSE Chemistry & Physics Tutor - Old Airport",
+      "city": "Addis Ababa",
+      "sub_city": "Kirkos",
+      "general_area": "Old Airport, near ICS",
+      "grade_level": "Grade 9-10 (IGCSE / Secondary)",
+      "curriculum": "Cambridge IGCSE / International",
+      "subjects": [
+        "Chemistry",
+        "Physics"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Tuesday",
+        "Thursday",
+        "Saturday"
+      ],
+      "time_window": "5:00 PM - 6:30 PM",
+      "lesson_frequency": "3 days per week (1.5 hrs each)",
+      "hours_per_session": 1.5,
+      "expected_duration_months": 6,
+      "hourly_rate_etb": 600,
+      "total_estimated_budget_etb": 10800,
+      "required_qualifications": "B.Sc. in Chemistry/Physics with Cambridge IGCSE track record",
+      "languages": [
+        "English"
+      ],
+      "parent_preferences": "Focus on laboratory past papers and exam technique.",
+      "application_instructions": "Apply online with IGCSE tutoring experience.",
+      "status": "open",
+      "id": "vac-1792853293756",
+      "vacancy_code": "BT-VAC-2026-0009",
+      "view_count": 1,
+      "application_count": 0,
+      "created_at": "2026-10-24T14:48:13.756Z",
+      "updated_at": "2026-10-24T14:48:13.756Z"
+    },
+    {
+      "title": "Grade 8 (Ministry Exam Prep) Mathematics & English Home Tutor - Yeka",
+      "parent_request_id": "req-1792853293778",
+      "city": "Addis Ababa",
+      "sub_city": "Yeka",
+      "general_area": "Megenagna behind Diaspora square",
+      "grade_level": "Grade 8 (Ministry Exam Prep)",
+      "curriculum": "Ethiopian National Curriculum",
+      "subjects": [
+        "Mathematics",
+        "English"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Monday, Wednesday, Friday after 4 PM"
+      ],
+      "time_window": "Afternoon / Evening",
+      "lesson_frequency": "3 days per week",
+      "hours_per_session": 1.5,
+      "expected_duration_months": 3,
+      "hourly_rate_etb": 450,
+      "total_estimated_budget_etb": 8100,
+      "required_qualifications": "Qualified educator with degree in Mathematics, English or related discipline with proven track record.",
+      "languages": [
+        "Amharic (አማርኛ)"
+      ],
+      "parent_preferences": "Student struggles with algebra word problems and needs gentle patience.",
+      "application_instructions": "Submit your profile and approach. Shortlisted educators will be introduced to the family.",
+      "status": "draft",
+      "id": "vac-1792853293785",
+      "vacancy_code": "BT-VAC-2026-0010",
+      "view_count": 0,
+      "application_count": 0,
+      "created_at": "2026-10-24T14:48:13.785Z",
+      "updated_at": "2026-10-24T14:48:13.785Z"
+    },
+    {
+      "title": "Grade 12 EUEE Biology Tutor - Bole",
+      "city": "Addis Ababa",
+      "sub_city": "Bole",
+      "general_area": "Bole Atlas",
+      "grade_level": "Grade 11-12 (University Entrance / EUEE Prep)",
+      "curriculum": "Ethiopian National Curriculum",
+      "subjects": [
+        "Biology"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_window": "Morning 9:00 AM",
+      "lesson_frequency": "2 days per week (2 hrs each)",
+      "hours_per_session": 2,
+      "expected_duration_months": 4,
+      "hourly_rate_etb": 500,
+      "required_qualifications": "Medical or Biology degree with high EUEE score",
+      "languages": [
+        "Amharic (አማርኛ)",
+        "English"
+      ],
+      "status": "open",
+      "id": "vac-1792853293795",
+      "vacancy_code": "BT-VAC-2026-0011",
+      "view_count": 0,
+      "application_count": 2,
+      "created_at": "2026-10-24T14:48:13.795Z",
+      "updated_at": "2026-10-24T14:48:13.813Z"
+    },
+    {
+      "title": "Grade 6 Primary Math & English - Sarbet",
+      "city": "Addis Ababa",
+      "sub_city": "Nifas Silk-Lafto",
+      "grade_level": "Grade 5-6 (Upper Primary)",
+      "curriculum": "Ethiopian National Curriculum",
+      "subjects": [
+        "Mathematics",
+        "English"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Monday",
+        "Wednesday"
+      ],
+      "time_window": "4:30 PM",
+      "lesson_frequency": "2 days per week",
+      "hours_per_session": 1.5,
+      "expected_duration_months": 3,
+      "hourly_rate_etb": 400,
+      "required_qualifications": "Degree in Education or English",
+      "languages": [
+        "English",
+        "Amharic (አማርኛ)"
+      ],
+      "status": "filled",
+      "id": "vac-1792853293821",
+      "vacancy_code": "BT-VAC-2026-0012",
+      "view_count": 0,
+      "application_count": 1,
+      "created_at": "2026-10-24T14:48:13.821Z",
+      "updated_at": "2026-10-24T14:48:13.825Z",
+      "closed_at": "2026-10-24T14:48:13.833Z"
+    }
+  ],
+  "vacancy_applications": [
+    {
+      "id": "vapp-001",
+      "vacancy_id": "vac-001",
+      "tutor_id": "tut-001",
+      "applicant_name": "Dagmawi Yosef Mesfin",
+      "applicant_phone": "+251 91 189 4521",
+      "applicant_email": "dagmawi.yosef@example.com",
+      "applicant_education": "B.Sc. Mechanical Engineering",
+      "applicant_institution": "Addis Ababa University (AAU)",
+      "years_of_experience": 5,
+      "proposed_rate_etb": 450,
+      "available_schedule": "Available on all requested Tuesday, Thursday & Saturday afternoon windows",
+      "cover_note": "I have 5 years experience preparing middle school students for Grade 8 physics and algebra. I live in Bole Brass and can walk to the home punctually.",
+      "status": "shortlisted",
+      "admin_review_notes": "Verified AAU degree and background. Candidate lives 10 mins away from family.",
+      "referral_source": "Telegram Channel",
+      "created_at": "2026-03-10T12:00:00Z",
+      "updated_at": "2026-03-11T09:00:00Z"
+    },
+    {
+      "id": "vapp-002",
+      "vacancy_id": "vac-001",
+      "tutor_id": "tut-002",
+      "applicant_name": "Bethlehem Tadesse Haile",
+      "applicant_phone": "+251 92 345 6789",
+      "applicant_email": "bethlehem.tadesse@example.com",
+      "applicant_education": "B.Sc. Applied Chemistry",
+      "applicant_institution": "ASTU",
+      "years_of_experience": 4,
+      "proposed_rate_etb": 400,
+      "available_schedule": "Tuesday & Thursday afternoons available",
+      "cover_note": "Strong chemistry pedagogy. Have tutored 12 middle school students for regional exams with a 100% pass rate.",
+      "status": "submitted",
+      "referral_source": "Website Board",
+      "created_at": "2026-03-10T14:30:00Z",
+      "updated_at": "2026-03-10T14:30:00Z"
+    },
+    {
+      "vacancy_id": "vac-1792853216156",
+      "applicant_name": "Dr. Yared Bekele",
+      "applicant_phone": "+251 94 411 2233",
+      "applicant_email": "yared.b@example.com",
+      "applicant_education": "Doctor of Medicine (M.D.)",
+      "applicant_institution": "Addis Ababa University, Tikur Anbessa",
+      "years_of_experience": 4,
+      "proposed_rate_etb": 500,
+      "available_schedule": "Weekends 9am-12pm",
+      "cover_note": "I scored 642 on EUEE and have guided 15+ students into AAU Medical Faculty.",
+      "referral_source": "Telegram Channel",
+      "utm_source": "telegram",
+      "utm_campaign": "weekend_vacancies",
+      "id": "vapp-1792853216198",
+      "status": "withdrawn",
+      "created_at": "2026-10-24T14:46:56.198Z",
+      "updated_at": "2026-10-24T14:46:56.253Z",
+      "admin_review_notes": "Tutor withdrew due to schedule change"
+    },
+    {
+      "vacancy_id": "vac-1792853216156",
+      "applicant_name": "Dr. Yared Bekele",
+      "applicant_phone": "+251 94 411 2233",
+      "applicant_education": "Doctor of Medicine (M.D.)",
+      "applicant_institution": "Addis Ababa University",
+      "years_of_experience": 4,
+      "proposed_rate_etb": 500,
+      "cover_note": "Re-applying with updated Sunday afternoon availability.",
+      "id": "vapp-1792853216301",
+      "status": "submitted",
+      "created_at": "2026-10-24T14:46:56.301Z",
+      "updated_at": "2026-10-24T14:46:56.301Z"
+    },
+    {
+      "vacancy_id": "vac-1792853216307",
+      "applicant_name": "Bethlehem Tadesse",
+      "applicant_phone": "+251 92 333 4455",
+      "applicant_education": "B.Ed. in Primary Education",
+      "applicant_institution": "Kotebe Metropolitan University",
+      "years_of_experience": 3,
+      "proposed_rate_etb": 400,
+      "cover_note": "Patient primary educator with proven results in foundational literacy.",
+      "id": "vapp-1792853216356",
+      "status": "selected",
+      "created_at": "2026-10-24T14:46:56.356Z",
+      "updated_at": "2026-10-24T14:46:56.464Z",
+      "admin_review_notes": "Family approved candidate after introductory call."
+    },
+    {
+      "vacancy_id": "vac-1792853293795",
+      "applicant_name": "Dr. Yared Bekele",
+      "applicant_phone": "+251 94 411 2233",
+      "applicant_email": "yared.b@example.com",
+      "applicant_education": "Doctor of Medicine (M.D.)",
+      "applicant_institution": "Addis Ababa University, Tikur Anbessa",
+      "years_of_experience": 4,
+      "proposed_rate_etb": 500,
+      "available_schedule": "Weekends 9am-12pm",
+      "cover_note": "I scored 642 on EUEE and have guided 15+ students into AAU Medical Faculty.",
+      "referral_source": "Telegram Channel",
+      "utm_source": "telegram",
+      "utm_campaign": "weekend_vacancies",
+      "id": "vapp-1792853293803",
+      "status": "withdrawn",
+      "created_at": "2026-10-24T14:48:13.803Z",
+      "updated_at": "2026-10-24T14:48:13.808Z",
+      "admin_review_notes": "Tutor withdrew due to schedule change"
+    },
+    {
+      "vacancy_id": "vac-1792853293795",
+      "applicant_name": "Dr. Yared Bekele",
+      "applicant_phone": "+251 94 411 2233",
+      "applicant_education": "Doctor of Medicine (M.D.)",
+      "applicant_institution": "Addis Ababa University",
+      "years_of_experience": 4,
+      "proposed_rate_etb": 500,
+      "cover_note": "Re-applying with updated Sunday afternoon availability.",
+      "id": "vapp-1792853293813",
+      "status": "submitted",
+      "created_at": "2026-10-24T14:48:13.813Z",
+      "updated_at": "2026-10-24T14:48:13.813Z"
+    },
+    {
+      "vacancy_id": "vac-1792853293821",
+      "applicant_name": "Bethlehem Tadesse",
+      "applicant_phone": "+251 92 333 4455",
+      "applicant_education": "B.Ed. in Primary Education",
+      "applicant_institution": "Kotebe Metropolitan University",
+      "years_of_experience": 3,
+      "proposed_rate_etb": 400,
+      "cover_note": "Patient primary educator with proven results in foundational literacy.",
+      "id": "vapp-1792853293825",
+      "status": "selected",
+      "created_at": "2026-10-24T14:48:13.825Z",
+      "updated_at": "2026-10-24T14:48:13.833Z",
+      "admin_review_notes": "Family approved candidate after introductory call."
+    }
+  ]
 }

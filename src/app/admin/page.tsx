@@ -10,6 +10,8 @@ import {
   getFeeConfig,
   getAdminComplaints,
   getAuditLogs,
+  getAdminVacancies,
+  getAllVacancyApplications,
 } from '@/lib/db/storage';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 
@@ -28,6 +30,8 @@ export default async function AdminPage() {
     feeConfig,
     complaints,
     auditLogs,
+    vacancies,
+    vacancyApplications,
   ] = await Promise.all([
     getAdminMetrics(),
     getAdminTutorApplications(),
@@ -37,6 +41,8 @@ export default async function AdminPage() {
     getFeeConfig(),
     getAdminComplaints(),
     getAuditLogs(),
+    getAdminVacancies(),
+    getAllVacancyApplications(),
   ]);
 
   return (
@@ -49,6 +55,8 @@ export default async function AdminPage() {
       initialFeeConfig={feeConfig}
       initialComplaints={complaints}
       initialAuditLogs={auditLogs}
+      initialVacancies={vacancies}
+      initialVacancyApplications={vacancyApplications}
     />
   );
 }
