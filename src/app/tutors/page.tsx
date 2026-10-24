@@ -2,7 +2,13 @@ import React from 'react';
 import { getPublicTutors } from '@/lib/db/storage';
 import TutorCard from '@/components/TutorCard';
 import { SearchIcon, SlidersIcon, ArrowRightIcon } from '@/components/Icons';
-import { SUBJECTS_TAXONOMY, GRADE_LEVELS, SUB_CITIES_ADDIS_ABABA } from '@/lib/constants';
+import {
+  SUBJECTS_TAXONOMY,
+  GRADE_LEVELS,
+  SUB_CITIES_ADDIS_ABABA,
+  ADDIS_ABABA_SUB_CITIES_DIRECTORY,
+} from '@/lib/constants';
+import { POPULAR_SEFER_CHIPS } from '@/lib/sefers';
 import Link from 'next/link';
 
 interface TutorsPageProps {
@@ -55,7 +61,7 @@ export default async function TutorsPage({ searchParams }: TutorsPageProps) {
                 id="search"
                 name="search"
                 defaultValue={params.search || ''}
-                placeholder="Subject, tutor name..."
+                placeholder="Subject, tutor name, or Sefer (e.g. Mexico, 4 Kilo, CMC)..."
                 className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-amber-500"
               />
               <SearchIcon className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -116,11 +122,32 @@ export default async function TutorsPage({ searchParams }: TutorsPageProps) {
               <option value="">All Sub-Cities</option>
               {SUB_CITIES_ADDIS_ABABA.map((sc) => (
                 <option key={sc} value={sc}>
-                  {sc}
+                  {sc} ({ADDIS_ABABA_SUB_CITIES_DIRECTORY[sc]?.amharic || ''})
                 </option>
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Quick Sefer Filter Chips */}
+        <div className="pt-2 border-t border-slate-100 flex items-center gap-1.5 flex-wrap text-xs">
+          <span className="text-slate-500 font-semibold text-[11px] mr-1">Popular Sefers:</span>
+          {POPULAR_SEFER_CHIPS.slice(0, 10).map((chip) => {
+            const isActive = params.search?.toLowerCase() === chip.toLowerCase();
+            return (
+              <Link
+                key={chip}
+                href={`/tutors?search=${encodeURIComponent(chip)}`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                  isActive
+                    ? 'bg-amber-600 text-white font-bold shadow-xs'
+                    : 'bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-900 border border-slate-200/80'
+                }`}
+              >
+                {chip}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Filter Actions */}

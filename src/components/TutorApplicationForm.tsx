@@ -20,6 +20,7 @@ import {
   AlertTriangleIcon,
   ArrowRightIcon,
 } from './Icons';
+import SeferSearchSelector from './SeferSearchSelector';
 
 interface FormData {
   full_legal_name: string;
@@ -368,10 +369,24 @@ export default function TutorApplicationForm() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Sefer / Primary Residence Search */}
+            <SeferSearchSelector
+              label="Your Primary Sefer (ሰፈር) / Residence"
+              placeholder="Search where you live (e.g. 4 Kilo, Mexico, CMC, Sarbet, ጀሞ)..."
+              value={formData.specific_neighborhood}
+              selectedSubCity={formData.sub_city}
+              onSelect={(sefer, subCity) => {
+                updateField('specific_neighborhood', sefer);
+                updateField('sub_city', subCity);
+              }}
+              required
+              helperText="Helps families find nearby tutors and minimizes your daily transit time."
+            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Primary Sub-City (Addis Ababa) <span className="text-red-500">*</span>
+                  Primary Sub-City (ክፍለ ከተማ) <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.sub_city}
@@ -386,25 +401,20 @@ export default function TutorApplicationForm() {
                     </option>
                   ))}
                 </select>
+                <span className="text-[11px] text-slate-500">Auto-selected from your Sefer above</span>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Specific Neighborhood (Optional)
+                  Specific Street or Gate (Optional)
                 </label>
                 <input
                   type="text"
-                  list="tutor-neighborhoods-list"
                   value={formData.specific_neighborhood}
                   onChange={(e) => updateField('specific_neighborhood', e.target.value)}
-                  placeholder="e.g. Mexico, 4 Kilo, CMC Michael, Sarbet"
+                  placeholder="e.g. Near AAU 4 Kilo Gate 3, Condominium Block 12"
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
                 />
-                <datalist id="tutor-neighborhoods-list">
-                  {POPULAR_NEIGHBORHOODS.map((hood) => (
-                    <option key={hood} value={hood} />
-                  ))}
-                </datalist>
               </div>
             </div>
           </div>

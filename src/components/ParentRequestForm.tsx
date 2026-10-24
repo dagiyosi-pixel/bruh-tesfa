@@ -32,6 +32,7 @@ import {
   GraduationCapIcon,
   MapPinIcon,
 } from './Icons';
+import SeferSearchSelector from './SeferSearchSelector';
 
 interface ParentRequestFormProps {
   initialTutorId?: string;
@@ -381,10 +382,24 @@ export default function ParentRequestForm({ initialTutorId, initialTutorName }: 
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Sefer / Informal Neighborhood Search & Auto-Select */}
+            <SeferSearchSelector
+              value={formData.general_area}
+              selectedSubCity={formData.sub_city}
+              onSelect={(sefer, subCity) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  general_area: sefer,
+                  sub_city: subCity,
+                }));
+              }}
+              required
+            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Sub-City (Addis Ababa) <span className="text-red-500">*</span>
+                  Administrative Sub-City (ክፍለ ከተማ) <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.sub_city}
@@ -398,98 +413,21 @@ export default function ParentRequestForm({ initialTutorId, initialTutorName }: 
                     </option>
                   ))}
                 </select>
+                <span className="text-[11px] text-slate-500">Auto-filled when choosing your Sefer above</span>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  General Neighborhood / Area
+                  Specific Street or Compound (Optional)
                 </label>
                 <input
                   type="text"
-                  list="popular-neighborhoods-list"
                   value={formData.general_area}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    const autoSubCity = !formData.sub_city ? resolveSubCityForNeighborhood(val) : null;
-                    setFormData((prev) => ({
-                      ...prev,
-                      general_area: val,
-                      ...(autoSubCity ? { sub_city: autoSubCity } : {}),
-                    }));
-                  }}
-                  placeholder="e.g. Mexico, 4 Kilo, CMC Michael, Sarbet"
+                  onChange={(e) => setFormData({ ...formData, general_area: e.target.value })}
+                  placeholder="e.g. Near Commerce Gate 2, Condominium Block B"
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
                 />
-                <datalist id="popular-neighborhoods-list">
-                  {POPULAR_NEIGHBORHOODS.map((item) => (
-                    <option key={item} value={item} />
-                  ))}
-                </datalist>
-              </div>
-            </div>
-
-            {/* Quick-Pick Neighborhood Chips */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-700">
-                  {formData.sub_city && ADDIS_ABABA_SUB_CITIES_DIRECTORY[formData.sub_city as SubCityName]
-                    ? `Popular ${formData.sub_city} (${ADDIS_ABABA_SUB_CITIES_DIRECTORY[formData.sub_city as SubCityName].amharic}) Hubs:`
-                    : 'Popular Addis Ababa Hubs (Click to auto-fill):'}
-                </span>
-                {formData.general_area && (
-                  <button
-                    type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, general_area: '' }))}
-                    className="text-amber-700 hover:underline text-[11px]"
-                  >
-                    Clear area
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {(formData.sub_city && ADDIS_ABABA_SUB_CITIES_DIRECTORY[formData.sub_city as SubCityName]
-                  ? ADDIS_ABABA_SUB_CITIES_DIRECTORY[formData.sub_city as SubCityName].neighborhoods.slice(0, 10)
-                  : [
-                      'Mexico',
-                      '4 Kilo',
-                      '6 Kilo',
-                      'Piazza',
-                      'CMC',
-                      'Sarbet',
-                      'Ayat',
-                      'Summit',
-                      'Kazanchis',
-                      'Megenagna',
-                      'Lebu',
-                      'Jemo',
-                      'Bole Medhanialem',
-                      'Shiro Meda',
-                      'Tor Hailoch',
-                    ]
-                ).map((hood) => {
-                  const isSelected = formData.general_area.toLowerCase() === hood.toLowerCase();
-                  return (
-                    <button
-                      type="button"
-                      key={hood}
-                      onClick={() => {
-                        const targetSubCity = formData.sub_city || resolveSubCityForNeighborhood(hood) || '';
-                        setFormData((prev) => ({
-                          ...prev,
-                          general_area: hood,
-                          sub_city: targetSubCity || prev.sub_city,
-                        }));
-                      }}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-                        isSelected
-                          ? 'bg-amber-600 text-white font-bold shadow-xs'
-                          : 'bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-900 border border-slate-200/80'
-                      }`}
-                    >
-                      {hood}
-                    </button>
-                  );
-                })}
+                <span className="text-[11px] text-slate-500">No exact house numbers needed during matching</span>
               </div>
             </div>
 

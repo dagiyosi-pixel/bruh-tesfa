@@ -7,6 +7,8 @@ import assert from 'node:assert/strict';
 
 import { evaluateCandidateMatch, rankCandidatesForRequest } from '../src/lib/matching.ts';
 import { resolveSubCityForNeighborhood } from '../src/lib/constants.ts';
+import { searchSefers, resolveSeferDetails } from '../src/lib/sefers.ts';
+import { getPublicTutors } from '../src/lib/db/storage.ts';
 
 test('Matching Engine: Unapproved or suspended tutor is marked ineligible with 0 score', () => {
   const request = {
@@ -268,4 +270,54 @@ test('Matching Engine: Grants location score when parent request general_area ma
   const result = evaluateCandidateMatch(requestWithLandmark, kirkosTutor);
   assert.equal(result.breakdown.location_score, 15);
   assert.ok(result.total_score >= 80);
+});
+
+test('Sefer Search Engine: Matches colloquial names, Amharic script, and famous taxi landmarks', () => {
+  const mexicoResults = searchSefers('mexico');
+  assert.ok(mexicoResults.length > 0);
+  assert.equal(mexicoResults[0].subCity, 'Kirkos');
+
+  const aratKilo = searchSefers('arat kilo');
+  assert.ok(aratKilo.length > 0);
+  assert.equal(aratKilo[0].name, '4 Kilo (Arat Kilo)');
+  assert.equal(aratKilo[0].subCity, 'Arada');
+
+  // Amharic search
+  const kazanchisAmharic = searchSefers('ካዛንቺስ');
+  assert.ok(kazanchisAmharic.length > 0);
+  assert.equal(kazanchisAmharic[0].name, 'Kazanchis');
+
+  // Landmark search
+  const unecaSearch = searchSefers('uneca');
+  assert.ok(unecaSearch.length > 0);
+  assert.equal(unecaSearch[0].name, 'Kazanchis');
+
+  const tsehaySearch = searchSefers('tsehay');
+  assert.ok(tsehaySearch.length > 0);
+  assert.equal(tsehaySearch[0].subCity, 'Lemi Kura');
+
+  const alertSearch = searchSefers('alert hospital');
+  assert.ok(alertSearch.length > 0);
+  assert.equal(alertSearch[0].subCity, 'Kolfe Keranio');
+});
+
+test('Sefer Resolver: Resolves detailed SeferItem with taxi drops and sub-city', () => {
+  const details = resolveSeferDetails('CMC Michael');
+  assert.ok(details);
+  assert.equal(details.subCity, 'Lemi Kura');
+  assert.ok(details.taxiDropOrLandmark.includes('Tsehay Real Estate'));
+
+  const detailsPiazza = resolveSeferDetails('piassa');
+  assert.ok(detailsPiazza);
+  assert.equal(detailsPiazza.subCity, 'Arada');
+});
+
+test('Public Tutors Query: Searching by Sefer returns tutors whose service areas include that sub-city', async () => {
+  const kirkosTutors = await getPublicTutors({ search: 'Mexico' });
+  assert.ok(kirkosTutors.length > 0);
+  assert.ok(kirkosTutors.some((t) => t.service_areas.includes('Kirkos')));
+
+  const cmcTutors = await getPublicTutors({ search: 'CMC Michael' });
+  assert.ok(cmcTutors.length > 0);
+  assert.ok(cmcTutors.some((t) => t.service_areas.some((a) => a.includes('CMC') || a.includes('Lemi Kura'))));
 });

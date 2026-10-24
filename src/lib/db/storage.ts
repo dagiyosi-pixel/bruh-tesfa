@@ -60,6 +60,7 @@ import {
 } from './seed';
 import { evaluateCandidateMatch, rankCandidatesForRequest } from '../matching';
 import { calculatePlacementFee } from '../fees';
+import { resolveSubCityForNeighborhood } from '../constants';
 
 interface DatabaseSchema {
   tutors: TutorApplication[];
@@ -292,12 +293,14 @@ export async function getPublicTutors(filters?: {
 
   if (filters.search) {
     const q = filters.search.toLowerCase();
+    const resolvedAreaSubCity = resolveSubCityForNeighborhood(q);
     profiles = profiles.filter(
       (p) =>
         p.display_name.toLowerCase().includes(q) ||
         p.bio.toLowerCase().includes(q) ||
         p.subjects.some((s) => s.toLowerCase().includes(q)) ||
-        p.service_areas.some((a) => a.toLowerCase().includes(q))
+        p.service_areas.some((a) => a.toLowerCase().includes(q)) ||
+        (resolvedAreaSubCity && p.service_areas.some((a) => a.toLowerCase().includes(resolvedAreaSubCity.toLowerCase())))
     );
   }
 
