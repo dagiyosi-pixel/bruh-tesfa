@@ -1489,7 +1489,7 @@ export async function getActiveTelegramSubscribers(): Promise<TelegramSubscriber
 
 export async function getTelegramSubscriber(chatId: number): Promise<TelegramSubscriber | null> {
   const db = loadDatabase();
-  return (db.telegram_subscribers || []).find((s) => s.chat_id === chatId) || null;
+  return (db.telegram_subscribers || []).find((s) => Number(s.chat_id) === Number(chatId)) || null;
 }
 
 export async function upsertTelegramSubscriber(data: {
@@ -1505,7 +1505,7 @@ export async function upsertTelegramSubscriber(data: {
   const db = loadDatabase();
   if (!db.telegram_subscribers) db.telegram_subscribers = [];
 
-  const existingIdx = db.telegram_subscribers.findIndex((s) => s.chat_id === data.chat_id);
+  const existingIdx = db.telegram_subscribers.findIndex((s) => Number(s.chat_id) === Number(data.chat_id));
   const now = new Date().toISOString();
 
   if (existingIdx >= 0) {
@@ -1527,7 +1527,7 @@ export async function upsertTelegramSubscriber(data: {
   } else {
     const newSub: TelegramSubscriber = {
       id: 'tsub-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-      chat_id: data.chat_id,
+      chat_id: Number(data.chat_id),
       username: data.username,
       first_name: data.first_name,
       is_active: data.is_active !== undefined ? data.is_active : true,
@@ -1548,7 +1548,7 @@ export async function unsubscribeTelegramSubscriber(chatId: number): Promise<boo
   const db = loadDatabase();
   if (!db.telegram_subscribers) return false;
 
-  const sub = db.telegram_subscribers.find((s) => s.chat_id === chatId);
+  const sub = db.telegram_subscribers.find((s) => Number(s.chat_id) === Number(chatId));
   if (!sub) return false;
 
   sub.is_active = false;
