@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getPublicTutors, getPublicVacancies } from '@/lib/db/storage';
 import TutorCard from '@/components/TutorCard';
 import VacancyCard from '@/components/VacancyCard';
+import HomeQuickFinder from '@/components/HomeQuickFinder';
 import {
   ShieldCheckIcon,
   GraduationCapIcon,
@@ -92,65 +93,9 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Right Card / Visual Showcase */}
+            {/* Right Card / Interactive Quick Match Finder */}
             <div className="lg:col-span-5">
-              <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-lg border border-slate-200/80 relative">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                  <div>
-                    <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">
-                      Verified Matching
-                    </span>
-                    <h2 className="text-lg font-bold text-slate-900 mt-0.5">
-                      Curriculum Specialization
-                    </h2>
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Active Placements
-                  </span>
-                </div>
-
-                <div className="space-y-3 my-4 text-xs sm:text-sm">
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50/60 border border-amber-100">
-                    <BookOpenIcon className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="font-bold text-slate-900">National Curriculum & EUEE Prep</h3>
-                      <p className="text-xs text-slate-600 mt-0.5">
-                        Focused Grade 8 Ministry exam and Grade 12 university entrance examination mentoring with SQ3R methodology.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200/60">
-                    <GraduationCapIcon className="w-4 h-4 text-slate-700 shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="font-bold text-slate-900">Cambridge IGCSE & IB Diploma</h3>
-                      <p className="text-xs text-slate-600 mt-0.5">
-                        International school curriculum support with past-paper mark schemes and analytical problem sets.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200/60">
-                    <ShieldCheckIcon className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="font-bold text-slate-900">Safeguarding & Parent Supervision</h3>
-                      <p className="text-xs text-slate-600 mt-0.5">
-                        Compliant with Ethiopian Proclamation No. 1321/2024. All lessons arranged with parental visibility.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-1">
-                  <Link
-                    href="/tutors"
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-xs text-slate-800 bg-slate-100 hover:bg-slate-200 transition-colors"
-                  >
-                    <span>Browse Approved Tutors Directory</span>
-                    <ArrowRightIcon className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
+              <HomeQuickFinder />
             </div>
 
           </div>

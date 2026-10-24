@@ -37,11 +37,25 @@ import SeferSearchSelector from './SeferSearchSelector';
 interface ParentRequestFormProps {
   initialTutorId?: string;
   initialTutorName?: string;
+  initialSubject?: string;
+  initialGrade?: string;
+  initialSefer?: string;
+  initialSubCity?: string;
 }
 
-export default function ParentRequestForm({ initialTutorId, initialTutorName }: ParentRequestFormProps) {
+export default function ParentRequestForm({
+  initialTutorId,
+  initialTutorName,
+  initialSubject,
+  initialGrade,
+  initialSefer,
+  initialSubCity,
+}: ParentRequestFormProps) {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
+  // If subject & grade were preselected in quick finder, advance to step 2 (location)
+  const [currentStep, setCurrentStep] = useState(
+    initialSubject && initialGrade && (initialSefer || initialSubCity) ? 3 : initialSubject && initialGrade ? 2 : 1
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -51,11 +65,11 @@ export default function ParentRequestForm({ initialTutorId, initialTutorName }: 
     email: '',
     preferred_contact_method: 'Phone' as 'Phone' | 'Telegram' | 'WhatsApp',
     city: 'Addis Ababa',
-    sub_city: '',
-    general_area: '',
+    sub_city: initialSubCity || '',
+    general_area: initialSefer || '',
     target_tutor_id: initialTutorId || '',
-    subjects: [] as string[],
-    grade_level: '',
+    subjects: initialSubject ? [initialSubject] : ([] as string[]),
+    grade_level: initialGrade || '',
     curriculum: 'Ethiopian National Curriculum',
     teaching_mode: 'in_person' as 'in_person' | 'online' | 'hybrid',
     // Detailed Schedule Preferences

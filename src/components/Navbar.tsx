@@ -33,12 +33,11 @@ export default function Navbar() {
   }, [pathname]);
 
   const navLinks = [
-    { label: 'Find a Tutor', href: '/tutors' },
+    { label: 'Find a Tutor', href: '/request-tutor' },
     { label: 'Vacancies', href: '/vacancies' },
+    { label: 'Track Request', href: '/track' },
     { label: 'How It Works', href: '/how-it-works' },
-    { label: 'Safety & Trust', href: '/safety' },
     { label: 'Become a Tutor', href: '/become-a-tutor' },
-    { label: 'About', href: '/about' },
   ];
 
   const isActive = (href: string) => {
@@ -229,6 +228,15 @@ export default function Navbar() {
               <TelegramIcon className="w-4 h-4 text-sky-500" />
               <span>Join Telegram Community</span>
             </a>
+
+            <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+              <span>Coordinator Call:</span>
+              <div className="flex items-center gap-2">
+                <a href="tel:0931736692" className="text-amber-700 font-bold hover:underline">0931736692</a>
+                <span>|</span>
+                <a href="tel:0979558343" className="text-amber-700 font-bold hover:underline">0979558343</a>
+              </div>
+            </div>
           </div>
         </div>
       )}

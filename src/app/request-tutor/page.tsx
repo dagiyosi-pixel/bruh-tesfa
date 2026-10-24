@@ -6,11 +6,15 @@ interface RequestTutorPageProps {
   searchParams: Promise<{
     tutorId?: string;
     tutorName?: string;
+    subject?: string;
+    grade?: string;
+    sefer?: string;
+    subCity?: string;
   }>;
 }
 
 export default async function RequestTutorPage({ searchParams }: RequestTutorPageProps) {
-  const { tutorId, tutorName } = await searchParams;
+  const { tutorId, tutorName, subject, grade, sefer, subCity } = await searchParams;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 space-y-10">
@@ -44,7 +48,14 @@ export default async function RequestTutorPage({ searchParams }: RequestTutorPag
       </div>
 
       {/* Form Component */}
-      <ParentRequestForm initialTutorId={tutorId} initialTutorName={tutorName} />
+      <ParentRequestForm
+        initialTutorId={tutorId}
+        initialTutorName={tutorName}
+        initialSubject={subject}
+        initialGrade={grade}
+        initialSefer={sefer}
+        initialSubCity={subCity}
+      />
     </div>
   );
 }
