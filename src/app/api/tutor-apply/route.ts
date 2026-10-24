@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server';
 import { submitTutorApplication } from '@/lib/db/storage';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { createTutorSessionToken, TUTOR_COOKIE_NAME, AUTH_COOKIE_OPTIONS } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
@@ -135,12 +136,15 @@ export async function POST(request: Request) {
       utm_campaign: utm_campaign || undefined,
     });
 
-    return NextResponse.json({
+    const sessionToken = createTutorSessionToken(result.id, phone.trim());
+    const response = NextResponse.json({
       success: true,
       reference_number: result.reference_number,
       id: result.id,
       message: 'Application submitted successfully. A Bruh Tesfa coordinator will review your credentials within 24-48 business hours.',
     });
+    response.cookies.set(TUTOR_COOKIE_NAME, sessionToken, AUTH_COOKIE_OPTIONS);
+    return response;
   } catch (error) {
     console.error('Error submitting tutor application:', error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });

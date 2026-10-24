@@ -1,3 +1,4 @@
+import { verifyPassword } from '../auth';
 // =============================================================================
 // BRUH TESFA (ብሩህ ተስፋ) - Unified Data Access Layer (DAL)
 // =============================================================================
@@ -33,6 +34,7 @@ import {
   AdminMetrics,
   ApplicationStatus,
   ParentRequestStatus,
+  TeachingMode,
   PaymentStatus,
   TutoringVacancy,
   VacancyApplication,
@@ -1490,6 +1492,86 @@ export async function lookupTutorPortalStatus(
   };
 }
 
+
+export async function getTutorById(id: string): Promise<TutorApplication | null> {
+  const db = loadDatabase();
+  return db.tutors.find((t) => t.id === id) || null;
+}
+
+export async function authenticateTutor(
+  identifier: string,
+  secret: string
+): Promise<{ success: boolean; tutor?: TutorApplication; error?: string }> {
+  if (!identifier || !secret) {
+    return { success: false, error: 'Identifier and secret are required' };
+  }
+  const db = loadDatabase();
+  const idNorm = identifier.trim().toLowerCase();
+  const phoneNorm = identifier.replace(/[\s\-\(\)]/g, '');
+
+  const tutor = db.tutors.find((t) => {
+    const tRef = t.reference_number.trim().toLowerCase();
+    const tEmail = t.email.trim().toLowerCase();
+    const tPhone = t.phone.replace(/[\s\-\(\)]/g, '');
+    return tRef === idNorm || tEmail === idNorm || tPhone === phoneNorm;
+  });
+
+  if (!tutor) {
+    return { success: false, error: 'No tutor account found matching those credentials' };
+  }
+
+  // 1. Password hash verification
+  if (tutor.password_hash) {
+    const isPassValid = verifyPassword(secret, tutor.password_hash);
+    if (!isPassValid) {
+      // Backward compatibility: allow registered phone number
+      const secPhoneNorm = secret.replace(/[\s\-\(\)]/g, '');
+      const tPhone = tutor.phone.replace(/[\s\-\(\)]/g, '');
+      if (secPhoneNorm !== tPhone) {
+        return { success: false, error: 'Incorrect password or phone verification' };
+      }
+    }
+  } else {
+    // 2. Initial lookup verification: phone or reference number
+    const secPhoneNorm = secret.replace(/[\s\-\(\)]/g, '');
+    const tPhone = tutor.phone.replace(/[\s\-\(\)]/g, '');
+    const tRef = tutor.reference_number.trim().toLowerCase();
+    if (secPhoneNorm !== tPhone && secret.trim().toLowerCase() !== tRef) {
+      return { success: false, error: 'Incorrect phone number or reference code' };
+    }
+  }
+
+  tutor.last_login_at = new Date().toISOString();
+  saveDatabase(db);
+  return { success: true, tutor };
+}
+
+export async function setTutorPassword(
+  tutorId: string,
+  newPasswordHash: string
+): Promise<{ success: boolean; error?: string }> {
+  const db = loadDatabase();
+  const tutor = db.tutors.find((t) => t.id === tutorId);
+  if (!tutor) {
+    return { success: false, error: 'Tutor not found' };
+  }
+  tutor.password_hash = newPasswordHash;
+  tutor.updated_at = new Date().toISOString();
+  saveDatabase(db);
+  return { success: true };
+}
+
+export async function getTutorVacancyApplications(
+  tutorId: string,
+  phone?: string
+): Promise<VacancyApplication[]> {
+  const db = loadDatabase();
+  const phoneNorm = phone ? phone.replace(/[\s\-\(\)]/g, '') : null;
+  return (db.vacancy_applications || []).filter(
+    (app) => app.tutor_id === tutorId || (phoneNorm && app.applicant_phone.replace(/[\s\-\(\)]/g, '') === phoneNorm)
+  );
+}
+
 // =============================================================================
 // TELEGRAM BOT SUBSCRIBERS & BROADCAST LOGS
 // =============================================================================
@@ -1646,5 +1728,96 @@ export async function getTelegramMarketingMetrics(): Promise<{
     telegramAttributedTutors,
     telegramAttributedParents,
     telegramAttributedVacancyApps,
+  };
+}
+
+export async function lookupParentRequestStatus(
+  referenceNumber: string,
+  phone?: string
+): Promise<{
+  success: boolean;
+  request?: {
+    reference_number: string;
+    parent_name_masked: string;
+    status: ParentRequestStatus;
+    status_label: string;
+    subjects: string[];
+    grade_level: string;
+    curriculum: string;
+    teaching_mode: TeachingMode;
+    sub_city: string;
+    general_area?: string;
+    preferred_days?: string[];
+    preferred_time_windows?: string[];
+    created_at: string;
+    updated_at: string;
+    matched_candidates_count: number;
+    phone_verified: boolean;
+  };
+  error?: string;
+}> {
+  if (!referenceNumber) {
+    return { success: false, error: 'Reference number is required' };
+  }
+
+  const db = loadDatabase();
+  const normRef = referenceNumber.trim().toUpperCase();
+
+  const req = db.parent_requests.find(
+    (r) => r.reference_number.trim().toUpperCase() === normRef
+  );
+
+  if (!req) {
+    return { success: false, error: 'No tutoring request found matching this reference number' };
+  }
+
+  let phoneVerified = false;
+  if (phone) {
+    const normInputPhone = phone.replace(/[\s\-\(\)]/g, '');
+    const normReqPhone = req.phone.replace(/[\s\-\(\)]/g, '');
+    if (normInputPhone && (normReqPhone.endsWith(normInputPhone) || normInputPhone.endsWith(normReqPhone))) {
+      phoneVerified = true;
+    }
+  }
+
+  // Mask parent name (e.g., "Abebe B." or "A***e")
+  const nameParts = req.parent_name.trim().split(/\s+/);
+  const maskedName = nameParts.length > 1
+    ? `${nameParts[0]} ${nameParts[1].charAt(0)}.`
+    : req.parent_name;
+
+  const matchesForReq = db.matches.filter((m) => m.request_id === req.id);
+
+  const statusLabels: Record<ParentRequestStatus, string> = {
+    new: 'Reviewing Requirements',
+    reviewing: 'Reviewing Requirements',
+    matching: 'Matching Qualified Tutors',
+    candidates_proposed: 'Candidates Proposed for Review',
+    matched: 'Tutors Matched - Preparing Introductions',
+    active: 'Tutor Assigned & Active',
+    closed: 'Completed',
+    cancelled: 'Cancelled',
+  };
+
+  return {
+    success: true,
+    request: {
+      reference_number: req.reference_number,
+      parent_name_masked: maskedName,
+      status: req.status,
+      status_label: statusLabels[req.status] || req.status,
+      subjects: req.subjects,
+      grade_level: req.grade_level,
+      curriculum: req.curriculum,
+      teaching_mode: req.teaching_mode,
+      sub_city: req.sub_city,
+      general_area: req.general_area,
+      preferred_days: req.preferred_days,
+      preferred_time_windows: req.preferred_time_windows,
+      created_at: req.created_at,
+      updated_at: req.updated_at,
+      matched_candidates_count: matchesForReq.length,
+      phone_verified: phoneVerified,
+    },
   };
 }

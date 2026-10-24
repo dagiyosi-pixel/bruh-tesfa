@@ -100,6 +100,10 @@ export interface TutorApplication {
   privacy_consent: boolean;
   code_of_conduct_agreed: boolean;
   
+  // Account Security & Auth
+  password_hash?: string;
+  last_login_at?: string;
+  
   // Status & Admin Fields
   status: ApplicationStatus;
   admin_review_notes?: string;

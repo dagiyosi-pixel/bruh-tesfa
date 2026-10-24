@@ -38,32 +38,32 @@ export default function VacancyCard({ vacancy }: VacancyCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group">
+    <div className="bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group">
       <div>
         {/* Header: Code, Status & Rate */}
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              <span className="text-xs font-mono font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60">
+            <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+              <span className="text-[11px] font-mono font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
                 {vacancy.vacancy_code}
               </span>
               {getStatusBadge()}
             </div>
-            <h3 className="font-bold text-lg text-slate-900 group-hover:text-amber-700 transition-colors">
+            <h3 className="font-bold text-base sm:text-lg text-slate-900 group-hover:text-amber-700 transition-colors">
               {vacancy.title}
             </h3>
           </div>
 
           <div className="text-right shrink-0">
-            <span className="text-lg font-extrabold text-slate-900">
+            <span className="text-base sm:text-lg font-extrabold text-slate-900">
               {Number(vacancy.hourly_rate_etb).toLocaleString()}
             </span>
-            <span className="text-xs text-slate-500 block font-medium">ETB / hr</span>
+            <span className="text-[11px] text-slate-500 block font-medium">ETB / hr</span>
           </div>
         </div>
 
         {/* Grade & Location */}
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600">
+        <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1 text-xs text-slate-600">
           <div className="flex items-center gap-1">
             <MapPinIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span className="font-medium text-slate-800">
@@ -81,12 +81,12 @@ export default function VacancyCard({ vacancy }: VacancyCardProps) {
         </div>
 
         {/* Subjects Badges */}
-        <div className="mt-4">
-          <div className="flex flex-wrap gap-1.5">
+        <div className="mt-3">
+          <div className="flex flex-wrap gap-1">
             {vacancy.subjects.map((sub) => (
               <span
                 key={sub}
-                className="px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200/60"
+                className="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-900 border border-amber-200/60"
               >
                 {sub}
               </span>
@@ -95,7 +95,7 @@ export default function VacancyCard({ vacancy }: VacancyCardProps) {
         </div>
 
         {/* Schedule & Timing Snippet */}
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+        <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
           <div className="flex items-center gap-1.5 truncate">
             <ClockIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span className="truncate">{vacancy.lesson_frequency} • {vacancy.time_window || 'Afternoons'}</span>
@@ -108,7 +108,7 @@ export default function VacancyCard({ vacancy }: VacancyCardProps) {
       </div>
 
       {/* Action Footer */}
-      <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2.5">
         {vacancy.application_deadline && (
           <span className="text-[11px] text-slate-500">
             Deadline: <strong className="text-slate-700">{vacancy.application_deadline}</strong>
@@ -116,7 +116,7 @@ export default function VacancyCard({ vacancy }: VacancyCardProps) {
         )}
         <Link
           href={`/vacancies/${vacancy.vacancy_code}`}
-          className="ml-auto inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 transition-colors shadow-xs"
+          className="ml-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 transition-colors shadow-xs"
         >
           <span>View & Apply</span>
           <ArrowRightIcon className="w-3.5 h-3.5" />

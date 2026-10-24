@@ -26,21 +26,21 @@ export default async function HomePage() {
   const tutors = await getPublicTutors();
 
   return (
-    <div className="space-y-16 lg:space-y-24 pb-20">
+    <div className="space-y-12 lg:space-y-16 pb-14">
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-amber-50/60 via-slate-50 to-[#FDFBF7] pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-slate-200/60">
+      <section className="relative overflow-hidden bg-gradient-to-b from-amber-50/60 via-slate-50 to-[#FDFBF7] pt-8 pb-12 sm:pt-12 sm:pb-14 lg:pt-16 lg:pb-16 border-b border-slate-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
             {/* Left Content */}
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300/60 shadow-xs">
+            <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300/60 shadow-xs">
                 <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse" />
                 <span>Addis Ababa Vetted Tutor Network</span>
                 <span className="text-amber-700 font-bold">ብሩህ ተስፋ</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
                 Exceptional Private Tutors for Your Child&apos;s{' '}
                 <span className="text-amber-600 underline decoration-amber-400 decoration-wavy decoration-2">
                   Brightest Future
@@ -48,15 +48,15 @@ export default async function HomePage() {
                 .
               </h1>
 
-              <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 BRUH TESFA connects Ethiopian parents with personally screened, high-caliber tutors from AAU, ASTU, and top institutions. We verify credentials, match learning needs, and safeguard every home placement.
               </p>
 
               {/* Dual Hero CTAs */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-1">
                 <Link
                   href="/request-tutor"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-base text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 shadow-md shadow-amber-600/25 transition-all min-h-[48px]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 shadow-md shadow-amber-600/20 transition-all min-h-[44px]"
                 >
                   <span>Find a Tutor for Your Child</span>
                   <ArrowRightIcon className="w-4 h-4" />
@@ -64,24 +64,24 @@ export default async function HomePage() {
 
                 <Link
                   href="/become-a-tutor"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-base text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs transition-all min-h-[48px]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs transition-all min-h-[44px]"
                 >
-                  <GraduationCapIcon className="w-5 h-5 text-amber-600" />
+                  <GraduationCapIcon className="w-4 h-4 text-amber-600" />
                   <span>Become a Tutor</span>
                 </Link>
               </div>
 
               {/* Trust Badges */}
-              <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-600">
-                <div className="flex items-center justify-center lg:justify-start gap-2 bg-white/70 backdrop-blur-xs p-2.5 rounded-xl border border-slate-200/70">
+              <div className="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-slate-600">
+                <div className="flex items-center justify-center lg:justify-start gap-2 bg-white/80 backdrop-blur-xs p-2 rounded-xl border border-slate-200/70">
                   <ShieldCheckIcon className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span className="font-medium">In-Person ID & Degree Verified</span>
                 </div>
-                <div className="flex items-center justify-center lg:justify-start gap-2 bg-white/70 backdrop-blur-xs p-2.5 rounded-xl border border-slate-200/70">
+                <div className="flex items-center justify-center lg:justify-start gap-2 bg-white/80 backdrop-blur-xs p-2 rounded-xl border border-slate-200/70">
                   <CheckCircleIcon className="w-4 h-4 text-amber-600 shrink-0" />
                   <span className="font-medium">Zero Upfront Cost to Parents</span>
                 </div>
-                <div className="flex items-center justify-center lg:justify-start gap-2 bg-white/70 backdrop-blur-xs p-2.5 rounded-xl border border-slate-200/70">
+                <div className="flex items-center justify-center lg:justify-start gap-2 bg-white/80 backdrop-blur-xs p-2 rounded-xl border border-slate-200/70">
                   <ClockIcon className="w-4 h-4 text-sky-600 shrink-0" />
                   <span className="font-medium">14-Day Placement Guarantee</span>
                 </div>
@@ -90,24 +90,24 @@ export default async function HomePage() {
 
             {/* Right Card / Visual Showcase */}
             <div className="lg:col-span-5">
-              <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 relative">
-                <div className="flex items-center justify-between pb-5 border-b border-slate-100">
+              <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-lg border border-slate-200/80 relative">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                   <div>
-                    <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">
+                    <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">
                       Verified Matching
                     </span>
-                    <h2 className="text-xl font-bold text-slate-900 mt-0.5">
+                    <h2 className="text-lg font-bold text-slate-900 mt-0.5">
                       Curriculum Specialization
                     </h2>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Active Placements
                   </span>
                 </div>
 
-                <div className="space-y-4 my-5 text-sm">
+                <div className="space-y-3 my-4 text-xs sm:text-sm">
                   <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50/60 border border-amber-100">
-                    <BookOpenIcon className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+                    <BookOpenIcon className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                     <div>
                       <h3 className="font-bold text-slate-900">National Curriculum & EUEE Prep</h3>
                       <p className="text-xs text-slate-600 mt-0.5">
@@ -117,7 +117,7 @@ export default async function HomePage() {
                   </div>
 
                   <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200/60">
-                    <GraduationCapIcon className="w-5 h-5 text-slate-700 shrink-0 mt-0.5" />
+                    <GraduationCapIcon className="w-4 h-4 text-slate-700 shrink-0 mt-0.5" />
                     <div>
                       <h3 className="font-bold text-slate-900">Cambridge IGCSE & IB Diploma</h3>
                       <p className="text-xs text-slate-600 mt-0.5">
@@ -127,7 +127,7 @@ export default async function HomePage() {
                   </div>
 
                   <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200/60">
-                    <ShieldCheckIcon className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <ShieldCheckIcon className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
                       <h3 className="font-bold text-slate-900">Safeguarding & Parent Supervision</h3>
                       <p className="text-xs text-slate-600 mt-0.5">
@@ -137,13 +137,13 @@ export default async function HomePage() {
                   </div>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-1">
                   <Link
                     href="/tutors"
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm text-slate-800 bg-slate-100 hover:bg-slate-200 transition-colors"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-xs text-slate-800 bg-slate-100 hover:bg-slate-200 transition-colors"
                   >
                     <span>Browse Approved Tutors Directory</span>
-                    <ArrowRightIcon className="w-4 h-4" />
+                    <ArrowRightIcon className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </div>
@@ -155,47 +155,47 @@ export default async function HomePage() {
 
       {/* HOW IT WORKS SECTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-widest">
+        <div className="text-center max-w-2xl mx-auto mb-8">
+          <span className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">
             The Process
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
             How Bruh Tesfa Works for Families
           </h2>
-          <p className="text-slate-600 mt-3 text-base">
+          <p className="text-slate-600 mt-2 text-xs sm:text-sm">
             No endless unverified phone calls. We personally review every tutor&apos;s university credentials and background before introducing them to your home.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs relative">
-            <span className="text-3xl font-black text-amber-500/30">01</span>
-            <h3 className="font-bold text-lg text-slate-900 mt-2">Submit Your Request</h3>
-            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-xs relative">
+            <span className="text-2xl font-black text-amber-500/30">01</span>
+            <h3 className="font-bold text-base text-slate-900 mt-1.5">Submit Your Request</h3>
+            <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
               Tell us your child&apos;s grade, subjects, Addis Ababa sub-city, and learning goals. No account required.
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs relative">
-            <span className="text-3xl font-black text-amber-500/30">02</span>
-            <h3 className="font-bold text-lg text-slate-900 mt-2">Candidate Screening</h3>
-            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+          <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-xs relative">
+            <span className="text-2xl font-black text-amber-500/30">02</span>
+            <h3 className="font-bold text-base text-slate-900 mt-1.5">Candidate Screening</h3>
+            <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
               We check degree certificates, National IDs (Fayda/Kebele), and subject competence across our tutor database.
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs relative">
-            <span className="text-3xl font-black text-amber-500/30">03</span>
-            <h3 className="font-bold text-lg text-slate-900 mt-2">Personal Match Intro</h3>
-            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+          <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-xs relative">
+            <span className="text-2xl font-black text-amber-500/30">03</span>
+            <h3 className="font-bold text-base text-slate-900 mt-1.5">Personal Match Intro</h3>
+            <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
               We propose shortlisted tutors compatible with your schedule and budget. You review their profile and approve.
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs relative">
-            <span className="text-3xl font-black text-amber-500/30">04</span>
-            <h3 className="font-bold text-lg text-slate-900 mt-2">Placement & Guarantee</h3>
-            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+          <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-xs relative">
+            <span className="text-2xl font-black text-amber-500/30">04</span>
+            <h3 className="font-bold text-base text-slate-900 mt-1.5">Placement & Guarantee</h3>
+            <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
               First lesson begins under parental supervision. Protected by our 14-day replacement safeguard policy.
             </p>
           </div>
@@ -204,28 +204,28 @@ export default async function HomePage() {
 
       {/* FEATURED APPROVED TUTORS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
           <div>
-            <span className="text-xs font-bold text-amber-600 uppercase tracking-widest">
+            <span className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">
               Verified Profiles
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
               Approved Private Tutors
             </h2>
-            <p className="text-sm text-slate-600 mt-1">
+            <p className="text-xs sm:text-sm text-slate-600 mt-1">
               Real educators authenticated by Bruh Tesfa. No fictional or unverified profiles.
             </p>
           </div>
           <Link
             href="/tutors"
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-amber-700 hover:text-amber-800"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800"
           >
             <span>View All Profiles</span>
-            <ArrowRightIcon className="w-4 h-4" />
+            <ArrowRightIcon className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {tutors.slice(0, 3).map((tutor) => (
             <TutorCard key={tutor.id} tutor={tutor} />
           ))}
@@ -233,48 +233,48 @@ export default async function HomePage() {
       </section>
 
       {/* COVERAGE AREAS ACROSS ADDIS ABABA */}
-      <section className="bg-slate-900 text-white py-16">
+      <section className="bg-slate-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-10">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">
+          <div className="max-w-2xl mx-auto text-center mb-8">
+            <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest">
               Local Service Areas
             </span>
-            <h2 className="text-3xl font-extrabold mt-2">
+            <h2 className="text-2xl sm:text-3xl font-extrabold mt-1">
               Serving All 11 Addis Ababa Sub-Cities
             </h2>
-            <p className="text-slate-400 mt-2 text-sm">
+            <p className="text-slate-400 mt-1.5 text-xs sm:text-sm">
               Our vetted tutors travel directly to your home or offer secure online sessions throughout the capital.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {SUB_CITIES_ADDIS_ABABA.map((subCity) => {
               const entry = ADDIS_ABABA_SUB_CITIES_DIRECTORY[subCity as SubCityName];
               return (
                 <Link
                   key={subCity}
                   href={`/tutors?subCity=${encodeURIComponent(subCity)}`}
-                  className="bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/60 p-4 rounded-2xl transition-all group flex flex-col justify-between"
+                  className="bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/60 p-3.5 rounded-xl transition-all group flex flex-col justify-between"
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <MapPinIcon className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm font-bold text-slate-100 group-hover:text-amber-300">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <MapPinIcon className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-bold text-slate-100 group-hover:text-amber-300">
                           {subCity}
                         </span>
                       </div>
-                      <span className="text-xs font-semibold text-amber-400/90 bg-amber-400/10 px-2 py-0.5 rounded-md">
+                      <span className="text-[11px] font-semibold text-amber-400/90 bg-amber-400/10 px-1.5 py-0.5 rounded">
                         {entry?.amharic}
                       </span>
                     </div>
                     {entry && (
-                      <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
+                      <p className="text-[11px] text-slate-400 leading-relaxed line-clamp-2">
                         {entry.neighborhoods.slice(0, 4).join(' • ')}
                       </p>
                     )}
                   </div>
-                  <div className="mt-3 pt-2.5 border-t border-slate-700/60 flex items-center justify-between text-[11px] text-slate-400">
+                  <div className="mt-2.5 pt-2 border-t border-slate-700/60 flex items-center justify-between text-[10px] text-slate-400">
                     <span className="line-clamp-1">{entry?.prominentLandmarks[0] || 'Vetted Tutors Available'}</span>
                     <ArrowRightIcon className="w-3 h-3 text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                   </div>
@@ -283,8 +283,8 @@ export default async function HomePage() {
             })}
           </div>
 
-          <div className="mt-8 pt-8 border-t border-slate-800 text-center">
-            <p className="text-xs text-slate-400">
+          <div className="mt-6 pt-6 border-t border-slate-800 text-center">
+            <p className="text-[11px] text-slate-400">
               Popular residential hubs covered:{' '}
               <span className="text-slate-300">
                 {POPULAR_NEIGHBORHOODS.slice(0, 16).join(' • ')}
@@ -296,26 +296,26 @@ export default async function HomePage() {
 
       {/* TELEGRAM & RECRUITMENT CALLOUT */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-sky-900 to-slate-900 text-white rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-xl">
-          <div className="max-w-2xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-400/30">
-              <TelegramIcon className="w-3.5 h-3.5" />
+        <div className="bg-gradient-to-r from-sky-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-lg">
+          <div className="max-w-2xl space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-sky-500/20 text-sky-300 border border-sky-400/30">
+              <TelegramIcon className="w-3 h-3" />
               <span>Official Ethiopian Community</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-white">
               Join the Bruh Tesfa Telegram Channel
             </h2>
-            <p className="text-sm text-sky-100 leading-relaxed">
+            <p className="text-xs sm:text-sm text-sky-100 leading-relaxed">
               Receive notifications of verified tutor openings, study guides for the Grade 8 and EUEE national exams, and parent community discussions.
             </p>
-            <div className="pt-2 flex flex-wrap items-center gap-4">
+            <div className="pt-1 flex flex-wrap items-center gap-3">
               <a
                 href={DEFAULT_TELEGRAM_COMMUNITY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-sky-500 hover:bg-sky-400 text-white transition-all shadow-md"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white transition-all shadow-xs"
               >
-                <TelegramIcon className="w-4 h-4" />
+                <TelegramIcon className="w-3.5 h-3.5" />
                 <span>Join Telegram Channel</span>
               </a>
               <Link
