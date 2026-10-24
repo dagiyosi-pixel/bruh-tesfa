@@ -9,7 +9,7 @@
   - Post recruitment flyers in university noticeboards: *"Teach High School STEM & Earn 400–600 ETB/hr in Your Neighborhood"*.
   - Share link to `/become-a-tutor?utm_source=campus_outreach`.
 - [ ] **Telegram Community Setup**:
-  - Establish the official `@bruhtesfa_community` and `@bruhtesfa_announcements`.
+  - Establish the official `@bruh_tesfa_tutoring_ethiopia` and `@bruhtesfa_announcements`.
   - Share free educational study guides (e.g., Grade 8 Regional Exam Review, EUEE Physics/Math problem walk-throughs).
 - [ ] **Initial Vetting Batch**:
   - Conduct 15-minute phone interviews with the first 30 applicants.

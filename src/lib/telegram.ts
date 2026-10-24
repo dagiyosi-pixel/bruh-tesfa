@@ -997,7 +997,7 @@ export function getContentStudioTemplates(): TelegramStudioTemplate[] {
       target_url_path: '/vacancies',
       default_campaign: 'tg_weekly_roundup',
       default_caption_en:
-        '🌟 BRUH TESFA — WEEKLY TUTORING VACANCIES ROUNDUP\n\nLooking for rewarding tutoring opportunities in Addis Ababa this week? Here are our top verified openings:\n\n{{VACANCY_LIST}}\n\nAll families are vetted and payment is secured through Bruh Tesfa.\n\n👉 Browse all opportunities: {{TARGET_URL}}\n\nTelegram Community: https://t.me/bruhtesfa_community',
+        '🌟 BRUH TESFA — WEEKLY TUTORING VACANCIES ROUNDUP\n\nLooking for rewarding tutoring opportunities in Addis Ababa this week? Here are our top verified openings:\n\n{{VACANCY_LIST}}\n\nAll families are vetted and payment is secured through Bruh Tesfa.\n\n👉 Browse all opportunities: {{TARGET_URL}}\n\nTelegram Community: https://t.me/bruh_tesfa_tutoring_ethiopia',
       default_caption_am:
         '🌟 ብሩህ ተስፋ — የሳምንቱ የተመረጡ የማስተማር የስራ እድሎች\n\nበአዲስ አበባ ውስጥ ጥራት ያለው የማስተማር ስራ ይፈልጋሉ? በዚህ ሳምንት ክፍት የሆኑ እድሎች:\n\n{{VACANCY_LIST}}\n\n👉 ሁሉንም ክፍት ቦታዎች ይመልከቱ: {{TARGET_URL}}',
     },
