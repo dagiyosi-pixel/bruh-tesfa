@@ -1,0 +1,291 @@
+// =============================================================================
+// BRUH TESFA (ብሩህ ተስፋ) - Domain Models & Type Definitions
+// =============================================================================
+
+export type TeachingMode = 'in_person' | 'online' | 'hybrid';
+
+export type ApplicationStatus = 
+  | 'submitted'
+  | 'under_review'
+  | 'needs_info'
+  | 'approved'
+  | 'rejected'
+  | 'suspended';
+
+export type ParentRequestStatus = 
+  | 'new'
+  | 'reviewing'
+  | 'matching'
+  | 'candidates_proposed'
+  | 'matched'
+  | 'active'
+  | 'closed'
+  | 'cancelled';
+
+export type MatchStatus = 
+  | 'proposed'
+  | 'tutor_accepted'
+  | 'parent_accepted'
+  | 'confirmed'
+  | 'declined'
+  | 'cancelled';
+
+export type PaymentStatus = 
+  | 'pending_invoice'
+  | 'due'
+  | 'partially_paid'
+  | 'paid'
+  | 'waived_cancellation'
+  | 'refunded';
+
+export type ContractType = 
+  | 'first_month_recurring'
+  | 'package_hours'
+  | 'single_lesson';
+
+export type ComplaintPriority = 'low' | 'medium' | 'high' | 'urgent_safeguarding';
+export type ComplaintStatus = 'open' | 'under_investigation' | 'action_taken' | 'resolved' | 'dismissed';
+
+export interface TutorApplication {
+  id: string;
+  reference_number: string;
+  
+  // Private identifying details (Protected on server, NEVER exposed to public visitors)
+  full_legal_name: string;
+  phone: string;
+  email: string;
+  preferred_contact_channel: 'Telegram' | 'Phone' | 'WhatsApp';
+  city: string;
+  sub_city: string;
+  specific_neighborhood?: string;
+  
+  // Teaching profile
+  public_display_name: string;
+  subjects: string[];
+  grade_levels: string[];
+  curricula: string[];
+  
+  // Qualifications & Experience
+  education_level: string;
+  institution: string;
+  field_of_study: string;
+  years_of_experience: number;
+  teaching_approach: string;
+  bio: string;
+  teaching_languages: string[];
+  
+  // Availability & Modality
+  available_days: string[];
+  available_time_windows: string[];
+  teaching_modes: TeachingMode[];
+  travel_areas: string[];
+  hourly_rate_etb: number;
+  
+  // Private Storage Documents
+  national_id_doc_path?: string;
+  degree_cert_doc_path?: string;
+  avatar_url?: string;
+  
+  // Consent & Code of Conduct
+  privacy_consent: boolean;
+  code_of_conduct_agreed: boolean;
+  
+  // Status & Admin Fields
+  status: ApplicationStatus;
+  admin_review_notes?: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  
+  // Marketing & Referral Tracking
+  referral_source?: string;
+  utm_source?: string;
+  utm_campaign?: string;
+  
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TutorPublicProfile {
+  id: string;
+  slug: string;
+  display_name: string;
+  bio: string;
+  teaching_approach: string;
+  education_summary: string;
+  subjects: string[];
+  grade_levels: string[];
+  curricula: string[];
+  teaching_modes: TeachingMode[];
+  service_areas: string[];
+  hourly_rate_etb: number;
+  languages: string[];
+  avatar_url?: string;
+  is_verified: boolean;
+  badge: string;
+  total_lessons_placed: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ParentRequest {
+  id: string;
+  reference_number: string;
+  
+  parent_name: string;
+  phone: string;
+  email?: string;
+  preferred_contact_method: 'Phone' | 'Telegram' | 'WhatsApp';
+  
+  city: string;
+  sub_city: string;
+  general_area?: string;
+  
+  target_tutor_id?: string;
+  
+  subjects: string[];
+  grade_level: string;
+  curriculum: string;
+  teaching_mode: TeachingMode;
+  schedule_preference?: string;
+  lesson_frequency?: string;
+  budget_range_min?: number;
+  budget_range_max?: number;
+  preferred_language: string;
+  learning_goals?: string;
+  
+  status: ParentRequestStatus;
+  admin_notes?: string;
+  privacy_consent: boolean;
+  
+  referral_source?: string;
+  utm_source?: string;
+  utm_campaign?: string;
+  
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MatchBreakdown {
+  subject_score: number;
+  grade_score: number;
+  modality_score: number;
+  location_score: number;
+  language_score: number;
+  budget_score: number;
+  reasons: string[];
+}
+
+export interface CandidateMatch {
+  tutor: TutorPublicProfile | TutorApplication;
+  total_score: number;
+  breakdown: MatchBreakdown;
+  is_eligible: boolean;
+}
+
+export interface MatchProposal {
+  id: string;
+  request_id: string;
+  tutor_id: string;
+  match_score: number;
+  match_breakdown: MatchBreakdown;
+  proposed_at: string;
+  tutor_response: 'pending' | 'accepted' | 'declined';
+  parent_response: 'pending' | 'accepted' | 'declined';
+  status: MatchStatus;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Placement {
+  id: string;
+  match_id: string;
+  request_id: string;
+  tutor_id: string;
+  
+  contract_type: ContractType;
+  agreed_rate_etb: number;
+  total_contract_value_etb: number;
+  commission_percentage: number; // typically 60%
+  commission_amount_etb: number;
+  commission_basis_description: string;
+  
+  terms_accepted_date: string;
+  terms_version: string;
+  
+  payment_status: PaymentStatus;
+  payment_reference?: string;
+  payment_method?: string; // Telebirr, CBE Birr, Awash, Cash
+  payment_received_at?: string;
+  
+  start_date: string;
+  replacement_guarantee_valid_until?: string;
+  follow_up_status: 'pending_first_lesson' | 'first_lesson_completed' | 'ongoing_smooth' | 'issue_reported' | 'concluded';
+  follow_up_notes?: string;
+  
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FeeConfiguration {
+  id: string;
+  default_commission_percentage: number; // 60.00
+  applicable_basis: string; // 'first_month_lessons'
+  failure_replacement_policy: string;
+  repeat_client_policy: string;
+  effective_from: string;
+  is_active: boolean;
+}
+
+export interface Complaint {
+  id: string;
+  reference_number: string;
+  reporter_type: 'parent' | 'tutor' | 'anonymous' | 'staff';
+  reporter_name?: string;
+  reporter_contact?: string;
+  subject: string;
+  description: string;
+  priority: ComplaintPriority;
+  status: ComplaintStatus;
+  resolution_notes?: string;
+  resolved_by?: string;
+  resolved_at?: string;
+  created_at: string;
+}
+
+export interface AuditLog {
+  id: string;
+  actor: string;
+  role: string;
+  action: string;
+  resource_type: string;
+  resource_id: string;
+  details: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface DataDeletionRequest {
+  id: string;
+  reference_number: string;
+  requester_name: string;
+  requester_contact: string;
+  request_type: 'deletion' | 'rectification' | 'data_export';
+  details?: string;
+  status: 'pending' | 'verified' | 'completed' | 'rejected';
+  completed_at?: string;
+  created_at: string;
+}
+
+export interface AdminMetrics {
+  totalTutorApplications: number;
+  pendingTutorReviews: number;
+  approvedTutors: number;
+  totalParentRequests: number;
+  activeRequests: number;
+  activeMatches: number;
+  totalPlacements: number;
+  totalPlacementValueETB: number;
+  totalCommissionDueETB: number;
+  totalCommissionPaidETB: number;
+  openComplaints: number;
+}
