@@ -45,6 +45,12 @@ interface AdminDashboardProps {
   initialAuditLogs: AuditLog[];
   initialVacancies: TutoringVacancy[];
   initialVacancyApplications: VacancyApplication[];
+  initialStorageInfo?: {
+    provider: 'supabase' | 'local-file';
+    isProduction: boolean;
+    isConfigured: boolean;
+    statusMessage: string;
+  };
 }
 
 export default function AdminDashboard({
@@ -58,6 +64,7 @@ export default function AdminDashboard({
   initialAuditLogs,
   initialVacancies = [],
   initialVacancyApplications = [],
+  initialStorageInfo,
 }: AdminDashboardProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'tutors' | 'requests' | 'vacancies' | 'placements' | 'complaints' | 'fee-config' | 'audit'>('overview');
@@ -505,6 +512,24 @@ export default function AdminDashboard({
               <span className="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 border border-slate-700">
                 Staff Console
               </span>
+              {initialStorageInfo && (
+                <span
+                  className={`ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                    initialStorageInfo.provider === 'supabase' && initialStorageInfo.isConfigured
+                      ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
+                      : initialStorageInfo.isProduction && !initialStorageInfo.isConfigured
+                      ? 'bg-red-950 text-red-300 border-red-700 animate-pulse'
+                      : 'bg-slate-800 text-slate-300 border-slate-700'
+                  }`}
+                  title={initialStorageInfo.statusMessage}
+                >
+                  {initialStorageInfo.provider === 'supabase' && initialStorageInfo.isConfigured
+                    ? 'Storage: Supabase PostgreSQL'
+                    : initialStorageInfo.isProduction && !initialStorageInfo.isConfigured
+                    ? 'Storage: Unconfigured (Shared DB Required)'
+                    : 'Storage: Local Engine (Development)'}
+                </span>
+              )}
             </div>
           </div>
 
@@ -687,6 +712,20 @@ export default function AdminDashboard({
                 >
                   <DownloadIcon className="w-4 h-4 text-slate-500" />
                   <span>Export Tutor Applications CSV</span>
+                </a>
+                <a
+                  href="/api/admin/export?type=vacancies"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors"
+                >
+                  <DownloadIcon className="w-4 h-4 text-slate-500" />
+                  <span>Export Vacancies CSV</span>
+                </a>
+                <a
+                  href="/api/admin/export?type=vacancy_applications"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors"
+                >
+                  <DownloadIcon className="w-4 h-4 text-slate-500" />
+                  <span>Export Vacancy Applicants CSV</span>
                 </a>
               </div>
             </div>
@@ -1406,12 +1445,37 @@ export default function AdminDashboard({
             <div className="space-y-2 text-xs">
               <span className="font-bold text-slate-700 uppercase">Verification Evidence</span>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-900 border border-amber-200">
-                  National ID Path: {selectedTutor.national_id_doc_path || 'Pending upload'}
-                </span>
-                <span className="px-3 py-1.5 rounded-lg bg-sky-50 text-sky-900 border border-sky-200">
-                  Degree Path: {selectedTutor.degree_cert_doc_path || 'Pending upload'}
-                </span>
+                {selectedTutor.national_id_doc_path ? (
+                  <a
+                    href={`/api/admin/documents?path=${encodeURIComponent(selectedTutor.national_id_doc_path)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-semibold transition-colors"
+                  >
+                    <span>Inspect National ID</span>
+                    <span className="text-[10px] bg-amber-200/80 px-1 rounded font-mono">Signed Access</span>
+                  </a>
+                ) : (
+                  <span className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-500 border border-slate-200">
+                    National ID: Pending upload
+                  </span>
+                )}
+
+                {selectedTutor.degree_cert_doc_path ? (
+                  <a
+                    href={`/api/admin/documents?path=${encodeURIComponent(selectedTutor.degree_cert_doc_path)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-300 font-semibold transition-colors"
+                  >
+                    <span>Inspect Degree Certificate</span>
+                    <span className="text-[10px] bg-sky-200/80 px-1 rounded font-mono">Signed Access</span>
+                  </a>
+                ) : (
+                  <span className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-500 border border-slate-200">
+                    Degree Certificate: Pending upload
+                  </span>
+                )}
               </div>
             </div>
 

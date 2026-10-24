@@ -6,6 +6,8 @@
 
 import fs from 'fs';
 import path from 'path';
+import { getSupabaseClient, getStorageProviderInfo } from './supabase';
+export { getStorageProviderInfo };
 import {
   TutorApplication,
   TutorPublicProfile,
@@ -74,18 +76,25 @@ function loadDatabase(): DatabaseSchema {
   ensureDataDirectory();
 
   if (fs.existsSync(DB_FILE)) {
-    try {
-      const raw = fs.readFileSync(DB_FILE, 'utf-8');
-      memoryDb = JSON.parse(raw);
-      if (!memoryDb!.vacancies) {
-        memoryDb!.vacancies = [...INITIAL_VACANCIES];
+    // Retry reading if file was caught mid-write by another process
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        if (raw && raw.trim().endsWith('}')) {
+          memoryDb = JSON.parse(raw);
+          if (!memoryDb!.vacancies) {
+            memoryDb!.vacancies = [...INITIAL_VACANCIES];
+          }
+          if (!memoryDb!.vacancy_applications) {
+            memoryDb!.vacancy_applications = [...INITIAL_VACANCY_APPLICATIONS];
+          }
+          return memoryDb!;
+        }
+      } catch {
+        // Short pause if another process is flushing
+        const end = Date.now() + 50;
+        while (Date.now() < end) {}
       }
-      if (!memoryDb!.vacancy_applications) {
-        memoryDb!.vacancy_applications = [...INITIAL_VACANCY_APPLICATIONS];
-      }
-      return memoryDb!;
-    } catch (err) {
-      console.warn('Could not parse local DB file, initializing with seeds:', err);
     }
   }
 
@@ -176,11 +185,16 @@ function loadDatabase(): DatabaseSchema {
 function saveDatabase(db: DatabaseSchema): void {
   memoryDb = db;
   ensureDataDirectory();
+  const tmpFile = `${DB_FILE}.${process.pid}.${Date.now()}.${Math.random().toString(36).substring(2, 7)}.tmp`;
   try {
-    const tmpFile = `${DB_FILE}.${process.pid}.${Date.now()}.tmp`;
     fs.writeFileSync(tmpFile, JSON.stringify(db, null, 2), 'utf-8');
     fs.renameSync(tmpFile, DB_FILE);
   } catch {
+    try {
+      if (fs.existsSync(tmpFile)) {
+        fs.unlinkSync(tmpFile);
+      }
+    } catch {}
     try {
       fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf-8');
     } catch (err) {
@@ -200,6 +214,22 @@ export async function getPublicTutors(filters?: {
   subCity?: string;
   search?: string;
 }): Promise<TutorPublicProfile[]> {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    let query = supabase.from('tutor_public_profiles').select('*').eq('is_verified', true);
+    if (filters?.subject) query = query.contains('subjects', [filters.subject]);
+    if (filters?.grade) query = query.contains('grade_levels', [filters.grade]);
+    if (filters?.modality) query = query.contains('teaching_modes', [filters.modality]);
+    if (filters?.subCity) query = query.contains('service_areas', [filters.subCity]);
+    if (filters?.search) {
+      const q = filters.search.trim();
+      query = query.or(`display_name.ilike.%${q}%,bio.ilike.%${q}%`);
+    }
+    const { data, error } = await query.order('created_at', { ascending: false });
+    if (error) throw new Error(`Supabase query error: ${error.message}`);
+    return data || [];
+  }
+
   const db = loadDatabase();
   let profiles = db.public_profiles.filter((p) => p.is_verified);
 
@@ -240,6 +270,18 @@ export async function getPublicTutors(filters?: {
 }
 
 export async function getPublicTutorBySlug(slug: string): Promise<TutorPublicProfile | null> {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('tutor_public_profiles')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_verified', true)
+      .maybeSingle();
+    if (error) throw new Error(`Supabase query error: ${error.message}`);
+    return data || null;
+  }
+
   const db = loadDatabase();
   const profile = db.public_profiles.find((p) => p.slug === slug && p.is_verified);
   return profile || null;
@@ -252,6 +294,23 @@ export async function getPublicTutorBySlug(slug: string): Promise<TutorPublicPro
 export async function submitTutorApplication(
   data: Omit<TutorApplication, 'id' | 'reference_number' | 'status' | 'created_at' | 'updated_at'>
 ): Promise<{ success: boolean; reference_number: string; id: string }> {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    const seq = Math.floor(1000 + Math.random() * 9000);
+    const reference_number = `BT-TUT-2026-${seq}`;
+    const { data: inserted, error } = await supabase
+      .from('tutor_applications')
+      .insert({
+        ...data,
+        reference_number,
+        status: 'submitted',
+      })
+      .select('id, reference_number')
+      .single();
+    if (error) throw new Error(`Supabase error saving tutor application: ${error.message}`);
+    return { success: true, reference_number: inserted.reference_number, id: inserted.id };
+  }
+
   const db = loadDatabase();
   const id = `tut-${Date.now()}`;
   const seq = (db.tutors.length + 1).toString().padStart(4, '0');
@@ -288,6 +347,23 @@ export async function submitTutorApplication(
 export async function submitParentRequest(
   data: Omit<ParentRequest, 'id' | 'reference_number' | 'status' | 'created_at' | 'updated_at'>
 ): Promise<{ success: boolean; reference_number: string; id: string }> {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    const seq = Math.floor(1000 + Math.random() * 9000);
+    const reference_number = `BT-REQ-2026-${seq}`;
+    const { data: inserted, error } = await supabase
+      .from('parent_requests')
+      .insert({
+        ...data,
+        reference_number,
+        status: 'new',
+      })
+      .select('id, reference_number')
+      .single();
+    if (error) throw new Error(`Supabase error saving parent request: ${error.message}`);
+    return { success: true, reference_number: inserted.reference_number, id: inserted.id };
+  }
+
   const db = loadDatabase();
   const id = `req-${Date.now()}`;
   const seq = (db.parent_requests.length + 1).toString().padStart(4, '0');
@@ -594,6 +670,12 @@ export async function createPlacementRecord(input: {
   const match = db.matches.find((m) => m.id === input.matchId);
   if (!match) return null;
 
+  // Prevent duplicate placement agreements for the same match
+  const existingPlacement = db.placements.find((p) => p.match_id === input.matchId);
+  if (existingPlacement) {
+    throw new Error('A placement agreement has already been recorded and locked for this match proposal.');
+  }
+
   const req = db.parent_requests.find((r) => r.id === match.request_id);
   const tutor = db.tutors.find((t) => t.id === match.tutor_id);
   if (!req || !tutor) return null;
@@ -757,6 +839,25 @@ export async function getPublicVacancies(filters?: {
   minRate?: number;
   search?: string;
 }): Promise<TutoringVacancy[]> {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    let query = supabase
+      .from('tutoring_vacancies')
+      .select('*')
+      .in('status', ['open', 'closing_soon', 'filled']);
+    if (filters?.subCity) query = query.ilike('sub_city', `%${filters.subCity}%`);
+    if (filters?.grade) query = query.ilike('grade_level', `%${filters.grade}%`);
+    if (filters?.subject) query = query.contains('subjects', [filters.subject]);
+    if (filters?.minRate) query = query.gte('hourly_rate_etb', filters.minRate);
+    if (filters?.search) {
+      const q = filters.search.trim();
+      query = query.or(`title.ilike.%${q}%,vacancy_code.ilike.%${q}%,sub_city.ilike.%${q}%`);
+    }
+    const { data, error } = await query.order('created_at', { ascending: false });
+    if (error) throw new Error(`Supabase query error: ${error.message}`);
+    return data || [];
+  }
+
   const db = loadDatabase();
   let list = (db.vacancies || []).filter(
     (v) => v.status === 'open' || v.status === 'closing_soon' || v.status === 'filled'
@@ -803,6 +904,25 @@ export async function getPublicVacancies(filters?: {
 }
 
 export async function getPublicVacancyByCode(code: string, incrementView: boolean = true): Promise<TutoringVacancy | null> {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('tutoring_vacancies')
+      .select('*')
+      .ilike('vacancy_code', code)
+      .maybeSingle();
+    if (error) throw new Error(`Supabase query error: ${error.message}`);
+    if (!data) return null;
+    if (incrementView) {
+      await supabase
+        .from('tutoring_vacancies')
+        .update({ view_count: (data.view_count || 0) + 1 })
+        .eq('id', data.id);
+      data.view_count = (data.view_count || 0) + 1;
+    }
+    return data;
+  }
+
   const db = loadDatabase();
   const vacancy = (db.vacancies || []).find((v) => v.vacancy_code.toUpperCase() === code.toUpperCase());
   if (!vacancy) return null;
@@ -818,6 +938,41 @@ export async function getPublicVacancyByCode(code: string, incrementView: boolea
 export async function submitVacancyApplication(
   data: Omit<VacancyApplication, 'id' | 'status' | 'created_at' | 'updated_at'>
 ): Promise<{ success: boolean; id: string; reference_number: string }> {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    const { data: vac, error: vacErr } = await supabase
+      .from('tutoring_vacancies')
+      .select('id, vacancy_code, status, application_count')
+      .eq('id', data.vacancy_id)
+      .maybeSingle();
+    if (vacErr || !vac) throw new Error('Tutoring vacancy not found.');
+    if (vac.status !== 'open' && vac.status !== 'closing_soon') {
+      throw new Error('This vacancy is no longer accepting new applications.');
+    }
+    // Check duplicate active application
+    const { data: existing } = await supabase
+      .from('vacancy_applications')
+      .select('id, status')
+      .eq('vacancy_id', data.vacancy_id)
+      .eq('applicant_phone', data.applicant_phone)
+      .not('status', 'in', '("withdrawn","not_selected")')
+      .maybeSingle();
+    if (existing) {
+      throw new Error('You have already submitted an active application for this vacancy.');
+    }
+    const { data: inserted, error: insErr } = await supabase
+      .from('vacancy_applications')
+      .insert({ ...data, status: 'submitted' })
+      .select('id')
+      .single();
+    if (insErr) throw new Error(`Failed to submit vacancy application: ${insErr.message}`);
+    await supabase
+      .from('tutoring_vacancies')
+      .update({ application_count: (vac.application_count || 0) + 1, updated_at: new Date().toISOString() })
+      .eq('id', data.vacancy_id);
+    return { success: true, id: inserted.id, reference_number: vac.vacancy_code };
+  }
+
   const db = loadDatabase();
   const vacancy = (db.vacancies || []).find((v) => v.id === data.vacancy_id);
   if (!vacancy) {

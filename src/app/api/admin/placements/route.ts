@@ -53,9 +53,10 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true, placement });
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Internal Server Error';
     console.error('Error creating placement:', error);
-    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ success: false, error: msg }, { status: 400 });
   }
 }
 

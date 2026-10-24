@@ -5,9 +5,19 @@
 import { NextResponse } from 'next/server';
 import { submitComplaint } from '@/lib/db/storage';
 import { ComplaintPriority } from '@/lib/types';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rateLimit = checkRateLimit(`complaint:${ip}`, 5, 60 * 60 * 1000); // 5 reports per hour
+    if (!rateLimit.isAllowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many reports submitted. Please wait before submitting another report.' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+      );
+    }
+
     const body = await request.json();
     const { reporter_type, reporter_name, reporter_contact, subject, description, priority } = body;
 

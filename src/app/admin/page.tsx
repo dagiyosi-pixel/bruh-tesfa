@@ -12,6 +12,7 @@ import {
   getAuditLogs,
   getAdminVacancies,
   getAllVacancyApplications,
+  getStorageProviderInfo,
 } from '@/lib/db/storage';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 
@@ -45,6 +46,8 @@ export default async function AdminPage() {
     getAllVacancyApplications(),
   ]);
 
+  const storageInfo = getStorageProviderInfo();
+
   return (
     <AdminDashboard
       initialMetrics={metrics}
@@ -57,6 +60,7 @@ export default async function AdminPage() {
       initialAuditLogs={auditLogs}
       initialVacancies={vacancies}
       initialVacancyApplications={vacancyApplications}
+      initialStorageInfo={storageInfo}
     />
   );
 }

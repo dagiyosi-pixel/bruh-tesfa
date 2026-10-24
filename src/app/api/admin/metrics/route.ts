@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server';
 import { verifyAdminSession } from '@/lib/auth';
-import { getAdminMetrics } from '@/lib/db/storage';
+import { getAdminMetrics, getStorageProviderInfo } from '@/lib/db/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +16,8 @@ export async function GET() {
 
   try {
     const metrics = await getAdminMetrics();
-    return NextResponse.json({ success: true, metrics });
+    const storageInfo = getStorageProviderInfo();
+    return NextResponse.json({ success: true, metrics, storageInfo });
   } catch (error) {
     console.error('Error fetching admin metrics:', error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });

@@ -1,9 +1,11 @@
 // =============================================================================
 // BRUH TESFA - Apply to Vacancy API (POST /api/vacancies/[code]/apply)
+// Hardened with IP Rate Limiting & Strict Duplicate Active Application Defense
 // =============================================================================
 
 import { NextResponse } from 'next/server';
 import { getPublicVacancyByCode, submitVacancyApplication } from '@/lib/db/storage';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +14,15 @@ export async function POST(
   context: { params: Promise<{ code: string }> }
 ) {
   try {
+    const ip = getClientIp(request);
+    const rateLimit = checkRateLimit(`vacancy-apply:${ip}`, 12, 60 * 60 * 1000); // 12 applications per hour
+    if (!rateLimit.isAllowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many applications submitted from your network. Please wait before applying again.' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+      );
+    }
+
     const { code } = await context.params;
     const body = await request.json();
 

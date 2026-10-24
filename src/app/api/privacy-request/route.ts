@@ -5,9 +5,19 @@
 
 import { NextResponse } from 'next/server';
 import { submitDataDeletionRequest } from '@/lib/db/storage';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rateLimit = checkRateLimit(`privacy-request:${ip}`, 5, 60 * 60 * 1000); // 5 requests per hour
+    if (!rateLimit.isAllowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests submitted. Please wait before submitting another data privacy request.' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+      );
+    }
+
     const { requester_name, requester_contact, request_type, details } = await request.json();
 
     if (!requester_name || !requester_contact) {

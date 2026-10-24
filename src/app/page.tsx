@@ -18,6 +18,8 @@ import {
   POPULAR_NEIGHBORHOODS,
 } from '@/lib/constants';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const tutors = await getPublicTutors();
 

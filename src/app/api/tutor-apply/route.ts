@@ -1,12 +1,23 @@
 // =============================================================================
 // BRUH TESFA - Tutor Application Submission (POST /api/tutor-apply)
+// Hardened with IP Rate Limiting, Input Sanitization & Proclamation 1321/2024
 // =============================================================================
 
 import { NextResponse } from 'next/server';
 import { submitTutorApplication } from '@/lib/db/storage';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rateLimit = checkRateLimit(`tutor-apply:${ip}`, 10, 60 * 60 * 1000); // 10 applications per hour
+    if (!rateLimit.isAllowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many submissions. Please wait before submitting another tutor application.' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+      );
+    }
+
     const body = await request.json();
 
     // 1. Validation checks

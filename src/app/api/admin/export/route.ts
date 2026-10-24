@@ -5,7 +5,13 @@
 
 import { NextResponse } from 'next/server';
 import { verifyAdminSession } from '@/lib/auth';
-import { getAdminPlacements, getAdminParentRequests, getAdminTutorApplications } from '@/lib/db/storage';
+import {
+  getAdminPlacements,
+  getAdminParentRequests,
+  getAdminTutorApplications,
+  getAdminVacancies,
+  getAllVacancyApplications,
+} from '@/lib/db/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,6 +95,68 @@ export async function GET(request: Request) {
         r.budget_range_min || 'N/A',
         r.budget_range_max || 'N/A',
         r.created_at,
+      ]);
+      csvContent = [headers.join(','), ...rows.map((r) => r.map(escapeCsvField).join(','))].join('\n');
+    } else if (type === 'vacancies') {
+      const vacancies = await getAdminVacancies();
+      const headers = [
+        'Vacancy Code',
+        'Title',
+        'Sub-City',
+        'General Area',
+        'Grade Level',
+        'Curriculum',
+        'Subjects',
+        'Teaching Format',
+        'Hourly Rate (ETB)',
+        'Status',
+        'Views Count',
+        'Applications Count',
+        'Created At',
+      ];
+      const rows = vacancies.map((v) => [
+        v.vacancy_code,
+        v.title,
+        v.sub_city,
+        v.general_area || 'N/A',
+        v.grade_level,
+        v.curriculum,
+        v.subjects.join('; '),
+        v.teaching_format,
+        v.hourly_rate_etb,
+        v.status,
+        v.view_count || 0,
+        v.application_count || 0,
+        v.created_at,
+      ]);
+      csvContent = [headers.join(','), ...rows.map((r) => r.map(escapeCsvField).join(','))].join('\n');
+    } else if (type === 'vacancy_applications') {
+      const apps = await getAllVacancyApplications();
+      const headers = [
+        'Application ID',
+        'Vacancy ID',
+        'Applicant Name',
+        'Phone',
+        'Education',
+        'Institution',
+        'Experience (Years)',
+        'Proposed Rate (ETB)',
+        'Status',
+        'Referral Source',
+        'Created At',
+      ];
+      const rows = apps.map((a) => [
+        a.id,
+        a.vacancy_id,
+        a.applicant_name,
+        a.applicant_phone,
+        a.applicant_education,
+        a.applicant_institution,
+        a.years_of_experience,
+        a.proposed_rate_etb || 'N/A',
+        a.status,
+        a.referral_source || 'N/A',
+        a.created_at,
       ]);
       csvContent = [headers.join(','), ...rows.map((r) => r.map(escapeCsvField).join(','))].join('\n');
     } else {

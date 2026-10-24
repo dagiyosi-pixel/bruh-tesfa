@@ -18,15 +18,22 @@ BRUH TESFA is a genuinely functional, mobile-first Ethiopian tutor-matching plat
    - One-click sanitized conversion from genuine parent requests into public vacancy drafts (automatically stripping private phone numbers, family names, and exact house addresses).
    - Copy-ready, attractive Telegram announcement generator designed specifically for Ethiopian tutoring audiences (works 100% offline without API tokens).
    - Optional Telegram Bot API integration (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`) for automated channel broadcasting when configured.
-   - Duplicate active application prevention per applicant phone number or tutor profile.
-3. **Dual-Persistence Engine**:
-   - Seamlessly connects to cloud **Supabase PostgreSQL** and **Supabase Storage** via `001_bruh_tesfa_schema.sql` and `002_bruh_tesfa_vacancies.sql`.
-   - Embeds an atomic, zero-credential local persistent storage engine (`data/bruh-tesfa-db.json`) allowing all core flows to run immediately out-of-the-box.
-4. **Algorithmic Candidate Matcher**:
+   - Duplicate active application prevention per applicant phone number or tutor profile, with re-application permitted if a previous application was withdrawn.
+3. **Dual-Persistence Engine & Production Fail-Safe Guard**:
+   - Connects to cloud **Supabase PostgreSQL** and **Supabase Storage** via sequential migrations `001`, `002`, and `003`.
+   - Embeds an atomic, zero-credential local persistent storage engine (`data/bruh-tesfa-db.json`) allowing local development, testing, and offline trials immediately out-of-the-box.
+   - In production (`NODE_ENV=production`), the application strictly demands valid Supabase credentials and throws a fail-safe `ProductionStorageConfigurationError` rather than silently degrading to local disk or memory.
+4. **Cryptographic Security & Brute-Force Defense**:
+   - Administrator sessions are signed with HMAC-SHA256 and verified using constant-time `crypto.timingSafeEqual` comparison to eliminate timing side-channels.
+   - Session tokens enforce 7-day TTL and clock skew bounds.
+   - Server-side sliding-window rate limiter guards the admin login route (5 attempts per 15 minutes) and public submission endpoints.
+   - Private document gateway (`/api/admin/documents`) enforces authentication and strictly blocks directory traversal payloads (`..`, absolute paths, null bytes).
+5. **Algorithmic Candidate Matcher**:
    - Scores compatibility (0–100%) based on subject fit, grade level, teaching modality, sub-city proximity, language overlap, and budget fit with explainable rationale strings.
-5. **Transparent 60% Placement Economics**:
+6. **Transparent 60% Placement Economics**:
    - One-time 60% placement commission locked into the placement agreement for the first month/package.
    - 0% commission on subsequent months (months 2+ belong 100% to the tutor).
+   - Immutable terms prevent retroactive fee modifications when platform rates change.
    - 14-day / 2-lesson replacement safeguard for families.
 
 ---
@@ -36,7 +43,7 @@ BRUH TESFA is a genuinely functional, mobile-first Ethiopian tutor-matching plat
 bruh-tesfa/
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx                     # Homepage with dual CTAs, trust signals, sub-city hubs
+│   │   ├── page.tsx                     # Dynamic homepage with dual CTAs, trust signals, sub-city hubs
 │   │   ├── layout.tsx                   # Global responsive layout with metadata
 │   │   ├── globals.css                  # Tailwind styles with Ethiopian education theme
 │   │   ├── tutors/
@@ -63,25 +70,27 @@ bruh-tesfa/
 │   │   ├── fee-policy/page.tsx          # Transparent 60% placement fee policy
 │   │   ├── admin/
 │   │   │   ├── page.tsx                 # Protected admin console (role verified on server)
-│   │   │   └── login/page.tsx           # Admin authentication gate
+│   │   │   └── login/page.tsx           # Admin authentication gate with rate limiting
 │   │   └── api/
 │   │       ├── tutors/                  # Public approved profiles API
 │   │       ├── vacancies/               # Public active vacancies API with filters
 │   │       │   └── [code]/
 │   │       │       ├── route.ts         # Single vacancy endpoint (view counter)
-│   │       │       └── apply/route.ts   # Public vacancy application endpoint (duplicate prevention)
-│   │       ├── tutor-apply/             # Public tutor application submission
-│   │       ├── request-tutor/           # Public parent request submission
-│   │       ├── complaints/              # Public safeguarding incident reporting
-│   │       ├── privacy-request/         # Public data deletion/rectification requests
+│   │       │       └── apply/route.ts   # Public vacancy application endpoint (rate limited)
+│   │       ├── tutor-apply/             # Public tutor application submission (rate limited)
+│   │       ├── request-tutor/           # Public parent request submission (rate limited)
+│   │       ├── complaints/              # Public safeguarding incident reporting (rate limited)
+│   │       ├── privacy-request/         # Public data deletion/rectification requests (rate limited)
 │   │       └── admin/
-│   │           ├── metrics/             # Real platform KPIs and vacancy view metrics
-│   │           ├── vacancies/           # Admin vacancy CRUD, status changes
+│   │           ├── documents/           # Private document gateway (signed URLs & traversal guard)
+│   │           ├── export/              # CSV export (Placements, Requests, Tutors, Vacancies, Applicants)
+│   │           ├── metrics/             # Platform KPIs, vacancy view metrics & storage health
+│   │           ├── vacancies/           # Admin vacancy CRUD, status transitions
 │   │           │   ├── convert-request/ # 1-click sanitized conversion from parent requests
 │   │           │   └── [id]/
-│   │           │       ├── applications/# Vacancy applicant review & status update
+│   │           │       ├── applications/# Vacancy applicant review & stage transitions
 │   │           │       └── telegram/    # Copy-ready text & bot broadcast dispatcher
-│   │           └── placements/          # 60% fee agreements & CBE/Telebirr reconciliation
+│   │           └── placements/          # 60% fee agreements & duplicate placement guard
 │   ├── components/
 │   │   ├── Navbar.tsx                   # Responsive navigation with Vacancies link & mobile drawer
 │   │   ├── Footer.tsx                   # Footer with legal links & Telegram channels
@@ -92,31 +101,35 @@ bruh-tesfa/
 │   │   ├── TutorApplicationForm.tsx     # 5-step form with draft auto-save
 │   │   ├── ParentRequestForm.tsx        # Guided parent request form
 │   │   └── admin/
-│   │       └── AdminDashboard.tsx       # Operator command center (Tutors, Requests, Vacancies, Placements)
+│   │       └── AdminDashboard.tsx       # Operator command center (Storage badge, Tutors, Requests, Vacancies, Placements)
 │   ├── lib/
 │   │   ├── types.ts                     # TypeScript domain models & schemas
 │   │   ├── constants.ts                 # Taxonomies (sub-cities, subjects, curricula, grades)
-│   │   ├── auth.ts                      # Session token creation & cryptographic verification
+│   │   ├── auth.ts                      # HMAC-SHA256 session token creation & timing-safe verification
+│   │   ├── rate-limit.ts                # Sliding-window in-memory server rate limiter
 │   │   ├── telegram.ts                  # Telegram announcement generator & Bot API publisher
 │   │   ├── matching.ts                  # Algorithmic candidate match engine
 │   │   ├── fees.ts                      # 60% placement commission calculation
 │   │   └── db/
 │   │       ├── seed.ts                  # Realistic Addis Ababa seed data (Tutors & Vacancies)
+│   │       ├── supabase.ts              # Supabase client manager & production fail-safe error
 │   │       └── storage.ts               # Unified Data Access Layer (Atomic local + Supabase)
 │   └── db/
 │       └── migrations/
-│           ├── 001_bruh_tesfa_schema.sql     # Core platform schema (Tutors, Requests, Placements)
-│           └── 002_bruh_tesfa_vacancies.sql  # Vacancies and vacancy applications schema
+│           ├── 001_bruh_tesfa_schema.sql      # Core platform schema (Tutors, Requests, Placements)
+│           ├── 002_bruh_tesfa_vacancies.sql   # Vacancies and vacancy applications schema
+│           └── 003_bruh_tesfa_refinements.sql # Student count, partial indexes, and RLS policies
 ├── tests/
-│   ├── fees.test.mjs                    # Placement fee math & edge cases
-│   ├── matching.test.mjs                # Match scoring & unapproved tutor exclusion
-│   ├── storage-and-security.test.mjs    # Public/private isolation & status transitions
-│   ├── security-and-validation.test.mjs # Malformed input & boundary tests
-│   └── vacancies.test.mjs               # Vacancy CRUD, sanitization, duplicate prevention, Telegram text
+│   ├── fees.test.mjs                          # Placement fee math & edge cases
+│   ├── matching.test.mjs                      # Match scoring & unapproved tutor exclusion
+│   ├── storage-and-security.test.mjs          # Public/private isolation & status transitions
+│   ├── security-and-validation.test.mjs       # Malformed input & boundary tests
+│   ├── vacancies.test.mjs                     # Vacancy CRUD, sanitization, duplicate prevention, Telegram text
+│   └── security-auth-and-persistence.test.mjs # HMAC-SHA256, rate limiting, persistence guards, traversal guards
 ├── docs/
-│   └── 30-DAY-LAUNCH-PLAYBOOK.md        # Operator go-to-market plan
-├── .env.example                         # Environment configuration template
-├── .env.local                           # Local development configuration
+│   └── 30-DAY-LAUNCH-PLAYBOOK.md              # Operator go-to-market plan
+├── .env.example                               # Environment configuration template
+├── .env.local                                 # Local development configuration
 └── package.json
 ```
 
@@ -138,8 +151,11 @@ npm install
 ```
 
 ### 3. Environment Configuration
-Verify that `.env.local` contains the configuration values:
+Copy `.env.example` to `.env.local` for local execution:
 ```env
+# Persistence Mode: 'local' for zero-config offline development, 'supabase' for cloud
+PERSISTENCE_MODE=local
+
 # Administration
 ADMIN_INITIAL_PASSWORD=BruhTesfaAdmin2026!
 ADMIN_JWT_SECRET=bruh-tesfa-secure-production-secret-addis-2026
@@ -150,39 +166,46 @@ NEXT_PUBLIC_TELEGRAM_URL=https://t.me/bruhtesfa_community
 NEXT_PUBLIC_TELEGRAM_CHANNEL_URL=https://t.me/bruhtesfa_announcements
 NEXT_PUBLIC_SUPPORT_PHONE=+251 91 123 4567
 NEXT_PUBLIC_SUPPORT_EMAIL=contact@bruhtesfa.com
-
-# Optional Telegram Channel Bot Publishing (Leave unset for manual copy-paste workflow)
-# TELEGRAM_BOT_TOKEN=123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ
-# TELEGRAM_CHANNEL_ID=@bruhtesfa_announcements
 ```
 
-### 4. Running the Development Server
+### 4. Running Automated Tests
+```bash
+npm test
+```
+Executes all **28 automated tests** covering:
+- Mathematical 60% placement fee calculations and single-lesson boundaries.
+- Candidate matching algorithm and unapproved tutor exclusion.
+- Public/private data isolation (ensuring phone numbers and national IDs are never exposed).
+- Cryptographic HMAC-SHA256 session generation, expiration, and constant-time password verification.
+- Sliding-window brute-force rate limiter (blocking attempts exceeding limit).
+- Production persistence fail-safe guard (`ProductionStorageConfigurationError`).
+- Duplicate placement agreement blocking.
+- Path traversal and malicious filename rejection.
+- Vacancy application lifecycle and conditional re-application after withdrawal.
+- Telegram announcement text generation complying with safeguarding standards.
+
+### 5. Running the Development Server
 ```bash
 npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 5. Running Automated Tests
-```bash
-npm test
-```
-Runs all **17 unit, integration, and security tests** across fees, candidate matching, security, vacancies, and Telegram formatting.
-
 ### 6. Building for Production
 ```bash
 npm run build
 ```
-Compiles all 35+ routes with Next.js Turbopack, verifies TypeScript types, and creates optimized production bundles.
+Compiles all 40+ routes with Next.js Turbopack, verifies TypeScript types, and creates optimized production bundles with zero errors.
 
 ---
 
-## 4. Operator Console & Vacancy Workflows
+## 4. Operator Console & Administrative Workflows
 
 1. Navigate to [http://localhost:3000/admin/login](http://localhost:3000/admin/login).
 2. Enter the administrator key: `BruhTesfaAdmin2026!`
 3. You will enter the **Staff Management Console**:
-   - **KPI Overview**: Live operational metrics including total vacancies, active open vacancies, total vacancy applicants, and tracked views.
-   - **Tutor Applications**: Review private documents, qualifications, phone numbers, and update status.
+   - **Live Storage Indicator**: A badge at the top of the dashboard displays whether persistence is running on `Supabase PostgreSQL` or `Local Engine (Development)`.
+   - **KPI Overview**: Real-time operational metrics including total vacancies, active open vacancies, total vacancy applicants, and tracked views.
+   - **Tutor Applications**: Review qualifications, phone numbers, and inspect private documents securely via `/api/admin/documents`.
    - **Parent Requests**: Inspect incoming tutoring requests. Use the **"Draft Vacancy"** button on any genuine request to automatically strip sensitive family identifiers and generate a moderated vacancy draft.
    - **Tutoring Vacancies**:
      - Filter vacancies by status (`all`, `open`, `closing_soon`, `filled`, `closed`, `draft`, `archived`) or search by subject/sub-city.
@@ -190,13 +213,36 @@ Compiles all 35+ routes with Next.js Turbopack, verifies TypeScript types, and c
      - Click **"Applicants ({count})"** to view all tutor submissions for that specific vacancy, inspect their qualifications, experience, and cover notes, and transition their stage (`submitted` → `under_review` → `shortlisted` → `interview_discussion` → `selected`).
      - Selecting a candidate automatically marks the vacancy as `filled`.
    - **Candidate Matcher**: Algorithmic 0–100% match scoring engine against approved tutors.
-   - **Placements & 60% Fees**: Create official placement agreements, view locked 60% first-month commission calculations, and reconcile Telebirr / CBE payments.
+   - **Placements & 60% Fees**: Create official placement agreements, view locked 60% first-month commission calculations, and reconcile Telebirr / CBE payments. Rapid double-clicks are rejected to prevent duplicate placements.
    - **Safeguarding**: Review and resolve confidential incident reports.
-   - **Data Exports**: Download sanitized CSV files of placements, requests, and tutors.
+   - **Data Exports**: Download sanitized CSV files of placements, parent requests, tutor applications, vacancies, and vacancy applicants.
 
 ---
 
-## 5. Telegram Distribution Guide
+## 5. Database Migrations (Supabase PostgreSQL)
+
+When deploying to cloud Supabase, execute migrations in exact numerical sequence via the Supabase SQL Editor:
+
+1. `src/db/migrations/001_bruh_tesfa_schema.sql`:
+   - Creates core tables: `tutor_applications`, `tutor_public_profiles`, `parent_requests`, `candidate_matches`, `placements`, `complaints`, `fee_configurations`, `audit_logs`, and `data_deletion_requests`.
+   - Enables Row Level Security (RLS) on all tables with public read policies for verified tutor profiles.
+2. `src/db/migrations/002_bruh_tesfa_vacancies.sql`:
+   - Creates `tutoring_vacancies` and `vacancy_applications` tables.
+   - Configures public read policies for open/closing-soon vacancies.
+3. `src/db/migrations/003_bruh_tesfa_refinements.sql`:
+   - Adds `student_count INT DEFAULT 1` to `parent_requests`.
+   - Replaces static unique constraints on `vacancy_applications` with partial unique indexes `WHERE status NOT IN ('withdrawn', 'not_selected')` to permit legitimate re-application after withdrawal.
+   - Adds unique constraint `idx_unique_placement_per_match` on `placements(match_id)` to block duplicate placement creation.
+   - Adds query performance indexes and admin RLS select policies.
+
+### Storage Buckets Setup
+In the Supabase Storage dashboard:
+- Create private bucket: `tutor-documents` (stores national IDs, degrees, certificates; served via signed URLs).
+- Create public bucket: `tutor-public-avatars` (stores verified tutor headshots).
+
+---
+
+## 6. Telegram Distribution Guide
 
 ### Manual Copy-Ready Workflow (Zero API Token Required)
 1. In the Admin Console under the **Tutoring Vacancies** tab, click **Telegram** next to any vacancy.
@@ -217,18 +263,6 @@ To enable one-click publishing directly from the dashboard:
    TELEGRAM_CHANNEL_ID="@your_channel_username"
    ```
 4. Click **"Bot Auto-Publish"** in the announcement modal. The system will broadcast the announcement, store the Telegram message ID, and update publication status in the database.
-
----
-
-## 6. Database Migrations (Supabase PostgreSQL)
-
-If deploying to cloud Supabase:
-1. Create a Supabase project.
-2. In the SQL Editor, execute in order:
-   - `src/db/migrations/001_bruh_tesfa_schema.sql` (Creates core tables: `tutor_applications`, `parent_requests`, `candidate_matches`, `placements`, `complaints`, `fee_configurations`, `audit_logs`).
-   - `src/db/migrations/002_bruh_tesfa_vacancies.sql` (Creates `tutoring_vacancies` and `vacancy_applications` tables with Row Level Security policies, indexes, and duplicate active application constraints).
-3. Create private Supabase storage bucket `tutor-documents` and public bucket `tutor-public-avatars`.
-4. Configure `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`.
 
 ---
 

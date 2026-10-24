@@ -1,12 +1,23 @@
 // =============================================================================
 // BRUH TESFA - Parent / Guardian Tutoring Request API (POST /api/request-tutor)
+// Hardened with IP Rate Limiting & Safe Field Validation
 // =============================================================================
 
 import { NextResponse } from 'next/server';
 import { submitParentRequest } from '@/lib/db/storage';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rateLimit = checkRateLimit(`parent-request:${ip}`, 10, 60 * 60 * 1000); // 10 requests per hour
+    if (!rateLimit.isAllowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests submitted. Please wait before submitting another tutoring request.' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+      );
+    }
+
     const body = await request.json();
 
     const {
