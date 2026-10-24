@@ -9,6 +9,7 @@ import {
   FeeConfiguration,
   TutoringVacancy,
   VacancyApplication,
+  TelegramSubscriber,
 } from '../types';
 
 export const INITIAL_FEE_CONFIG: FeeConfiguration = {
@@ -499,5 +500,34 @@ export const INITIAL_VACANCY_APPLICATIONS: VacancyApplication[] = [
     referral_source: 'Website Board',
     created_at: '2026-03-10T14:30:00Z',
     updated_at: '2026-03-10T14:30:00Z',
+  },
+];
+
+export const INITIAL_TELEGRAM_SUBSCRIBERS: TelegramSubscriber[] = [
+  {
+    id: 'sub-001',
+    chat_id: 108923481,
+    username: 'yohannes_math',
+    first_name: 'Yohannes',
+    is_active: true,
+    subjects: ['Mathematics', 'Physics'],
+    grade_levels: ['Grades 9-10 (Secondary School)', 'Grades 11-12 (University Entrance / EUEE Prep)'],
+    sub_cities: ['Bole', 'Yeka'],
+    teaching_format: 'either',
+    created_at: '2026-03-01T10:00:00Z',
+    updated_at: '2026-03-01T10:00:00Z',
+  },
+  {
+    id: 'sub-002',
+    chat_id: 209847123,
+    username: 'selam_english',
+    first_name: 'Selamawit',
+    is_active: true,
+    subjects: ['English Language & Literature'],
+    grade_levels: ['Grades 7-8 (Middle School / Ministry Prep)'],
+    sub_cities: ['Kirkos'],
+    teaching_format: 'in_person',
+    created_at: '2026-03-05T14:30:00Z',
+    updated_at: '2026-03-05T14:30:00Z',
   },
 ];

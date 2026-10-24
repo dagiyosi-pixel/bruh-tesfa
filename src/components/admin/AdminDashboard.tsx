@@ -42,6 +42,7 @@ import {
   WeeklyAvailability,
 } from '@/lib/availability';
 import TutorAvailabilityEditor from '../TutorAvailabilityEditor';
+import { TelegramStudioPanel } from './TelegramStudioPanel';
 
 interface AdminDashboardProps {
   initialMetrics: AdminMetrics;
@@ -76,7 +77,7 @@ export default function AdminDashboard({
   initialStorageInfo,
 }: AdminDashboardProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'overview' | 'tutors' | 'requests' | 'vacancies' | 'placements' | 'complaints' | 'fee-config' | 'audit'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'tutors' | 'requests' | 'vacancies' | 'telegram-studio' | 'placements' | 'complaints' | 'fee-config' | 'audit'>('overview');
 
   // State collections
   const [metrics, setMetrics] = useState<AdminMetrics>(initialMetrics);
@@ -1384,6 +1385,11 @@ export default function AdminDashboard({
               </div>
             </div>
           </div>
+        )}
+
+        {/* TAB: TELEGRAM STUDIO & GROWTH MARKETING */}
+        {activeTab === 'telegram-studio' && (
+          <TelegramStudioPanel vacancies={vacancies} />
         )}
 
         {/* TAB 4: PLACEMENTS & 60% COMMISSION RECORDS */}

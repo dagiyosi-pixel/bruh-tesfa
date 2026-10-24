@@ -17,23 +17,25 @@ BRUH TESFA is a genuinely functional, mobile-first Ethiopian tutor-matching plat
    - Organized alternative to unstructured Telegram tutoring channels with verified statuses (`open`, `closing_soon`, `filled`, `closed`).
    - One-click sanitized conversion from genuine parent requests into public vacancy drafts (automatically stripping private phone numbers, family names, and exact house addresses).
    - Copy-ready, attractive Telegram announcement generator designed specifically for Ethiopian tutoring audiences (works 100% offline without API tokens).
-   - Optional Telegram Bot API integration (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`) for automated channel broadcasting when configured.
-   - Duplicate active application prevention per applicant phone number or tutor profile, with re-application permitted if a previous application was withdrawn.
-3. **Dual-Persistence Engine & Production Fail-Safe Guard**:
-   - Connects to cloud **Supabase PostgreSQL** and **Supabase Storage** via sequential migrations `001`, `002`, and `003`.
+   - Automated Telegram Bot API integration (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`) for direct channel broadcasting and webhook-driven interactive bot commands.
+3. **Interactive Telegram Bot & Opt-In Vacancy Alerts**:
+   - Official bot commands: `/start`, `/help`, `/find`, `/vacancies`, `/teach`, `/alerts`, `/contact`, `/stop`.
+   - Real-time opt-in alert matching for tutors (filtered by subject, sub-city, and in-person vs. online format).
+   - Timing-safe webhook verification using `crypto.timingSafeEqual` with secret tokens.
+4. **Integrated Telegram Content Studio & Branded Graphic Generator**:
+   - 12 pre-configured strategic marketing templates with English and Amharic draft support.
+   - Client-rendered 1080x1080 high-resolution graphic poster generator (HTML5 Canvas) with one-click PNG download.
+   - Built-in UTM campaign link tracking (`utm_source=telegram&utm_medium=channel|bot&utm_campaign=...`).
+5. **Dual-Persistence Engine & Production Fail-Safe Guard**:
+   - Connects to cloud **Supabase PostgreSQL** and **Supabase Storage** via sequential migrations `001`, `002`, `003`, `004`, and `005`.
    - Embeds an atomic, zero-credential local persistent storage engine (`data/bruh-tesfa-db.json`) allowing local development, testing, and offline trials immediately out-of-the-box.
    - In production (`NODE_ENV=production`), the application strictly demands valid Supabase credentials and throws a fail-safe `ProductionStorageConfigurationError` rather than silently degrading to local disk or memory.
-4. **Cryptographic Security & Brute-Force Defense**:
-   - Administrator sessions are signed with HMAC-SHA256 and verified using constant-time `crypto.timingSafeEqual` comparison to eliminate timing side-channels.
-   - Session tokens enforce 7-day TTL and clock skew bounds.
-   - Server-side sliding-window rate limiter guards the admin login route (5 attempts per 15 minutes) and public submission endpoints.
-   - Private document gateway (`/api/admin/documents`) enforces authentication and strictly blocks directory traversal payloads (`..`, absolute paths, null bytes).
-5. **Algorithmic Candidate Matcher**:
-   - Scores compatibility (0–100%) based on subject fit, grade level, teaching modality, sub-city proximity, language overlap, and budget fit with explainable rationale strings.
-6. **Transparent 60% Placement Economics**:
+6. **Schedule-Aware Matching & Mobile Availability Portal**:
+   - High-precision matching evaluating tutor 24-hour weekly intervals against family preferred days and time windows into 4 honest states (`compatible`, `partially_compatible`, `unknown`, `conflict`).
+   - Self-service tutor schedule portal at `/tutors/schedule` authenticated via Application Reference Number and registered phone.
+7. **Transparent 60% Placement Economics**:
    - One-time 60% placement commission locked into the placement agreement for the first month/package.
    - 0% commission on subsequent months (months 2+ belong 100% to the tutor).
-   - Immutable terms prevent retroactive fee modifications when platform rates change.
    - 14-day / 2-lesson replacement safeguard for families.
 
 ---
@@ -48,234 +50,157 @@ bruh-tesfa/
 │   │   ├── globals.css                  # Tailwind styles with Ethiopian education theme
 │   │   ├── tutors/
 │   │   │   ├── page.tsx                 # Find a Tutor directory with live filters
-│   │   │   └── [slug]/page.tsx          # Single approved tutor public showcase
+│   │   │   ├── [slug]/page.tsx          # Public tutor portfolio
+│   │   │   └── schedule/page.tsx        # Tutor self-service schedule & blackout dates portal
+│   │   ├── become-a-tutor/              # Multi-step tutor registration & document intake
+│   │   ├── request-tutor/               # 4-step progressive parent request wizard
 │   │   ├── vacancies/
-│   │   │   ├── page.tsx                 # Public Tutoring Vacancy Board with filters
-│   │   │   └── [code]/
-│   │   │       ├── page.tsx             # Single vacancy detail, Telegram share & application form
-│   │   │       └── confirmation/page.tsx # Vacancy application confirmation page
-│   │   ├── become-a-tutor/
-│   │   │   ├── page.tsx                 # Tutor recruitment & application page
-│   │   │   └── confirmation/page.tsx    # Application confirmation with reference number
-│   │   ├── request-tutor/
-│   │   │   ├── page.tsx                 # Guided parent/guardian tutoring request
-│   │   │   └── confirmation/page.tsx    # Request confirmation with tracking reference
-│   │   ├── how-it-works/page.tsx        # 4-step process breakdown for parents & tutors
-│   │   ├── safety/page.tsx              # Safeguarding rules & confidential incident form
-│   │   ├── about/page.tsx               # Brand story, mission, and philosophy
-│   │   ├── contact/page.tsx             # Service desk, Telegram channels, and phone
-│   │   ├── privacy/page.tsx             # Privacy notice & Proclamation 1321/2024 deletion form
-│   │   ├── terms/page.tsx               # Terms of service (flagged for local legal review)
-│   │   ├── tutor-agreement/page.tsx     # Tutor Code of Conduct & child safeguarding protocol
-│   │   ├── fee-policy/page.tsx          # Transparent 60% placement fee policy
+│   │   │   ├── page.tsx                 # Public vacancy board with sub-city & subject search
+│   │   │   └── [code]/                  # Single vacancy detail, Telegram share & application form
 │   │   ├── admin/
-│   │   │   ├── page.tsx                 # Protected admin console (role verified on server)
-│   │   │   └── login/page.tsx           # Admin authentication gate with rate limiting
+│   │   │   ├── page.tsx                 # Protected admin management console
+│   │   │   └── login/page.tsx           # Administrator login with brute-force rate limiting
 │   │   └── api/
-│   │       ├── tutors/                  # Public approved profiles API
-│   │       ├── vacancies/               # Public active vacancies API with filters
-│   │       │   └── [code]/
-│   │       │       ├── route.ts         # Single vacancy endpoint (view counter)
-│   │       │       └── apply/route.ts   # Public vacancy application endpoint (rate limited)
-│   │       ├── tutor-apply/             # Public tutor application submission (rate limited)
-│   │       ├── request-tutor/           # Public parent request submission (rate limited)
-│   │       ├── complaints/              # Public safeguarding incident reporting (rate limited)
-│   │       ├── privacy-request/         # Public data deletion/rectification requests (rate limited)
-│   │       └── admin/
-│   │           ├── documents/           # Private document gateway (signed URLs & traversal guard)
-│   │           ├── export/              # CSV export (Placements, Requests, Tutors, Vacancies, Applicants)
-│   │           ├── metrics/             # Platform KPIs, vacancy view metrics & storage health
-│   │           ├── vacancies/           # Admin vacancy CRUD, status transitions
-│   │           │   ├── convert-request/ # 1-click sanitized conversion from parent requests
-│   │           │   └── [id]/
-│   │           │       ├── applications/# Vacancy applicant review & stage transitions
-│   │           │       └── telegram/    # Copy-ready text & bot broadcast dispatcher
-│   │           └── placements/          # 60% fee agreements & duplicate placement guard
+│   │       ├── telegram/webhook/        # Official Telegram Bot HTTPS webhook handler
+│   │       ├── admin/
+│   │       │   ├── telegram/publish/    # Channel broadcast & subscriber alert dispatcher
+│   │       │   ├── telegram/studio/     # Content Studio template engine & metrics
+│   │       │   ├── telegram/webhook-setup/ # Webhook status & registration API
+│   │       │   ├── matches/             # Algorithmic candidate matching & ranking
+│   │       │   ├── tutors/[id]/availability/ # Weekly schedule inspector & coordinator verification
+│   │       │   └── vacancies/           # Vacancy management & Telegram broadcast
+│   │       └── tutors/portal/           # Tutor schedule portal status & availability API
 │   ├── components/
-│   │   ├── Navbar.tsx                   # Responsive navigation with Vacancies link & mobile drawer
-│   │   ├── Footer.tsx                   # Footer with legal links & Telegram channels
-│   │   ├── Icons.tsx                    # Lightweight accessible SVG icons
-│   │   ├── TutorCard.tsx                # Verified tutor card component
-│   │   ├── VacancyCard.tsx              # Responsive vacancy card with specs and status badges
-│   │   ├── VacancyApplicationForm.tsx   # Interactive client application form with validation
-│   │   ├── TutorApplicationForm.tsx     # 5-step form with draft auto-save
-│   │   ├── ParentRequestForm.tsx        # Guided parent request form
-│   │   └── admin/
-│   │       └── AdminDashboard.tsx       # Operator command center (Storage badge, Tutors, Requests, Vacancies, Placements)
+│   │   ├── admin/
+│   │   │   ├── AdminDashboard.tsx       # Core admin console (Tutors, Requests, Vacancies, Placements)
+│   │   │   ├── TelegramStudioPanel.tsx  # 12-template marketing studio & broadcast control
+│   │   │   └── TelegramGraphicCanvas.tsx# 1080x1080 canvas graphic generator & PNG exporter
+│   │   ├── ParentRequestForm.tsx        # 4-step wizard with schedule windows & safety agreement
+│   │   ├── TutorAvailabilityEditor.tsx  # Mobile-first weekly schedule & blackout dates editor
+│   │   └── Navbar.tsx                   # Header with quick links & Tutor Portal access
+│   ├── db/migrations/
+│   │   ├── 001_bruh_tesfa_schema.sql    # Core tables, RLS policies, and indexes
+│   │   ├── 002_bruh_tesfa_vacancies.sql # Vacancies & Telegram tracking
+│   │   ├── 003_bruh_tesfa_refinements.sql # View tracking & placement agreements
+│   │   ├── 004_bruh_tesfa_availability.sql # JSONB weekly intervals & blackout dates
+│   │   └── 005_bruh_tesfa_telegram.sql  # Telegram subscribers, alert preferences & broadcast logs
 │   ├── lib/
-│   │   ├── types.ts                     # TypeScript domain models & schemas
-│   │   ├── constants.ts                 # Taxonomies (sub-cities, subjects, curricula, grades)
-│   │   ├── auth.ts                      # HMAC-SHA256 session token creation & timing-safe verification
-│   │   ├── rate-limit.ts                # Sliding-window in-memory server rate limiter
-│   │   ├── telegram.ts                  # Telegram announcement generator & Bot API publisher
-│   │   ├── availability.ts              # Structured weekly availability, time intervals & schedule matching
-│   │   ├── matching.ts                  # Schedule-aware candidate matching engine (0-100% scoring)
-│   │   ├── fees.ts                      # 60% placement commission calculation
-│   │   └── db/
-│   │       ├── seed.ts                  # Realistic Addis Ababa seed data (Tutors & Vacancies)
-│   │       ├── supabase.ts              # Supabase client manager & production fail-safe error
-│   │       └── storage.ts               # Unified Data Access Layer (Atomic local + Supabase)
-│   └── db/
-│       └── migrations/
-│           ├── 001_bruh_tesfa_schema.sql      # Core platform schema (Tutors, Requests, Placements)
-│           ├── 002_bruh_tesfa_vacancies.sql   # Vacancies and vacancy applications schema
-│           ├── 003_bruh_tesfa_refinements.sql # Student count, partial indexes, and RLS policies
-│           └── 004_bruh_tesfa_availability.sql # Weekly intervals, blackout dates, and schedule preferences
-├── tests/
-│   ├── fees.test.mjs                          # Placement fee math & edge cases
-│   ├── matching.test.mjs                      # Match scoring & unapproved tutor exclusion
-│   ├── storage-and-security.test.mjs          # Public/private isolation & status transitions
-│   ├── security-and-validation.test.mjs       # Malformed input & boundary tests
-│   ├── vacancies.test.mjs                     # Vacancy CRUD, sanitization, duplicate prevention, Telegram text
-│   ├── security-auth-and-persistence.test.mjs # HMAC-SHA256, rate limiting, persistence guards, traversal guards
-│   └── availability-and-scheduling.test.mjs   # Timezones, intervals, overlaps, blackouts, schedule matching & portal auth
-├── docs/
-│   └── 30-DAY-LAUNCH-PLAYBOOK.md              # Operator go-to-market plan
-├── .env.example                               # Environment configuration template
-├── .env.local                                 # Local development configuration
-└── package.json
+│   │   ├── telegram.ts                  # Telegram Bot API client, webhook router & 12 templates
+│   │   ├── availability.ts              # 24-hr time parsing, interval overlap & schedule scoring
+│   │   ├── matching.ts                  # Algorithmic candidate matching engine
+│   │   ├── fees.ts                      # 60% placement fee engine
+│   │   └── db/storage.ts                # Unified persistent storage interface
+├── scripts/
+│   └── setup-telegram-webhook.mjs       # CLI tool for Telegram webhook inspection & registration
+└── tests/
+    ├── fees.test.mjs                    # Placement commission calculations
+    ├── matching.test.mjs                # Subject, sub-city, and schedule matching
+    ├── availability-and-scheduling.test.mjs # Schedule intervals, timezones, portal authentication
+    ├── telegram-bot-and-studio.test.mjs # Webhook security, bot commands, alert engine, studio templates
+    ├── vacancies.test.mjs               # Vacancy state transitions and duplicate prevention
+    ├── security-and-validation.test.mjs # Timing-safe auth, rate limiting, persistence fail-safe
+    └── storage-and-security.test.mjs    # Directory traversal prevention & RLS isolation
 ```
 
 ---
 
-## 3. Quick Start & Local Setup
+## 3. Quick Start & Setup
 
-### 1. Prerequisites
-- Node.js 20+ (Node 24 recommended)
-- npm 10+
-
-### 2. Installation
+### 1. Install Dependencies
 ```bash
-# Navigate to project workspace
-cd "01_Active_Workspaces/bruh-tesfa"
-
-# Install dependencies
 npm install
 ```
 
-### 3. Environment Configuration
-Copy `.env.example` to `.env.local` for local execution:
-```env
-# Persistence Mode: 'local' for zero-config offline development, 'supabase' for cloud
+### 2. Environment Configuration
+Create `.env.local` using `.env.example` as a template:
+```ini
+# Local zero-credential storage mode
 PERSISTENCE_MODE=local
 
-# Administration
+# Application Base URL
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Administrator Security
 ADMIN_INITIAL_PASSWORD=BruhTesfaAdmin2026!
 ADMIN_JWT_SECRET=bruh-tesfa-secure-production-secret-addis-2026
 
-# Brand & Community URLs
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_TELEGRAM_URL=https://t.me/bruhtesfa_community
-NEXT_PUBLIC_TELEGRAM_CHANNEL_URL=https://t.me/bruhtesfa_announcements
-NEXT_PUBLIC_SUPPORT_PHONE=+251 91 123 4567
-NEXT_PUBLIC_SUPPORT_EMAIL=contact@bruhtesfa.com
+# Telegram Bot API (Optional for automated broadcasting)
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+TELEGRAM_WEBHOOK_SECRET=your_secret_token_here
+TELEGRAM_CHANNEL_ID=@bruhtesfa_announcements
+TELEGRAM_CHANNEL_USERNAME=bruhtesfa_announcements
 ```
 
-### 4. Running Automated Tests
+### 3. Running Automated Tests
 ```bash
 npm test
 ```
-Executes all **44 automated tests** covering:
-- Mathematical 60% placement fee calculations and single-lesson boundaries.
-- Schedule-aware candidate matching algorithm and unapproved tutor exclusion.
-- Structured availability intervals, automatic overlap resolution, and Africa/Addis_Ababa timezone handling.
-- Date-specific blackout dates and temporary unavailability tracking.
-- Tutor self-service portal authentication (by reference number and phone) with strict zero-leakage of internal admin notes.
-- Public/private data isolation (ensuring phone numbers and national IDs are never exposed).
-- Cryptographic HMAC-SHA256 session generation, expiration, and constant-time password verification.
-- Sliding-window brute-force rate limiter (blocking attempts exceeding limit).
-- Production persistence fail-safe guard (`ProductionStorageConfigurationError`).
-- Duplicate placement agreement blocking.
-- Path traversal and malicious filename rejection.
-- Vacancy application lifecycle and conditional re-application after withdrawal.
-- Telegram announcement text generation complying with safeguarding standards.
+Executes all **56 automated tests** across 8 test suites with zero failures:
+- Telegram webhook signature verification with `crypto.timingSafeEqual`.
+- Bot command routing (`/start`, `/help`, `/find`, `/vacancies`, `/teach`, `/alerts`, `/contact`, `/stop`).
+- Interactive button callbacks (toggling subjects, sub-cities, and formats).
+- Opt-in vacancy alert matching (matching subjects, sub-cities, and online formats).
+- 12 strategic marketing templates in Content Studio (sanitized with zero private family data leaks).
+- Broadcast idempotency and duplicate channel post prevention.
+- Growth metrics and Telegram attribution tracking.
+- Structured availability intervals, overlap resolution, and Africa/Addis_Ababa timezone handling.
+- Tutor self-service portal authentication (by reference number and phone).
+- Cryptographic HMAC-SHA256 session generation and brute-force rate limiting.
+- 60% placement fee engine calculations.
 
-### 5. Running the Development Server
+### 4. Running the Development Server
 ```bash
 npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 6. Building for Production
+---
+
+## 4. Telegram Integration & Bot Setup Guide
+
+### Step 1: Create Your Bot with @BotFather
+1. Open Telegram and search for [@BotFather](https://t.me/BotFather).
+2. Send `/newbot`.
+3. Choose a friendly name (e.g. `Bruh Tesfa Assistant`).
+4. Choose a username ending in `bot` (e.g. `BruhTesfaBot`).
+5. Copy the generated **HTTP API token**. Set it as `TELEGRAM_BOT_TOKEN` in your environment.
+6. Send `/setprivacy` to `@BotFather` &rarr; select your bot &rarr; choose **Enable** (keeps group privacy mode enabled so the bot never scrapes unrelated group messages).
+
+### Step 2: Configure Your Announcement Channel
+1. Create a public Telegram channel (e.g. `@bruhtesfa_announcements`).
+2. Go to **Channel Settings &rarr; Administrators &rarr; Add Administrator**.
+3. Search for your bot and add it with **"Post Messages"** permission.
+4. Set `TELEGRAM_CHANNEL_ID` in your environment (e.g. `@bruhtesfa_announcements` or numeric ID `-100...`).
+
+### Step 3: Register the HTTPS Webhook
+Once your application is deployed to HTTPS (e.g. on Vercel), register the webhook with Telegram using the included CLI tool:
 ```bash
-npm run build
+# Check current webhook status
+node scripts/setup-telegram-webhook.mjs status
+
+# Register your deployed domain
+node scripts/setup-telegram-webhook.mjs set https://your-domain.vercel.app
+
+# Unregister webhook if needed
+node scripts/setup-telegram-webhook.mjs delete
 ```
-Compiles all 40+ routes with Next.js Turbopack, verifies TypeScript types, and creates optimized production bundles with zero errors.
+*(Alternatively, in the Admin Console under the **Telegram Studio** tab, click **"Register Webhook"**).*
 
 ---
 
-## 4. Operator Console & Administrative Workflows
-
-1. Navigate to [http://localhost:3000/admin/login](http://localhost:3000/admin/login).
-2. Enter the administrator key: `BruhTesfaAdmin2026!`
-3. You will enter the **Staff Management Console**:
-   - **Live Storage Indicator**: A badge at the top of the dashboard displays whether persistence is running on `Supabase PostgreSQL` or `Local Engine (Development)`.
-   - **KPI Overview**: Real-time operational metrics including total vacancies, active open vacancies, total vacancy applicants, and tracked views.
-   - **Tutor Applications**: Review qualifications, phone numbers, and inspect private documents securely via `/api/admin/documents`.
-   - **Parent Requests**: Inspect incoming tutoring requests. Use the **"Draft Vacancy"** button on any genuine request to automatically strip sensitive family identifiers and generate a moderated vacancy draft.
-   - **Tutoring Vacancies**:
-     - Filter vacancies by status (`all`, `open`, `closing_soon`, `filled`, `closed`, `draft`, `archived`) or search by subject/sub-city.
-     - Click **"Telegram"** to open the copy-ready announcement generator. Click "Copy Announcement Text" to paste directly into your Telegram channel, or use the "Bot Auto-Publish" button if API credentials are configured.
-     - Click **"Applicants ({count})"** to view all tutor submissions for that specific vacancy, inspect their qualifications, experience, and cover notes, and transition their stage (`submitted` → `under_review` → `shortlisted` → `interview_discussion` → `selected`).
-     - Selecting a candidate automatically marks the vacancy as `filled`.
-   - **Candidate Matcher**: Algorithmic 0–100% match scoring engine against approved tutors.
-   - **Placements & 60% Fees**: Create official placement agreements, view locked 60% first-month commission calculations, and reconcile Telebirr / CBE payments. Rapid double-clicks are rejected to prevent duplicate placements.
-   - **Safeguarding**: Review and resolve confidential incident reports.
-   - **Data Exports**: Download sanitized CSV files of placements, parent requests, tutor applications, vacancies, and vacancy applicants.
+## 5. Content Studio & Branded Graphic Generator
+Inside the Admin Console (`/admin`) under the **Telegram Studio & Growth** tab:
+1. **Choose a Template**: Select from 12 strategic marketing presets (Single Vacancy, Weekly Roundup, Tutor Recruitment, Parent Finding, SQ3R Study Tips, Safeguarding, FAQs, etc.).
+2. **Select Real Vacancy**: Connect live vacancies from the database to automatically inject codes, subjects, and pay rates.
+3. **Language Drafts**: Switch between English and optional Amharic promotional drafts.
+4. **Edit Caption**: Customize the announcement text in real-time.
+5. **Download Branded Graphic (PNG)**: Click the graphic export button to download a high-contrast 1080x1080 square poster ready for Telegram or Instagram.
+6. **Publish / Alert**: Click **"Publish to Channel"** to dispatch the announcement, and check **"Notify Opt-in Subscribers"** to alert matching tutors automatically.
 
 ---
 
-## 5. Database Migrations (Supabase PostgreSQL)
-
-When deploying to cloud Supabase, execute migrations in exact numerical sequence via the Supabase SQL Editor:
-
-1. `src/db/migrations/001_bruh_tesfa_schema.sql`:
-   - Creates core tables: `tutor_applications`, `tutor_public_profiles`, `parent_requests`, `candidate_matches`, `placements`, `complaints`, `fee_configurations`, `audit_logs`, and `data_deletion_requests`.
-   - Enables Row Level Security (RLS) on all tables with public read policies for verified tutor profiles.
-2. `src/db/migrations/002_bruh_tesfa_vacancies.sql`:
-   - Creates `tutoring_vacancies` and `vacancy_applications` tables.
-   - Configures public read policies for open/closing-soon vacancies.
-3. `src/db/migrations/003_bruh_tesfa_refinements.sql`:
-   - Adds `student_count INT DEFAULT 1` to `parent_requests`.
-   - Replaces static unique constraints on `vacancy_applications` with partial unique indexes `WHERE status NOT IN ('withdrawn', 'not_selected')` to permit legitimate re-application after withdrawal.
-   - Adds unique constraint `idx_unique_placement_per_match` on `placements(match_id)` to block duplicate placement creation.
-   - Adds query performance indexes and admin RLS select policies.
-4. `src/db/migrations/004_bruh_tesfa_availability.sql`:
-   - Adds structured JSONB `weekly_availability`, `blackout_dates`, and `availability_confirmed_at` to `tutor_applications`.
-   - Adds `preferred_days`, `preferred_time_windows`, and `schedule_flexibility` to `parent_requests`.
-   - Installs GIN performance indexes for weekly availability and blackout queries.
-
-### Storage Buckets Setup
-In the Supabase Storage dashboard:
-- Create private bucket: `tutor-documents` (stores national IDs, degrees, certificates; served via signed URLs).
-- Create public bucket: `tutor-public-avatars` (stores verified tutor headshots).
-
----
-
-## 6. Telegram Distribution Guide
-
-### Manual Copy-Ready Workflow (Zero API Token Required)
-1. In the Admin Console under the **Tutoring Vacancies** tab, click **Telegram** next to any vacancy.
-2. The modal generates a beautifully structured announcement complying with Ethiopian tutoring conventions:
-   - Emojis, Vacancy Code, Grade & Level, Curriculum, Subjects, Sub-City.
-   - Session duration, hours per lesson, pay rate in ETB, and minimum qualifications.
-   - Mandatory Safeguarding notice citing Ethiopian Proclamation No. 1321/2024.
-   - Trackable application URL with campaign tags (`?utm_source=telegram&utm_campaign=vacancy_alert`).
-3. Click **"Copy Announcement Text"** and paste directly into your Telegram channel or group.
-
-### Automated Telegram Bot API Broadcast (Optional)
-To enable one-click publishing directly from the dashboard:
-1. Create a bot with [@BotFather](https://t.me/BotFather) and copy the HTTP API token.
-2. Add your bot as an Administrator with "Post Messages" permission to your public Telegram channel (e.g. `@bruhtesfa_announcements`).
-3. Set in `.env.local`:
-   ```env
-   TELEGRAM_BOT_TOKEN="your_bot_token_here"
-   TELEGRAM_CHANNEL_ID="@your_channel_username"
-   ```
-4. Click **"Bot Auto-Publish"** in the announcement modal. The system will broadcast the announcement, store the Telegram message ID, and update publication status in the database.
-
----
-
-## 7. Child Safeguarding & Legal Notice
-- **Parent Presence Requirement**: Under Ethiopian Child Rights and Protection standards (Proc. No. 1321/2024), all in-person tutoring sessions arranged through Bruh Tesfa must take place with an adult parent or guardian present in the residence.
-- **Data Minimization**: Bruh Tesfa never publicly displays a student's full name, telephone number, or specific residential house address.
+## 6. Safeguarding Commitment
+In compliance with the **Ethiopian Personal Data Protection Proclamation (Proc. No. 1321/2024)**:
+- Tutors must undergo national ID and academic credential verification before approval.
+- In-person home tutoring must always take place with an adult parent or guardian present in the residence.
+- Private family contact details and residence addresses are never published in public vacancies or Telegram broadcasts.

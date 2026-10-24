@@ -28,6 +28,8 @@ import {
   VacancyStatus,
   VacancyApplicationStatus,
   WeeklyAvailability,
+  TelegramSubscriber,
+  TelegramBroadcastLog,
 } from '../types';
 import {
   mergeOverlappingIntervals,
@@ -43,6 +45,7 @@ import {
   INITIAL_FEE_CONFIG,
   INITIAL_VACANCIES,
   INITIAL_VACANCY_APPLICATIONS,
+  INITIAL_TELEGRAM_SUBSCRIBERS,
 } from './seed';
 import { evaluateCandidateMatch, rankCandidatesForRequest } from '../matching';
 import { calculatePlacementFee } from '../fees';
@@ -59,6 +62,8 @@ interface DatabaseSchema {
   data_deletion_requests: DataDeletionRequest[];
   vacancies: TutoringVacancy[];
   vacancy_applications: VacancyApplication[];
+  telegram_subscribers: TelegramSubscriber[];
+  telegram_broadcast_logs: TelegramBroadcastLog[];
 }
 
 // Local persistent file location
@@ -95,6 +100,12 @@ function loadDatabase(): DatabaseSchema {
           }
           if (!memoryDb!.vacancy_applications) {
             memoryDb!.vacancy_applications = [...INITIAL_VACANCY_APPLICATIONS];
+          }
+          if (!memoryDb!.telegram_subscribers) {
+            memoryDb!.telegram_subscribers = [...INITIAL_TELEGRAM_SUBSCRIBERS];
+          }
+          if (!memoryDb!.telegram_broadcast_logs) {
+            memoryDb!.telegram_broadcast_logs = [];
           }
           return memoryDb!;
         }
@@ -184,6 +195,8 @@ function loadDatabase(): DatabaseSchema {
     data_deletion_requests: [],
     vacancies: [...INITIAL_VACANCIES],
     vacancy_applications: [...INITIAL_VACANCY_APPLICATIONS],
+    telegram_subscribers: [...INITIAL_TELEGRAM_SUBSCRIBERS],
+    telegram_broadcast_logs: [],
   };
 
   saveDatabase(memoryDb);
@@ -476,7 +489,20 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
   const totalVacancyApplications = db.vacancy_applications ? db.vacancy_applications.length : 0;
   const totalVacancyViews = db.vacancies ? db.vacancies.reduce((sum, v) => sum + (v.view_count || 0), 0) : 0;
 
+  const telegramSubscribers = db.telegram_subscribers ? db.telegram_subscribers.length : 0;
+  const activeTelegramSubscribers = db.telegram_subscribers ? db.telegram_subscribers.filter((s) => s.is_active).length : 0;
+  const telegramBroadcastsCount = db.telegram_broadcast_logs ? db.telegram_broadcast_logs.length : 0;
+  const telegramAttributedRequests = db.parent_requests.filter((r) => r.utm_source === 'telegram' || (r.referral_source && r.referral_source.toLowerCase().includes('telegram'))).length;
+  const telegramAttributedTutors = db.tutors.filter((t) => t.utm_source === 'telegram' || (t.referral_source && t.referral_source.toLowerCase().includes('telegram'))).length;
+  const telegramAttributedVacancyApps = db.vacancy_applications ? db.vacancy_applications.filter((v) => v.utm_source === 'telegram' || (v.referral_source && v.referral_source.toLowerCase().includes('telegram'))).length : 0;
+
   return {
+    telegramSubscribers,
+    activeTelegramSubscribers,
+    telegramBroadcastsCount,
+    telegramAttributedRequests,
+    telegramAttributedTutors,
+    telegramAttributedVacancyApps,
     totalTutorApplications,
     pendingTutorReviews,
     approvedTutors,
@@ -1444,5 +1470,164 @@ export async function lookupTutorPortalStatus(
       created_at: tutor.created_at,
       updated_at: tutor.updated_at,
     },
+  };
+}
+
+// =============================================================================
+// TELEGRAM BOT SUBSCRIBERS & BROADCAST LOGS
+// =============================================================================
+
+export async function getTelegramSubscribers(): Promise<TelegramSubscriber[]> {
+  const db = loadDatabase();
+  return db.telegram_subscribers || [];
+}
+
+export async function getActiveTelegramSubscribers(): Promise<TelegramSubscriber[]> {
+  const db = loadDatabase();
+  return (db.telegram_subscribers || []).filter((s) => s.is_active);
+}
+
+export async function getTelegramSubscriber(chatId: number): Promise<TelegramSubscriber | null> {
+  const db = loadDatabase();
+  return (db.telegram_subscribers || []).find((s) => s.chat_id === chatId) || null;
+}
+
+export async function upsertTelegramSubscriber(data: {
+  chat_id: number;
+  username?: string;
+  first_name?: string;
+  is_active?: boolean;
+  subjects?: string[];
+  grade_levels?: string[];
+  sub_cities?: string[];
+  teaching_format?: 'in_person' | 'online' | 'either';
+}): Promise<TelegramSubscriber> {
+  const db = loadDatabase();
+  if (!db.telegram_subscribers) db.telegram_subscribers = [];
+
+  const existingIdx = db.telegram_subscribers.findIndex((s) => s.chat_id === data.chat_id);
+  const now = new Date().toISOString();
+
+  if (existingIdx >= 0) {
+    const existing = db.telegram_subscribers[existingIdx];
+    const updated: TelegramSubscriber = {
+      ...existing,
+      username: data.username !== undefined ? data.username : existing.username,
+      first_name: data.first_name !== undefined ? data.first_name : existing.first_name,
+      is_active: data.is_active !== undefined ? data.is_active : existing.is_active,
+      subjects: data.subjects !== undefined ? data.subjects : existing.subjects,
+      grade_levels: data.grade_levels !== undefined ? data.grade_levels : existing.grade_levels,
+      sub_cities: data.sub_cities !== undefined ? data.sub_cities : existing.sub_cities,
+      teaching_format: data.teaching_format !== undefined ? data.teaching_format : existing.teaching_format,
+      updated_at: now,
+    };
+    db.telegram_subscribers[existingIdx] = updated;
+    saveDatabase(db);
+    return updated;
+  } else {
+    const newSub: TelegramSubscriber = {
+      id: 'tsub-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      chat_id: data.chat_id,
+      username: data.username,
+      first_name: data.first_name,
+      is_active: data.is_active !== undefined ? data.is_active : true,
+      subjects: data.subjects || [],
+      grade_levels: data.grade_levels || [],
+      sub_cities: data.sub_cities || [],
+      teaching_format: data.teaching_format || 'either',
+      created_at: now,
+      updated_at: now,
+    };
+    db.telegram_subscribers.push(newSub);
+    saveDatabase(db);
+    return newSub;
+  }
+}
+
+export async function unsubscribeTelegramSubscriber(chatId: number): Promise<boolean> {
+  const db = loadDatabase();
+  if (!db.telegram_subscribers) return false;
+
+  const sub = db.telegram_subscribers.find((s) => s.chat_id === chatId);
+  if (!sub) return false;
+
+  sub.is_active = false;
+  sub.updated_at = new Date().toISOString();
+  saveDatabase(db);
+  return true;
+}
+
+export async function recordTelegramBroadcastLog(log: Omit<TelegramBroadcastLog, 'id' | 'created_at'>): Promise<TelegramBroadcastLog> {
+  const db = loadDatabase();
+  if (!db.telegram_broadcast_logs) db.telegram_broadcast_logs = [];
+
+  const newLog: TelegramBroadcastLog = {
+    id: 'tlog-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+    ...log,
+    created_at: new Date().toISOString(),
+  };
+
+  db.telegram_broadcast_logs.push(newLog);
+
+  if (log.vacancy_id && log.status === 'published') {
+    const vac = (db.vacancies || []).find((v) => v.id === log.vacancy_id);
+    if (vac) {
+      vac.telegram_message_id = log.message_id;
+      vac.telegram_published_at = newLog.created_at;
+    }
+  }
+
+  saveDatabase(db);
+  return newLog;
+}
+
+export async function getTelegramBroadcastLogs(vacancyId?: string): Promise<TelegramBroadcastLog[]> {
+  const db = loadDatabase();
+  const logs = db.telegram_broadcast_logs || [];
+  if (vacancyId) {
+    return logs.filter((l) => l.vacancy_id === vacancyId);
+  }
+  return [...logs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
+
+export async function hasVacancyBeenBroadcast(vacancyId: string, channelId: string): Promise<boolean> {
+  const db = loadDatabase();
+  const logs = db.telegram_broadcast_logs || [];
+  return logs.some(
+    (l) => l.vacancy_id === vacancyId && l.channel_id === channelId && l.status === 'published'
+  );
+}
+
+export async function getTelegramMarketingMetrics(): Promise<{
+  totalSubscribers: number;
+  activeSubscribers: number;
+  totalBroadcasts: number;
+  telegramAttributedTutors: number;
+  telegramAttributedParents: number;
+  telegramAttributedVacancyApps: number;
+}> {
+  const db = loadDatabase();
+  const subs = db.telegram_subscribers || [];
+  const broadcasts = db.telegram_broadcast_logs || [];
+
+  const telegramAttributedTutors = db.tutors.filter(
+    (t) => t.utm_source === 'telegram' || (t.referral_source && t.referral_source.toLowerCase().includes('telegram'))
+  ).length;
+
+  const telegramAttributedParents = db.parent_requests.filter(
+    (r) => r.utm_source === 'telegram' || (r.referral_source && r.referral_source.toLowerCase().includes('telegram'))
+  ).length;
+
+  const telegramAttributedVacancyApps = (db.vacancy_applications || []).filter(
+    (v) => v.utm_source === 'telegram' || (v.referral_source && v.referral_source.toLowerCase().includes('telegram'))
+  ).length;
+
+  return {
+    totalSubscribers: subs.length,
+    activeSubscribers: subs.filter((s) => s.is_active).length,
+    totalBroadcasts: broadcasts.length,
+    telegramAttributedTutors,
+    telegramAttributedParents,
+    telegramAttributedVacancyApps,
   };
 }

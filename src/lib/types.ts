@@ -315,6 +315,13 @@ export interface AdminMetrics {
   openVacancies: number;
   totalVacancyApplications: number;
   totalVacancyViews: number;
+  // Telegram & Growth stats
+  telegramSubscribers?: number;
+  activeTelegramSubscribers?: number;
+  telegramBroadcastsCount?: number;
+  telegramAttributedRequests?: number;
+  telegramAttributedTutors?: number;
+  telegramAttributedVacancyApps?: number;
 }
 
 export type VacancyStatus = 
@@ -411,4 +418,44 @@ export interface VacancyApplication {
   
   created_at: string;
   updated_at: string;
+}
+
+export interface TelegramSubscriber {
+  id: string;
+  chat_id: number;
+  username?: string;
+  first_name?: string;
+  is_active: boolean;
+  subjects: string[];
+  grade_levels: string[];
+  sub_cities: string[];
+  teaching_format: 'in_person' | 'online' | 'either';
+  created_at: string;
+  updated_at: string;
+  last_alert_sent_at?: string;
+}
+
+export interface TelegramBroadcastLog {
+  id: string;
+  vacancy_id?: string;
+  channel_id: string;
+  message_id: string;
+  broadcast_type: 'channel_announcement' | 'subscriber_alert' | 'custom_broadcast';
+  recipient_count: number;
+  status: 'published' | 'failed' | 'simulated';
+  caption_snippet?: string;
+  error_message?: string;
+  created_at: string;
+}
+
+export interface TelegramStudioTemplate {
+  id: string;
+  key: string;
+  title: string;
+  category: 'vacancy' | 'tutor_recruitment' | 'parent_promo' | 'branding_educational';
+  default_caption_en: string;
+  default_caption_am?: string;
+  call_to_action: string;
+  target_url_path: string;
+  default_campaign: string;
 }
