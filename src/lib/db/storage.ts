@@ -6,7 +6,18 @@
 
 import fs from 'fs';
 import path from 'path';
-import { getSupabaseClient, getStorageProviderInfo } from './supabase';
+import { getSupabaseClient, getStorageProviderInfo, ProductionStorageConfigurationError } from './supabase';
+
+function getSafeSupabaseClient() {
+  try {
+    return getSupabaseClient();
+  } catch (err) {
+    if (err instanceof ProductionStorageConfigurationError) {
+      return null;
+    }
+    throw err;
+  }
+}
 export { getStorageProviderInfo };
 import {
   TutorApplication,
@@ -235,7 +246,7 @@ export async function getPublicTutors(filters?: {
   subCity?: string;
   search?: string;
 }): Promise<TutorPublicProfile[]> {
-  const supabase = getSupabaseClient();
+  const supabase = getSafeSupabaseClient();
   if (supabase) {
     let query = supabase.from('tutor_public_profiles').select('*').eq('is_verified', true);
     if (filters?.subject) query = query.contains('subjects', [filters.subject]);
@@ -291,7 +302,7 @@ export async function getPublicTutors(filters?: {
 }
 
 export async function getPublicTutorBySlug(slug: string): Promise<TutorPublicProfile | null> {
-  const supabase = getSupabaseClient();
+  const supabase = getSafeSupabaseClient();
   if (supabase) {
     const { data, error } = await supabase
       .from('tutor_public_profiles')
@@ -315,7 +326,7 @@ export async function getPublicTutorBySlug(slug: string): Promise<TutorPublicPro
 export async function submitTutorApplication(
   data: Omit<TutorApplication, 'id' | 'reference_number' | 'status' | 'created_at' | 'updated_at'>
 ): Promise<{ success: boolean; reference_number: string; id: string }> {
-  const supabase = getSupabaseClient();
+  const supabase = getSafeSupabaseClient();
   if (supabase) {
     const seq = Math.floor(1000 + Math.random() * 9000);
     const reference_number = `BT-TUT-2026-${seq}`;
@@ -368,7 +379,7 @@ export async function submitTutorApplication(
 export async function submitParentRequest(
   data: Omit<ParentRequest, 'id' | 'reference_number' | 'status' | 'created_at' | 'updated_at'>
 ): Promise<{ success: boolean; reference_number: string; id: string }> {
-  const supabase = getSupabaseClient();
+  const supabase = getSafeSupabaseClient();
   if (supabase) {
     const seq = Math.floor(1000 + Math.random() * 9000);
     const reference_number = `BT-REQ-2026-${seq}`;
@@ -873,7 +884,7 @@ export async function getPublicVacancies(filters?: {
   minRate?: number;
   search?: string;
 }): Promise<TutoringVacancy[]> {
-  const supabase = getSupabaseClient();
+  const supabase = getSafeSupabaseClient();
   if (supabase) {
     let query = supabase
       .from('tutoring_vacancies')
@@ -938,7 +949,7 @@ export async function getPublicVacancies(filters?: {
 }
 
 export async function getPublicVacancyByCode(code: string, incrementView: boolean = true): Promise<TutoringVacancy | null> {
-  const supabase = getSupabaseClient();
+  const supabase = getSafeSupabaseClient();
   if (supabase) {
     const { data, error } = await supabase
       .from('tutoring_vacancies')
@@ -972,7 +983,7 @@ export async function getPublicVacancyByCode(code: string, incrementView: boolea
 export async function submitVacancyApplication(
   data: Omit<VacancyApplication, 'id' | 'status' | 'created_at' | 'updated_at'>
 ): Promise<{ success: boolean; id: string; reference_number: string }> {
-  const supabase = getSupabaseClient();
+  const supabase = getSafeSupabaseClient();
   if (supabase) {
     const { data: vac, error: vacErr } = await supabase
       .from('tutoring_vacancies')
