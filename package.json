@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test tests/fees.test.mjs tests/matching.test.mjs tests/storage-and-security.test.mjs tests/security-and-validation.test.mjs tests/vacancies.test.mjs tests/security-auth-and-persistence.test.mjs"
+    "test": "tsx --test tests/fees.test.mjs tests/matching.test.mjs tests/storage-and-security.test.mjs tests/security-and-validation.test.mjs tests/vacancies.test.mjs tests/security-auth-and-persistence.test.mjs tests/availability-and-scheduling.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

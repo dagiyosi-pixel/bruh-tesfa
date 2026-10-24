@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { ParentRequest, TutorApplication, TutorPublicProfile, CandidateMatch, MatchBreakdown } from './types';
+import { evaluateScheduleCompatibility } from './availability';
 
 /**
  * Calculates a transparent, explainable compatibility score (0-100)
@@ -150,7 +151,27 @@ export function evaluateCandidateMatch(
     breakdown.reasons.push(`+2 pts: Exceeds specified family budget (${tutorRate} ETB/hr)`);
   }
 
-  const total_score = Math.min(
+  // 7. SCHEDULE COMPATIBILITY
+  const weeklyAvailability = 'weekly_availability' in tutor ? tutor.weekly_availability : undefined;
+  const legacyDays = 'available_days' in tutor ? tutor.available_days : undefined;
+
+  const scheduleResult = evaluateScheduleCompatibility(
+    {
+      preferred_days: request.preferred_days,
+      preferred_time_windows: request.preferred_time_windows,
+      schedule_flexibility: request.schedule_flexibility,
+      schedule_preference: request.schedule_preference,
+    },
+    weeklyAvailability,
+    legacyDays
+  );
+
+  breakdown.schedule_score = scheduleResult.score;
+  breakdown.schedule_status = scheduleResult.status;
+  breakdown.schedule_explanation = scheduleResult.explanation;
+  breakdown.reasons.push(scheduleResult.explanation);
+
+  let total_score = Math.min(
     100,
     breakdown.subject_score +
     breakdown.grade_score +
@@ -160,10 +181,16 @@ export function evaluateCandidateMatch(
     breakdown.budget_score
   );
 
+  // If a parent has strict schedule requirements and tutor conflicts, apply a sharp penalty
+  if (scheduleResult.status === 'conflict' && request.schedule_flexibility === 'strict_times') {
+    total_score = Math.max(0, total_score - 25);
+  }
+
   return {
     tutor,
     total_score,
     breakdown,
+    schedule_status: scheduleResult.status,
     is_eligible: true,
   };
 }
@@ -178,5 +205,12 @@ export function rankCandidatesForRequest(
   return tutors
     .map((tutor) => evaluateCandidateMatch(request, tutor))
     .filter((match) => match.is_eligible)
-    .sort((a, b) => b.total_score - a.total_score);
+    .sort((a, b) => {
+      if (b.total_score !== a.total_score) {
+        return b.total_score - a.total_score;
+      }
+      // Prefer compatible schedule over unknown/conflict
+      const statusWeight = (s?: string) => (s === 'compatible' ? 3 : s === 'partially_compatible' ? 2 : s === 'unknown' ? 1 : 0);
+      return statusWeight(b.schedule_status) - statusWeight(a.schedule_status);
+    });
 }

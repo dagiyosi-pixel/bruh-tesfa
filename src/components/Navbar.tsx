@@ -35,6 +35,13 @@ export default function Navbar() {
             <span className="font-medium">Active screening & placement across Addis Ababa</span>
           </div>
           <div className="flex items-center gap-3">
+            <Link
+              href="/tutors/schedule"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center py-2.5 rounded-xl font-medium text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200"
+            >
+              Tutor Portal & Schedule
+            </Link>
             <a
               href={DEFAULT_TELEGRAM_COMMUNITY_URL}
               target="_blank"
@@ -44,6 +51,10 @@ export default function Navbar() {
               <TelegramIcon className="w-3.5 h-3.5 text-sky-400" />
               <span>Telegram Community</span>
             </a>
+            <span className="text-slate-600 hidden sm:inline">|</span>
+            <Link href="/tutors/schedule" className="text-amber-400 hover:text-white hidden sm:inline text-[11px] font-semibold">
+              Tutor Portal
+            </Link>
             <span className="text-slate-600 hidden sm:inline">|</span>
             <Link href="/admin/login" className="text-slate-400 hover:text-white hidden sm:inline text-[11px]">
               Operator Login
@@ -155,6 +166,13 @@ export default function Navbar() {
               className="w-full text-center py-3 rounded-xl font-semibold text-white bg-amber-600 hover:bg-amber-700 shadow-sm"
             >
               Request a Tutor
+            </Link>
+            <Link
+              href="/tutors/schedule"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center py-2.5 rounded-xl font-medium text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200"
+            >
+              Tutor Portal & Schedule
             </Link>
             <a
               href={DEFAULT_TELEGRAM_COMMUNITY_URL}

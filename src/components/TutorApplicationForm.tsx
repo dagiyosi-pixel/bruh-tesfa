@@ -660,6 +660,64 @@ export default function TutorApplicationForm() {
 
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                Days of the Week You Can Teach
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
+                  const selected = formData.available_days.includes(day);
+                  return (
+                    <button
+                      type="button"
+                      key={day}
+                      onClick={() => toggleArrayItem('available_days', day)}
+                      className={`px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
+                        selected
+                          ? 'bg-amber-50 border-amber-500 text-amber-900 font-bold'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      {day}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                General Available Time Windows
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {[
+                  'Morning (09:00 - 12:00)',
+                  'Afternoon (14:00 - 17:00)',
+                  'Evening (17:30 - 20:30)',
+                  'Weekend Full Day (10:00 - 16:00)',
+                ].map((win) => {
+                  const selected = formData.available_time_windows.includes(win);
+                  return (
+                    <button
+                      type="button"
+                      key={win}
+                      onClick={() => toggleArrayItem('available_time_windows', win)}
+                      className={`p-2.5 rounded-xl border text-left text-xs font-medium transition-all ${
+                        selected
+                          ? 'bg-amber-50 border-amber-500 text-amber-900 font-bold'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      {win}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                You can configure exact start/end hours and blackout dates anytime in the Tutor Portal.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 Sub-Cities You Are Willing to Travel To (In-Person)
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">

@@ -108,7 +108,8 @@ bruh-tesfa/
 │   │   ├── auth.ts                      # HMAC-SHA256 session token creation & timing-safe verification
 │   │   ├── rate-limit.ts                # Sliding-window in-memory server rate limiter
 │   │   ├── telegram.ts                  # Telegram announcement generator & Bot API publisher
-│   │   ├── matching.ts                  # Algorithmic candidate match engine
+│   │   ├── availability.ts              # Structured weekly availability, time intervals & schedule matching
+│   │   ├── matching.ts                  # Schedule-aware candidate matching engine (0-100% scoring)
 │   │   ├── fees.ts                      # 60% placement commission calculation
 │   │   └── db/
 │   │       ├── seed.ts                  # Realistic Addis Ababa seed data (Tutors & Vacancies)
@@ -118,14 +119,16 @@ bruh-tesfa/
 │       └── migrations/
 │           ├── 001_bruh_tesfa_schema.sql      # Core platform schema (Tutors, Requests, Placements)
 │           ├── 002_bruh_tesfa_vacancies.sql   # Vacancies and vacancy applications schema
-│           └── 003_bruh_tesfa_refinements.sql # Student count, partial indexes, and RLS policies
+│           ├── 003_bruh_tesfa_refinements.sql # Student count, partial indexes, and RLS policies
+│           └── 004_bruh_tesfa_availability.sql # Weekly intervals, blackout dates, and schedule preferences
 ├── tests/
 │   ├── fees.test.mjs                          # Placement fee math & edge cases
 │   ├── matching.test.mjs                      # Match scoring & unapproved tutor exclusion
 │   ├── storage-and-security.test.mjs          # Public/private isolation & status transitions
 │   ├── security-and-validation.test.mjs       # Malformed input & boundary tests
 │   ├── vacancies.test.mjs                     # Vacancy CRUD, sanitization, duplicate prevention, Telegram text
-│   └── security-auth-and-persistence.test.mjs # HMAC-SHA256, rate limiting, persistence guards, traversal guards
+│   ├── security-auth-and-persistence.test.mjs # HMAC-SHA256, rate limiting, persistence guards, traversal guards
+│   └── availability-and-scheduling.test.mjs   # Timezones, intervals, overlaps, blackouts, schedule matching & portal auth
 ├── docs/
 │   └── 30-DAY-LAUNCH-PLAYBOOK.md              # Operator go-to-market plan
 ├── .env.example                               # Environment configuration template
@@ -172,9 +175,12 @@ NEXT_PUBLIC_SUPPORT_EMAIL=contact@bruhtesfa.com
 ```bash
 npm test
 ```
-Executes all **28 automated tests** covering:
+Executes all **44 automated tests** covering:
 - Mathematical 60% placement fee calculations and single-lesson boundaries.
-- Candidate matching algorithm and unapproved tutor exclusion.
+- Schedule-aware candidate matching algorithm and unapproved tutor exclusion.
+- Structured availability intervals, automatic overlap resolution, and Africa/Addis_Ababa timezone handling.
+- Date-specific blackout dates and temporary unavailability tracking.
+- Tutor self-service portal authentication (by reference number and phone) with strict zero-leakage of internal admin notes.
 - Public/private data isolation (ensuring phone numbers and national IDs are never exposed).
 - Cryptographic HMAC-SHA256 session generation, expiration, and constant-time password verification.
 - Sliding-window brute-force rate limiter (blocking attempts exceeding limit).
@@ -234,6 +240,10 @@ When deploying to cloud Supabase, execute migrations in exact numerical sequence
    - Replaces static unique constraints on `vacancy_applications` with partial unique indexes `WHERE status NOT IN ('withdrawn', 'not_selected')` to permit legitimate re-application after withdrawal.
    - Adds unique constraint `idx_unique_placement_per_match` on `placements(match_id)` to block duplicate placement creation.
    - Adds query performance indexes and admin RLS select policies.
+4. `src/db/migrations/004_bruh_tesfa_availability.sql`:
+   - Adds structured JSONB `weekly_availability`, `blackout_dates`, and `availability_confirmed_at` to `tutor_applications`.
+   - Adds `preferred_days`, `preferred_time_windows`, and `schedule_flexibility` to `parent_requests`.
+   - Installs GIN performance indexes for weekly availability and blackout queries.
 
 ### Storage Buckets Setup
 In the Supabase Storage dashboard:

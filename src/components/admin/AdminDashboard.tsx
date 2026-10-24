@@ -32,7 +32,16 @@ import {
   ArrowRightIcon,
   SlidersIcon,
   TelegramIcon,
+  ClockIcon,
 } from '../Icons';
+import {
+  getScheduleCompleteness,
+  formatDayIntervals,
+  DAYS_OF_WEEK,
+  DayOfWeek,
+  WeeklyAvailability,
+} from '@/lib/availability';
+import TutorAvailabilityEditor from '../TutorAvailabilityEditor';
 
 interface AdminDashboardProps {
   initialMetrics: AdminMetrics;
@@ -107,6 +116,13 @@ export default function AdminDashboard({
   const [matcherCandidates, setMatcherCandidates] = useState<CandidateMatch[]>([]);
   const [loadingCandidates, setLoadingCandidates] = useState(false);
   const [matcherRequest, setMatcherRequest] = useState<ParentRequest | null>(null);
+  const [selectedCandidatesToCompare, setSelectedCandidatesToCompare] = useState<CandidateMatch[]>([]);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+
+  // Availability Modal state
+  const [scheduleModalTutor, setScheduleModalTutor] = useState<TutorApplication | null>(null);
+  const [isEditingScheduleInModal, setIsEditingScheduleInModal] = useState(false);
+  const [isConfirmingTutorSchedule, setIsConfirmingTutorSchedule] = useState(false);
 
   // Placement creation modal
   const [newPlacementModal, setNewPlacementModal] = useState<{
@@ -207,6 +223,7 @@ export default function AdminDashboard({
 
   const handleFindCandidates = async (req: ParentRequest) => {
     setMatcherRequest(req);
+    setSelectedCandidatesToCompare([]);
     setLoadingCandidates(true);
     setMatcherCandidates([]);
     try {
@@ -220,6 +237,51 @@ export default function AdminDashboard({
     } finally {
       setLoadingCandidates(false);
     }
+  };
+
+  const handleConfirmTutorAvailability = async (
+    tutorId: string,
+    notes: string = 'Availability confirmed with tutor via phone'
+  ) => {
+    setIsConfirmingTutorSchedule(true);
+    try {
+      const res = await fetch(`/api/admin/tutors/${tutorId}/availability`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'confirm', notes }),
+      });
+      const data = await res.json();
+      if (data.success && data.tutor) {
+        setTutors((prev) => prev.map((t) => (t.id === tutorId ? data.tutor : t)));
+        if (scheduleModalTutor && scheduleModalTutor.id === tutorId) {
+          setScheduleModalTutor(data.tutor);
+        }
+        alert('Tutor availability verified and logged in audit trail!');
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsConfirmingTutorSchedule(false);
+    }
+  };
+
+  const handleSaveTutorScheduleInModal = async (
+    weeklyAvailability: WeeklyAvailability,
+    blackoutDates: string[]
+  ) => {
+    if (!scheduleModalTutor) return;
+    const res = await fetch(`/api/admin/tutors/${scheduleModalTutor.id}/availability`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'update', weeklyAvailability, blackoutDates }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Failed to update schedule');
+    }
+    setTutors((prev) => prev.map((t) => (t.id === scheduleModalTutor.id ? data.tutor : t)));
+    setScheduleModalTutor(data.tutor);
+    setIsEditingScheduleInModal(false);
   };
 
   const handleProposeMatch = async (tutorId: string, score: number) => {
@@ -781,51 +843,111 @@ export default function AdminDashboard({
                       <th className="p-3">Education & Major</th>
                       <th className="p-3">Subjects</th>
                       <th className="p-3">Rate</th>
+                      <th className="p-3">Schedule</th>
                       <th className="p-3">Status</th>
                       <th className="p-3 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {filteredTutors.map((t) => (
-                      <tr key={t.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="p-3 font-mono font-bold text-slate-800">{t.reference_number}</td>
-                        <td className="p-3 font-semibold text-slate-900">{t.full_legal_name}</td>
-                        <td className="p-3 text-slate-600">{t.public_display_name}</td>
-                        <td className="p-3 text-slate-600">{t.sub_city}</td>
-                        <td className="p-3 text-slate-600">
-                          {t.education_level} • {t.institution}
-                        </td>
-                        <td className="p-3 text-slate-600 max-w-[200px] truncate">{t.subjects.join(', ')}</td>
-                        <td className="p-3 font-bold text-slate-800">{t.hourly_rate_etb} ETB</td>
-                        <td className="p-3">
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                              t.status === 'approved'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : t.status === 'submitted'
-                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                : t.status === 'under_review'
-                                ? 'bg-sky-50 text-sky-700 border border-sky-200'
-                                : 'bg-red-50 text-red-700 border border-red-200'
-                            }`}
-                          >
-                            {t.status.replace('_', ' ')}
-                          </span>
-                        </td>
-                        <td className="p-3 text-right">
+                    {filteredTutors.length === 0 ? (
+                      <tr>
+                        <td colSpan={10} className="p-8 text-center text-slate-500">
+                          <p className="font-semibold">No tutors match the selected filter or search term.</p>
                           <button
+                            type="button"
                             onClick={() => {
-                              setSelectedTutor(t);
-                              setTutorActionStatus(t.status);
-                              setTutorReviewNotes(t.admin_review_notes || '');
+                              setTutorFilterStatus('all');
+                              setTutorSearch('');
                             }}
-                            className="px-3 py-1 rounded-lg font-bold text-xs bg-slate-100 hover:bg-slate-200 text-slate-800"
+                            className="mt-2 text-xs font-bold text-amber-700 hover:underline"
                           >
-                            Inspect & Review
+                            Reset filters
                           </button>
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      filteredTutors.map((t) => {
+                        const comp = getScheduleCompleteness(t.weekly_availability);
+                        return (
+                          <tr key={t.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="p-3 font-mono font-bold text-slate-800">{t.reference_number}</td>
+                            <td className="p-3 font-semibold text-slate-900">{t.full_legal_name}</td>
+                            <td className="p-3 text-slate-600">{t.public_display_name}</td>
+                            <td className="p-3 text-slate-600">{t.sub_city}</td>
+                            <td className="p-3 text-slate-600">
+                              {t.education_level} • {t.institution}
+                            </td>
+                            <td className="p-3 text-slate-600 max-w-[200px] truncate">{t.subjects.join(', ')}</td>
+                            <td className="p-3 font-bold text-slate-800">{t.hourly_rate_etb} ETB</td>
+                            <td className="p-3">
+                              <div className="flex flex-col gap-1 items-start">
+                                <span
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                    comp.level === 'full'
+                                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                      : comp.level === 'basic'
+                                      ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                      : 'bg-slate-100 text-slate-600 border border-slate-200'
+                                  }`}
+                                >
+                                  {comp.label}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setScheduleModalTutor(t);
+                                    setIsEditingScheduleInModal(false);
+                                  }}
+                                  className="text-[11px] text-amber-700 hover:text-amber-900 font-semibold underline"
+                                >
+                                  {comp.totalWeeklyHours > 0 ? `${comp.totalWeeklyHours} hrs/wk` : 'Set Schedule'}
+                                </button>
+                              </div>
+                            </td>
+                            <td className="p-3">
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                  t.status === 'approved'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                    : t.status === 'submitted'
+                                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                    : t.status === 'under_review'
+                                    ? 'bg-sky-50 text-sky-700 border border-sky-200'
+                                    : 'bg-red-50 text-red-700 border border-red-200'
+                                }`}
+                              >
+                                {t.status.replace('_', ' ')}
+                              </span>
+                            </td>
+                            <td className="p-3 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setScheduleModalTutor(t);
+                                    setIsEditingScheduleInModal(false);
+                                  }}
+                                  className="px-2.5 py-1 rounded-lg font-semibold text-xs bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200"
+                                >
+                                  Hours
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedTutor(t);
+                                    setTutorActionStatus(t.status);
+                                    setTutorReviewNotes(t.admin_review_notes || '');
+                                  }}
+                                  className="px-2.5 py-1 rounded-lg font-bold text-xs bg-slate-100 hover:bg-slate-200 text-slate-800"
+                                >
+                                  Review
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -910,56 +1032,152 @@ export default function AdminDashboard({
             {/* Algorithmic Matcher Drawer/Panel */}
             {matcherRequest && (
               <div className="bg-white rounded-3xl border-2 border-amber-500/40 p-6 shadow-lg space-y-6">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-4">
                   <div>
                     <span className="text-xs font-bold text-amber-600 uppercase tracking-widest">
-                      Candidate Matching Engine
+                      Schedule-Aware Candidate Matching Engine
                     </span>
                     <h2 className="text-lg font-bold text-slate-900 mt-0.5">
-                      Shortlisted Candidates for {matcherRequest.parent_name} ({matcherRequest.reference_number})
+                      Candidates for {matcherRequest.parent_name} ({matcherRequest.reference_number})
                     </h2>
-                    <p className="text-xs text-slate-500">
-                      Looking for: {matcherRequest.subjects.join(', ')} • {matcherRequest.grade_level} • {matcherRequest.sub_city}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600 mt-1">
+                      <span>
+                        <strong>Subjects:</strong> {matcherRequest.subjects.join(', ')}
+                      </span>
+                      <span>
+                        <strong>Grade:</strong> {matcherRequest.grade_level}
+                      </span>
+                      <span>
+                        <strong>Location:</strong> {matcherRequest.sub_city}
+                      </span>
+                      <span>
+                        <strong>Target Hours:</strong> {matcherRequest.preferred_days?.join(', ') || matcherRequest.schedule_preference || 'Flexible'}
+                      </span>
+                      {matcherRequest.schedule_flexibility && (
+                        <span className="capitalize px-2 py-0.5 rounded-md bg-amber-50 text-amber-900 font-semibold text-[10px]">
+                          {matcherRequest.schedule_flexibility.replace('_', ' ')}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <button
-                    onClick={() => setMatcherRequest(null)}
-                    className="text-xs text-slate-500 hover:text-slate-800"
-                  >
-                    Close Matcher &times;
-                  </button>
+
+                  <div className="flex items-center gap-2">
+                    {selectedCandidatesToCompare.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setIsCompareModalOpen(true)}
+                        className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-xs animate-pulse"
+                      >
+                        Compare {selectedCandidatesToCompare.length} Selected &rarr;
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        setMatcherRequest(null);
+                        setSelectedCandidatesToCompare([]);
+                      }}
+                      className="text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded-lg border border-slate-200"
+                    >
+                      Close &times;
+                    </button>
+                  </div>
                 </div>
 
                 {loadingCandidates ? (
-                  <p className="text-sm text-slate-500 text-center py-8">Scoring approved tutors against student criteria...</p>
+                  <p className="text-sm text-slate-500 text-center py-8">Scoring approved tutors against student criteria and schedule...</p>
                 ) : matcherCandidates.length === 0 ? (
                   <p className="text-sm text-slate-500 text-center py-8">No approved tutors meet the minimum eligibility criteria.</p>
                 ) : (
                   <div className="space-y-4">
                     {matcherCandidates.map((candidate) => {
                       const tutor = candidate.tutor as TutorApplication;
+                      const isSelected = selectedCandidatesToCompare.some((c) => c.tutor.id === tutor.id);
+                      const schedStatus = candidate.schedule_status || candidate.breakdown.schedule_status || 'unknown';
+
                       return (
                         <div
                           key={tutor.id}
-                          className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+                          className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all hover:border-amber-400"
                         >
-                          <div className="space-y-1.5 max-w-xl">
-                            <div className="flex items-center gap-2">
+                          <div className="space-y-2 max-w-xl">
+                            <div className="flex flex-wrap items-center gap-2">
+                              {/* Compare Checkbox */}
+                              <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 mr-1 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      if (selectedCandidatesToCompare.length >= 3) {
+                                        alert('You can compare a maximum of 3 candidates side-by-side.');
+                                        return;
+                                      }
+                                      setSelectedCandidatesToCompare([...selectedCandidatesToCompare, candidate]);
+                                    } else {
+                                      setSelectedCandidatesToCompare(
+                                        selectedCandidatesToCompare.filter((c) => c.tutor.id !== tutor.id)
+                                      );
+                                    }
+                                  }}
+                                  className="rounded text-amber-600 focus:ring-amber-500"
+                                />
+                                <span className="text-[11px] text-slate-500">Compare</span>
+                              </label>
+
                               <h3 className="font-bold text-base text-slate-900">{tutor.public_display_name}</h3>
+
                               <span className="px-2 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300">
                                 Match Score: {candidate.total_score}%
                               </span>
+
+                              {/* Schedule Compatibility Status Pill */}
+                              <span
+                                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                                  schedStatus === 'compatible'
+                                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                                    : schedStatus === 'partially_compatible'
+                                    ? 'bg-sky-50 text-sky-800 border-sky-300'
+                                    : schedStatus === 'unknown'
+                                    ? 'bg-amber-50 text-amber-800 border-amber-300'
+                                    : 'bg-red-50 text-red-800 border-red-300'
+                                }`}
+                              >
+                                {schedStatus === 'compatible' && '✓ Schedule Compatible'}
+                                {schedStatus === 'partially_compatible' && '◑ Partial Schedule Match'}
+                                {schedStatus === 'unknown' && '⚠ Schedule Incomplete (Check Hours)'}
+                                {schedStatus === 'conflict' && '✕ Schedule Conflict'}
+                              </span>
                             </div>
+
                             <p className="text-xs text-slate-600">
-                              {tutor.education_level} • {tutor.institution} • Rate: {tutor.hourly_rate_etb} ETB/hr
+                              {tutor.education_level} • {tutor.institution} • Rate: <strong>{tutor.hourly_rate_etb} ETB/hr</strong> • Travel: {tutor.travel_areas.join(', ')}
                             </p>
-                            
+
+                            {/* Schedule Summary line */}
+                            <div className="text-[11px] text-slate-700 bg-white p-2 rounded-xl border border-slate-200">
+                              <span className="font-bold text-slate-800">Tutor Availability: </span>
+                              <span>
+                                {tutor.weekly_availability
+                                  ? Object.keys(tutor.weekly_availability.schedule || {})
+                                      .filter((d) => (tutor.weekly_availability!.schedule[d as DayOfWeek] || []).length > 0)
+                                      .map((d) => `${d} (${formatDayIntervals(tutor.weekly_availability!.schedule[d as DayOfWeek] || [])})`)
+                                      .join(' • ')
+                                  : tutor.available_days?.join(', ') || 'No schedule submitted'}
+                              </span>
+                            </div>
+
                             {/* Score Breakdown Reasons */}
                             <div className="pt-1 flex flex-wrap gap-1.5">
                               {candidate.breakdown.reasons.map((reason, idx) => (
                                 <span
                                   key={idx}
-                                  className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700"
+                                  className={`text-[10px] font-medium px-2 py-0.5 rounded-md border ${
+                                    reason.toLowerCase().includes('conflict')
+                                      ? 'bg-red-50 border-red-200 text-red-800'
+                                      : reason.toLowerCase().includes('schedule')
+                                      ? 'bg-amber-50 border-amber-200 text-amber-900 font-semibold'
+                                      : 'bg-white border-slate-200 text-slate-700'
+                                  }`}
                                 >
                                   {reason}
                                 </span>
@@ -967,10 +1185,32 @@ export default function AdminDashboard({
                             </div>
                           </div>
 
-                          <div className="shrink-0 flex items-center gap-2 w-full md:w-auto">
+                          <div className="shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
                             <button
+                              type="button"
+                              onClick={() => {
+                                setScheduleModalTutor(tutor);
+                                setIsEditingScheduleInModal(false);
+                              }}
+                              className="px-3 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-300 hover:bg-slate-50 text-slate-700"
+                            >
+                              Inspect Hours
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleConfirmTutorAvailability(tutor.id)}
+                              disabled={isConfirmingTutorSchedule}
+                              className="px-3 py-2 rounded-xl text-xs font-semibold bg-sky-50 text-sky-800 border border-sky-300 hover:bg-sky-100"
+                              title="Record that coordinator verified this tutor's current availability by phone"
+                            >
+                              Confirm Availability
+                            </button>
+
+                            <button
+                              type="button"
                               onClick={() => handleProposeMatch(tutor.id, candidate.total_score)}
-                              className="w-full md:w-auto px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs"
+                              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs"
                             >
                               Propose Match &rarr;
                             </button>
@@ -2044,6 +2284,310 @@ export default function AdminDashboard({
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200"
               >
                 Done Reviewing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: TUTOR WEEKLY AVAILABILITY & VERIFICATION */}
+      {scheduleModalTutor && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-2xl w-full p-6 shadow-2xl space-y-5 my-8 max-h-[90vh] flex flex-col">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[11px] font-bold text-amber-600 uppercase tracking-widest block">
+                  Educator Schedule Inspector
+                </span>
+                <h2 className="text-xl font-bold text-slate-900 mt-0.5">
+                  {scheduleModalTutor.public_display_name} ({scheduleModalTutor.reference_number})
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Rate: {scheduleModalTutor.hourly_rate_etb} ETB/hr • Travels to: {scheduleModalTutor.travel_areas.join(', ')}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setScheduleModalTutor(null);
+                  setIsEditingScheduleInModal(false);
+                }}
+                className="text-slate-400 hover:text-slate-700 text-lg font-bold"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+              {/* Coordinator Verification Banner */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="text-xs">
+                  <span className="font-bold text-slate-800 block">Availability Verification Status:</span>
+                  {scheduleModalTutor.availability_confirmed_at ? (
+                    <span className="text-emerald-700 font-semibold">
+                      ✓ Confirmed on {new Date(scheduleModalTutor.availability_confirmed_at).toLocaleDateString()}
+                      {scheduleModalTutor.availability_notes && ` ("${scheduleModalTutor.availability_notes}")`}
+                    </span>
+                  ) : (
+                    <span className="text-amber-700">
+                      ⚠ Not yet verified with tutor for active placement season
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={isConfirmingTutorSchedule}
+                  onClick={() => handleConfirmTutorAvailability(scheduleModalTutor.id)}
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-xs shrink-0"
+                >
+                  {isConfirmingTutorSchedule ? 'Saving...' : 'Confirm Availability by Phone'}
+                </button>
+              </div>
+
+              {isEditingScheduleInModal ? (
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-slate-800">Direct Schedule Editor</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingScheduleInModal(false)}
+                      className="text-xs text-slate-500 hover:underline"
+                    >
+                      Cancel Edit
+                    </button>
+                  </div>
+                  <TutorAvailabilityEditor
+                    initialAvailability={scheduleModalTutor.weekly_availability}
+                    onSave={handleSaveTutorScheduleInModal}
+                  />
+                </div>
+              ) : (
+                /* Read-Only Schedule View */
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Weekly Teaching Hours (Africa/Addis_Ababa)
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingScheduleInModal(true)}
+                      className="text-xs font-bold text-amber-700 hover:text-amber-900 underline"
+                    >
+                      Edit Schedule Directly
+                    </button>
+                  </div>
+
+                  <div className="bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden text-xs">
+                    <table className="w-full text-left">
+                      <thead className="bg-slate-100/70 border-b border-slate-200 font-bold text-slate-700">
+                        <tr>
+                          <th className="p-2.5">Day</th>
+                          <th className="p-2.5">Available Hours</th>
+                          <th className="p-2.5 text-right">Format</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {DAYS_OF_WEEK.map((day) => {
+                          const intervals = scheduleModalTutor.weekly_availability?.schedule?.[day] || [];
+                          return (
+                            <tr key={day} className="hover:bg-white transition-colors">
+                              <td className="p-2.5 font-bold text-slate-800">{day}</td>
+                              <td className="p-2.5">
+                                {intervals.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1">
+                                    {intervals.map((inv, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="px-2 py-0.5 rounded-md bg-white border border-slate-200 font-medium text-slate-800"
+                                      >
+                                        {inv.start} - {inv.end}
+                                        {inv.is_preferred && ' (Preferred)'}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-slate-400 italic">Unavailable</span>
+                                )}
+                              </td>
+                              <td className="p-2.5 text-right capitalize text-slate-600">
+                                {intervals.length > 0 ? intervals[0].mode || 'either' : '—'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Blackout Dates */}
+                  {scheduleModalTutor.blackout_dates && scheduleModalTutor.blackout_dates.length > 0 && (
+                    <div className="p-3 rounded-2xl bg-red-50/50 border border-red-200 space-y-1">
+                      <span className="text-xs font-bold text-red-900 uppercase tracking-wider block">
+                        Temporarily Unavailable Dates (Blackouts):
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {scheduleModalTutor.blackout_dates.map((d) => (
+                          <span
+                            key={d}
+                            className="px-2 py-0.5 rounded-md bg-white border border-red-200 text-xs font-medium text-red-800"
+                          >
+                            {d}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setScheduleModalTutor(null);
+                  setIsEditingScheduleInModal(false);
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200"
+              >
+                Close Inspector
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 6: SIDE-BY-SIDE CANDIDATE COMPARISON */}
+      {isCompareModalOpen && selectedCandidatesToCompare.length > 0 && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-4xl w-full p-6 shadow-2xl space-y-6 my-8 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[11px] font-bold text-amber-600 uppercase tracking-widest block">
+                  Candidate Comparison Engine
+                </span>
+                <h2 className="text-xl font-bold text-slate-900 mt-0.5">
+                  Comparing {selectedCandidatesToCompare.length} Shortlisted Candidates
+                </h2>
+                {matcherRequest && (
+                  <p className="text-xs text-slate-500">
+                    Parent Request: {matcherRequest.parent_name} • {matcherRequest.subjects.join(', ')} • {matcherRequest.grade_level}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCompareModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg font-bold"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-x-auto space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-w-[600px]">
+                {selectedCandidatesToCompare.map((cand) => {
+                  const tutor = cand.tutor as TutorApplication;
+                  const schedStatus = cand.schedule_status || cand.breakdown.schedule_status || 'unknown';
+
+                  return (
+                    <div
+                      key={tutor.id}
+                      className="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50/50 space-y-4 flex flex-col justify-between"
+                    >
+                      <div className="space-y-3">
+                        <div className="border-b border-slate-200 pb-3">
+                          <h3 className="font-extrabold text-base text-slate-900">{tutor.public_display_name}</h3>
+                          <span className="font-mono text-xs text-slate-500">{tutor.reference_number}</span>
+                          <div className="mt-2 flex items-center gap-2">
+                            <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-300">
+                              Score: {cand.total_score}%
+                            </span>
+                            <span className="font-extrabold text-sm text-slate-900">
+                              {tutor.hourly_rate_etb} ETB/hr
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Schedule Badge */}
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                            Schedule Overlap:
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded-md text-[11px] font-bold border block ${
+                              schedStatus === 'compatible'
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                                : schedStatus === 'partially_compatible'
+                                ? 'bg-sky-50 text-sky-800 border-sky-300'
+                                : schedStatus === 'unknown'
+                                ? 'bg-amber-50 text-amber-800 border-amber-300'
+                                : 'bg-red-50 text-red-800 border-red-300'
+                            }`}
+                          >
+                            {schedStatus === 'compatible' && '✓ Compatible'}
+                            {schedStatus === 'partially_compatible' && '◑ Partial / Flexible'}
+                            {schedStatus === 'unknown' && '⚠ Needs Verification'}
+                            {schedStatus === 'conflict' && '✕ Conflict'}
+                          </span>
+                          <p className="text-[11px] text-slate-600 mt-1">
+                            {cand.breakdown.schedule_explanation || 'Schedule verified.'}
+                          </p>
+                        </div>
+
+                        {/* Education */}
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
+                            Education:
+                          </span>
+                          <p className="text-xs text-slate-800 font-semibold">{tutor.education_level}</p>
+                          <p className="text-[11px] text-slate-500">{tutor.institution}</p>
+                        </div>
+
+                        {/* Subjects & Modality */}
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
+                            Subjects & Location:
+                          </span>
+                          <p className="text-xs text-slate-700">{tutor.subjects.join(', ')}</p>
+                          <p className="text-[11px] text-slate-500 mt-1">Travel: {tutor.travel_areas.join(', ')}</p>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-200">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleProposeMatch(tutor.id, cand.total_score);
+                            setIsCompareModalOpen(false);
+                          }}
+                          className="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                        >
+                          Select & Propose Match &rarr;
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setSelectedCandidatesToCompare([])}
+                className="text-xs text-red-600 hover:underline font-semibold"
+              >
+                Clear Selection
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsCompareModalOpen(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200"
+              >
+                Close Comparison
               </button>
             </div>
           </div>

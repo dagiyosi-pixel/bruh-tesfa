@@ -2,6 +2,9 @@
 // BRUH TESFA (ብሩህ ተስፋ) - Domain Models & Type Definitions
 // =============================================================================
 
+import { WeeklyAvailability, TimeInterval, ScheduleCompatibilityStatus } from './availability';
+export type { WeeklyAvailability, TimeInterval, ScheduleCompatibilityStatus };
+
 export type TeachingMode = 'in_person' | 'online' | 'hybrid';
 
 export type ApplicationStatus = 
@@ -77,6 +80,13 @@ export interface TutorApplication {
   // Availability & Modality
   available_days: string[];
   available_time_windows: string[];
+  weekly_availability?: WeeklyAvailability;
+  blackout_dates?: string[];
+  min_lesson_duration_minutes?: number;
+  max_lesson_duration_minutes?: number;
+  max_weekly_hours?: number;
+  availability_confirmed_at?: string;
+  availability_notes?: string;
   teaching_modes: TeachingMode[];
   travel_areas: string[];
   hourly_rate_etb: number;
@@ -117,6 +127,8 @@ export interface TutorPublicProfile {
   curricula: string[];
   teaching_modes: TeachingMode[];
   service_areas: string[];
+  available_days?: string[];
+  weekly_summary?: string;
   hourly_rate_etb: number;
   languages: string[];
   avatar_url?: string;
@@ -147,6 +159,12 @@ export interface ParentRequest {
   curriculum: string;
   teaching_mode: TeachingMode;
   schedule_preference?: string;
+  preferred_days?: string[];
+  preferred_time_windows?: string[];
+  schedule_flexibility?: 'strict_times' | 'flexible_windows' | 'weekends_only' | 'open_schedule';
+  earliest_start_date?: string;
+  hours_per_session?: number;
+  lessons_per_week?: number;
   lesson_frequency?: string;
   budget_range_min?: number;
   budget_range_max?: number;
@@ -172,6 +190,9 @@ export interface MatchBreakdown {
   location_score: number;
   language_score: number;
   budget_score: number;
+  schedule_score?: number;
+  schedule_status?: ScheduleCompatibilityStatus;
+  schedule_explanation?: string;
   reasons: string[];
 }
 
@@ -179,6 +200,7 @@ export interface CandidateMatch {
   tutor: TutorPublicProfile | TutorApplication;
   total_score: number;
   breakdown: MatchBreakdown;
+  schedule_status?: ScheduleCompatibilityStatus;
   is_eligible: boolean;
 }
 

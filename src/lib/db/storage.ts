@@ -27,7 +27,15 @@ import {
   VacancyApplication,
   VacancyStatus,
   VacancyApplicationStatus,
+  WeeklyAvailability,
 } from '../types';
+import {
+  mergeOverlappingIntervals,
+  validateTimeInterval,
+  formatDayIntervals,
+  DayOfWeek,
+  DAYS_OF_WEEK,
+} from '../availability';
 import {
   INITIAL_TUTORS,
   INITIAL_PUBLIC_PROFILES,
@@ -1235,4 +1243,206 @@ export async function recordTelegramBroadcast(vacancyId: string, messageId: stri
     vac.telegram_published_at = new Date().toISOString();
     saveDatabase(db);
   }
+}
+
+// -----------------------------------------------------------------------------
+// TUTOR AVAILABILITY & PORTAL METHODS
+// -----------------------------------------------------------------------------
+
+export async function updateTutorAvailability(
+  tutorId: string,
+  availability: WeeklyAvailability,
+  blackoutDates?: string[]
+): Promise<{ success: boolean; tutor: TutorApplication }> {
+  const db = loadDatabase();
+  const tutor = db.tutors.find((t) => t.id === tutorId);
+  if (!tutor) {
+    throw new Error('Tutor application not found');
+  }
+
+  // Sanitize and validate intervals per day
+  const cleanedSchedule: WeeklyAvailability['schedule'] = {};
+  const activeDays: string[] = [];
+
+  for (const day of DAYS_OF_WEEK) {
+    const rawIntervals = availability.schedule?.[day] || [];
+    if (rawIntervals.length > 0) {
+      // Validate each interval
+      for (const inv of rawIntervals) {
+        const val = validateTimeInterval(inv, availability.min_lesson_duration_minutes || 30);
+        if (!val.isValid) {
+          throw new Error(`Invalid schedule for ${day}: ${val.error}`);
+        }
+      }
+      // Merge overlapping/contiguous intervals
+      const merged = mergeOverlappingIntervals(rawIntervals);
+      cleanedSchedule[day] = merged;
+      activeDays.push(day);
+    }
+  }
+
+  const now = new Date().toISOString();
+  const sanitizedAvailability: WeeklyAvailability = {
+    timezone: availability.timezone || 'Africa/Addis_Ababa',
+    schedule: cleanedSchedule,
+    min_lesson_duration_minutes: availability.min_lesson_duration_minutes || 60,
+    max_lesson_duration_minutes: availability.max_lesson_duration_minutes || 120,
+    max_weekly_hours: availability.max_weekly_hours || 20,
+    blackout_dates: blackoutDates || availability.blackout_dates || [],
+    extra_dates: availability.extra_dates || [],
+    updated_at: now,
+  };
+
+  tutor.weekly_availability = sanitizedAvailability;
+  tutor.available_days = activeDays;
+  if (blackoutDates) {
+    tutor.blackout_dates = blackoutDates;
+  }
+  tutor.updated_at = now;
+
+  // Sync to public profile if approved
+  const publicProf = db.public_profiles.find((p) => p.id === tutorId);
+  if (publicProf) {
+    publicProf.available_days = activeDays;
+    publicProf.weekly_summary = activeDays.map((d) => `${d}: ${formatDayIntervals(cleanedSchedule[d as DayOfWeek] || [])}`).join(' | ');
+    publicProf.updated_at = now;
+  }
+
+  db.audit_logs.push({
+    id: `log-${Date.now()}`,
+    actor: tutor.public_display_name,
+    role: 'tutor',
+    action: 'tutor_availability_updated',
+    resource_type: 'tutor_application',
+    resource_id: tutorId,
+    details: { activeDaysCount: activeDays.length, activeDays },
+    created_at: now,
+  });
+
+  saveDatabase(db);
+  return { success: true, tutor };
+}
+
+export async function confirmTutorAvailability(
+  tutorId: string,
+  notes?: string,
+  actor: string = 'Staff Admin'
+): Promise<TutorApplication> {
+  const db = loadDatabase();
+  const tutor = db.tutors.find((t) => t.id === tutorId);
+  if (!tutor) {
+    throw new Error('Tutor not found');
+  }
+
+  const now = new Date().toISOString();
+  tutor.availability_confirmed_at = now;
+  if (notes) {
+    tutor.availability_notes = notes;
+  }
+  tutor.updated_at = now;
+
+  db.audit_logs.push({
+    id: `log-${Date.now()}`,
+    actor,
+    role: 'admin',
+    action: 'tutor_availability_confirmed_by_coordinator',
+    resource_type: 'tutor_application',
+    resource_id: tutorId,
+    details: { notes, confirmedAt: now },
+    created_at: now,
+  });
+
+  saveDatabase(db);
+  return tutor;
+}
+
+export async function getTutorAvailability(tutorId: string): Promise<{
+  tutorId: string;
+  name: string;
+  status: ApplicationStatus;
+  weekly_availability?: WeeklyAvailability;
+  available_days: string[];
+  blackout_dates?: string[];
+  availability_confirmed_at?: string;
+  availability_notes?: string;
+} | null> {
+  const db = loadDatabase();
+  const tutor = db.tutors.find((t) => t.id === tutorId);
+  if (!tutor) return null;
+
+  return {
+    tutorId: tutor.id,
+    name: tutor.public_display_name,
+    status: tutor.status,
+    weekly_availability: tutor.weekly_availability,
+    available_days: tutor.available_days,
+    blackout_dates: tutor.blackout_dates,
+    availability_confirmed_at: tutor.availability_confirmed_at,
+    availability_notes: tutor.availability_notes,
+  };
+}
+
+export async function lookupTutorPortalStatus(
+  referenceNumber: string,
+  phone: string
+): Promise<{
+  success: boolean;
+  tutor?: {
+    id: string;
+    reference_number: string;
+    public_display_name: string;
+    status: ApplicationStatus;
+    subjects: string[];
+    grade_levels: string[];
+    curricula: string[];
+    teaching_modes: string[];
+    travel_areas: string[];
+    hourly_rate_etb: number;
+    weekly_availability?: WeeklyAvailability;
+    blackout_dates?: string[];
+    availability_confirmed_at?: string;
+    created_at: string;
+    updated_at: string;
+  };
+  error?: string;
+}> {
+  if (!referenceNumber || !phone) {
+    return { success: false, error: 'Reference number and phone number are required' };
+  }
+
+  const db = loadDatabase();
+  const normRef = referenceNumber.trim().toUpperCase();
+  const normPhone = phone.replace(/[\s\-\(\)]/g, '');
+
+  const tutor = db.tutors.find(
+    (t) =>
+      t.reference_number.trim().toUpperCase() === normRef &&
+      t.phone.replace(/[\s\-\(\)]/g, '') === normPhone
+  );
+
+  if (!tutor) {
+    return { success: false, error: 'No matching application found with those credentials' };
+  }
+
+  // Strictly sanitize: NEVER return admin_review_notes or private identity document paths
+  return {
+    success: true,
+    tutor: {
+      id: tutor.id,
+      reference_number: tutor.reference_number,
+      public_display_name: tutor.public_display_name,
+      status: tutor.status,
+      subjects: tutor.subjects,
+      grade_levels: tutor.grade_levels,
+      curricula: tutor.curricula,
+      teaching_modes: tutor.teaching_modes,
+      travel_areas: tutor.travel_areas,
+      hourly_rate_etb: tutor.hourly_rate_etb,
+      weekly_availability: tutor.weekly_availability,
+      blackout_dates: tutor.blackout_dates,
+      availability_confirmed_at: tutor.availability_confirmed_at,
+      created_at: tutor.created_at,
+      updated_at: tutor.updated_at,
+    },
+  };
 }
