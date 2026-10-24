@@ -3,6 +3,7 @@
 // =============================================================================
 
 process.env.IS_TEST = 'true';
+process.env.PERSISTENCE_MODE = 'local';
 
 import test from 'node:test';
 import assert from 'node:assert/strict';

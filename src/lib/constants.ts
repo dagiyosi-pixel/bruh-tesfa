@@ -8,8 +8,10 @@ export const SITE_AMHARIC_NAME = 'ብሩህ ተስፋ';
 export const SITE_OROMO_NAME = 'Abdi Qajeelaa';
 
 export const DEFAULT_TELEGRAM_COMMUNITY_URL = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/bruh_tesfa_tutoring_ethiopia';
-export const DEFAULT_TELEGRAM_CHANNEL_URL = process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL_URL || 'https://t.me/bruhtesfa_announcements';
-export const DEFAULT_SUPPORT_PHONE = process.env.NEXT_PUBLIC_SUPPORT_PHONE || '+251 91 123 4567';
+export const DEFAULT_TELEGRAM_CHANNEL_URL = process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL_URL || 'https://t.me/bruh_tesfa_tutoring_ethiopia';
+export const DEFAULT_TELEGRAM_ADMIN_USERNAME = 'biruh_tesfa_tutoring';
+export const DEFAULT_SUPPORT_PHONE = process.env.NEXT_PUBLIC_SUPPORT_PHONE || '+251 93 173 6692';
+export const SECONDARY_SUPPORT_PHONE = process.env.NEXT_PUBLIC_SECONDARY_PHONE || '+251 97 955 8343';
 export const DEFAULT_SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'contact@bruhtesfa.com';
 export const DEFAULT_OFFICE_LOCATION = 'Addis Ababa, Ethiopia';
 

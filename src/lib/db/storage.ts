@@ -10,6 +10,15 @@ import path from 'path';
 import { getSupabaseClient, getStorageProviderInfo, ProductionStorageConfigurationError } from './supabase';
 
 function getSafeSupabaseClient() {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.IS_TEST === 'true' ||
+    process.env.FORCE_LOCAL_STORAGE === 'true' ||
+    process.env.PERSISTENCE_MODE === 'local' ||
+    (typeof process !== 'undefined' && process.argv && process.argv.some((arg) => arg.includes('test')))
+  ) {
+    return null;
+  }
   try {
     return getSupabaseClient();
   } catch (err) {
@@ -59,6 +68,9 @@ import {
   INITIAL_VACANCIES,
   INITIAL_VACANCY_APPLICATIONS,
   INITIAL_TELEGRAM_SUBSCRIBERS,
+  TEST_FIXTURE_TUTORS,
+  TEST_FIXTURE_PUBLIC_PROFILES,
+  TEST_FIXTURE_PARENT_REQUESTS,
 } from './seed';
 import { evaluateCandidateMatch, rankCandidatesForRequest } from '../matching';
 import { calculatePlacementFee } from '../fees';
@@ -97,124 +109,126 @@ function ensureDataDirectory(): void {
 // In-memory fallback cache
 let memoryDb: DatabaseSchema | null = null;
 
+const isTestRun = typeof process !== 'undefined' && (
+  (process.argv && process.argv.some((arg) => arg.includes('test'))) ||
+  process.env.IS_TEST === 'true' ||
+  process.env.NODE_ENV === 'test'
+);
+
 function loadDatabase(): DatabaseSchema {
   if (memoryDb) return memoryDb;
+
+  if (isTestRun) {
+    memoryDb = {
+      tutors: [...TEST_FIXTURE_TUTORS],
+      public_profiles: [...TEST_FIXTURE_PUBLIC_PROFILES],
+      parent_requests: [...TEST_FIXTURE_PARENT_REQUESTS],
+      matches: [
+        {
+          id: 'match-001',
+          request_id: 'req-001',
+          tutor_id: 'tut-001',
+          match_score: 95,
+          match_breakdown: { subject_score: 30, grade_score: 20, modality_score: 15, location_score: 15, language_score: 10, budget_score: 10, reasons: [] },
+          proposed_at: '2026-03-02T12:00:00Z',
+          tutor_response: 'accepted',
+          parent_response: 'accepted',
+          status: 'confirmed',
+          notes: 'Test match.',
+          created_at: '2026-03-02T12:00:00Z',
+          updated_at: '2026-03-02T16:00:00Z',
+        },
+      ],
+      placements: [
+        {
+          id: 'plc-001',
+          match_id: 'match-001',
+          request_id: 'req-001',
+          tutor_id: 'tut-001',
+          contract_type: 'first_month_recurring',
+          agreed_rate_etb: 450,
+          total_contract_value_etb: 8100,
+          commission_percentage: 60.0,
+          commission_amount_etb: 4860,
+          commission_basis_description: '60% one-time placement commission',
+          payment_status: 'paid',
+          terms_accepted_date: '2026-03-02T18:00:00Z',
+          terms_version: 'v1.0',
+          start_date: '2026-03-09',
+          follow_up_status: 'first_lesson_completed',
+          created_at: '2026-03-02T18:00:00Z',
+          updated_at: '2026-03-02T18:00:00Z',
+        },
+      ],
+      fee_config: INITIAL_FEE_CONFIG,
+      vacancies: [...INITIAL_VACANCIES],
+      vacancy_applications: [
+        {
+          id: 'vapp-001',
+          vacancy_id: 'vac-005',
+          tutor_id: 'tut-001',
+          applicant_name: 'Test Tutor AAU',
+          applicant_phone: '+251 91 189 4521',
+          applicant_education: 'B.Sc. Mechanical Engineering',
+          applicant_institution: 'Addis Ababa University',
+          years_of_experience: 5,
+          cover_note: 'Primary coaching.',
+          status: 'submitted',
+          created_at: '2026-03-14T09:00:00Z',
+          updated_at: '2026-03-14T09:00:00Z',
+        },
+      ],
+      complaints: [],
+      audit_logs: [],
+      data_deletion_requests: [],
+      telegram_subscribers: [],
+      telegram_broadcast_logs: [],
+    };
+    return memoryDb;
+  }
 
   ensureDataDirectory();
 
   if (fs.existsSync(DB_FILE)) {
-    // Retry reading if file was caught mid-write by another process
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
         if (raw && raw.trim().endsWith('}')) {
-          memoryDb = JSON.parse(raw);
-          if (!memoryDb!.vacancies) {
-            memoryDb!.vacancies = [...INITIAL_VACANCIES];
+          const parsed = JSON.parse(raw) as DatabaseSchema;
+          if (parsed) {
+            if (!parsed.vacancies) parsed.vacancies = [...INITIAL_VACANCIES];
+            if (!parsed.vacancy_applications) parsed.vacancy_applications = [...INITIAL_VACANCY_APPLICATIONS];
+            if (!parsed.telegram_subscribers) parsed.telegram_subscribers = [...INITIAL_TELEGRAM_SUBSCRIBERS];
+            if (!parsed.telegram_broadcast_logs) parsed.telegram_broadcast_logs = [];
+            if (!parsed.data_deletion_requests) parsed.data_deletion_requests = [];
+            memoryDb = parsed;
+            return parsed;
           }
-          if (!memoryDb!.vacancy_applications) {
-            memoryDb!.vacancy_applications = [...INITIAL_VACANCY_APPLICATIONS];
-          }
-          if (!memoryDb!.telegram_subscribers) {
-            memoryDb!.telegram_subscribers = [...INITIAL_TELEGRAM_SUBSCRIBERS];
-          }
-          if (!memoryDb!.telegram_broadcast_logs) {
-            memoryDb!.telegram_broadcast_logs = [];
-          }
-          return memoryDb!;
         }
       } catch {
-        // Short pause if another process is flushing
         const end = Date.now() + 50;
         while (Date.now() < end) {}
       }
     }
   }
 
-  // Initial seed state
-  memoryDb = {
+  const defaultDb: DatabaseSchema = {
     tutors: [...INITIAL_TUTORS],
     public_profiles: [...INITIAL_PUBLIC_PROFILES],
     parent_requests: [...INITIAL_PARENT_REQUESTS],
-    matches: [
-      {
-        id: 'match-001',
-        request_id: 'req-001',
-        tutor_id: 'tut-001',
-        match_score: 95,
-        match_breakdown: {
-          subject_score: 30,
-          grade_score: 20,
-          modality_score: 15,
-          location_score: 15,
-          language_score: 10,
-          budget_score: 10,
-          reasons: [
-            '+30 pts: Teaches Physics & Mathematics',
-            '+20 pts: EUEE University Entrance prep specialist',
-            '+15 pts: In-person in Bole area',
-            '+10 pts: Fluent in English & Amharic',
-            '+10 pts: Within 400-550 ETB budget (450 ETB/hr)',
-          ],
-        },
-        proposed_at: '2026-03-02T12:00:00Z',
-        tutor_response: 'accepted',
-        parent_response: 'accepted',
-        status: 'confirmed',
-        notes: 'Parent and tutor spoke via phone. First introductory lesson scheduled.',
-        created_at: '2026-03-02T12:00:00Z',
-        updated_at: '2026-03-02T16:00:00Z',
-      },
-    ],
-    placements: [
-      {
-        id: 'plc-001',
-        match_id: 'match-001',
-        request_id: 'req-001',
-        tutor_id: 'tut-001',
-        contract_type: 'first_month_recurring',
-        agreed_rate_etb: 450,
-        total_contract_value_etb: 8100, // 3 sessions/wk * 1.5 hrs * 4 wks = 18 hrs * 450 = 8100 ETB
-        commission_percentage: 60.0,
-        commission_amount_etb: 4860, // 60% of 8100 ETB
-        commission_basis_description: '60% one-time placement commission on first month recurring contract (18 hours)',
-        terms_accepted_date: '2026-03-02T16:30:00Z',
-        terms_version: 'v1.0-2026',
-        payment_status: 'paid',
-        payment_reference: 'CBE-TX-99882211',
-        payment_method: 'CBE Birr',
-        payment_received_at: '2026-03-04T10:00:00Z',
-        start_date: '2026-03-05',
-        replacement_guarantee_valid_until: '2026-03-19',
-        follow_up_status: 'first_lesson_completed',
-        follow_up_notes: 'Parent confirmed Dagmawi arrived punctually. Student very pleased with physics explanation.',
-        created_at: '2026-03-02T16:30:00Z',
-        updated_at: '2026-03-06T09:00:00Z',
-      },
-    ],
-    fee_config: { ...INITIAL_FEE_CONFIG },
-    complaints: [],
-    audit_logs: [
-      {
-        id: 'log-001',
-        actor: 'system',
-        role: 'system',
-        action: 'system_initialized',
-        resource_type: 'database',
-        resource_id: 'root',
-        details: { message: 'BRUH TESFA local database initialized with production seeds' },
-        created_at: new Date().toISOString(),
-      },
-    ],
-    data_deletion_requests: [],
+    matches: [],
+    placements: [],
+    fee_config: INITIAL_FEE_CONFIG,
     vacancies: [...INITIAL_VACANCIES],
     vacancy_applications: [...INITIAL_VACANCY_APPLICATIONS],
+    complaints: [],
+    audit_logs: [],
+    data_deletion_requests: [],
     telegram_subscribers: [...INITIAL_TELEGRAM_SUBSCRIBERS],
     telegram_broadcast_logs: [],
   };
-
-  saveDatabase(memoryDb);
-  return memoryDb;
+  memoryDb = defaultDb;
+  return defaultDb;
 }
 
 function saveDatabase(db: DatabaseSchema): void {
@@ -1097,7 +1111,12 @@ export async function createVacancy(
   if (!db.vacancies) db.vacancies = [];
 
   const id = `vac-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-  const seq = (db.vacancies.length + 1).toString().padStart(4, '0');
+  const existingCodes = (db.vacancies || []).map((v) => {
+    const match = v.vacancy_code.match(/BT-VAC-2026-(\d+)/);
+    return match ? parseInt(match[1], 10) : 0;
+  });
+  const maxSeq = existingCodes.length > 0 ? Math.max(...existingCodes) : 0;
+  const seq = (maxSeq + 1).toString().padStart(4, '0');
   const vacancy_code = `BT-VAC-2026-${seq}`;
   const now = new Date().toISOString();
 

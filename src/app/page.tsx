@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { getPublicTutors } from '@/lib/db/storage';
+import { getPublicTutors, getPublicVacancies } from '@/lib/db/storage';
 import TutorCard from '@/components/TutorCard';
+import VacancyCard from '@/components/VacancyCard';
 import {
   ShieldCheckIcon,
   GraduationCapIcon,
@@ -23,7 +24,10 @@ import {
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const tutors = await getPublicTutors();
+  const [tutors, vacancies] = await Promise.all([
+    getPublicTutors(),
+    getPublicVacancies(),
+  ]);
 
   return (
     <div className="space-y-12 lg:space-y-16 pb-14">
@@ -202,35 +206,66 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* FEATURED APPROVED TUTORS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
-          <div>
-            <span className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">
-              Verified Profiles
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
-              Approved Private Tutors
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              Real educators authenticated by Bruh Tesfa. No fictional or unverified profiles.
-            </p>
+      {/* FEATURED APPROVED TUTORS OR ACTIVE REAL VACANCIES */}
+      {tutors.length > 0 ? (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+            <div>
+              <span className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">
+                Verified Profiles
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                Approved Private Tutors
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                Real educators authenticated by Bruh Tesfa. No fictional or unverified profiles.
+              </p>
+            </div>
+            <Link
+              href="/tutors"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800"
+            >
+              <span>View All Profiles</span>
+              <ArrowRightIcon className="w-3.5 h-3.5" />
+            </Link>
           </div>
-          <Link
-            href="/tutors"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800"
-          >
-            <span>View All Profiles</span>
-            <ArrowRightIcon className="w-3.5 h-3.5" />
-          </Link>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {tutors.slice(0, 3).map((tutor) => (
-            <TutorCard key={tutor.id} tutor={tutor} />
-          ))}
-        </div>
-      </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {tutors.slice(0, 3).map((tutor) => (
+              <TutorCard key={tutor.id} tutor={tutor} />
+            ))}
+          </div>
+        </section>
+      ) : (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+            <div>
+              <span className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">
+                Current Openings & Placements
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                Active Tutoring Opportunities in Addis Ababa
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                Verified tutoring requests from families. We strictly never publish fictional tutor profiles.
+              </p>
+            </div>
+            <Link
+              href="/vacancies"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800"
+            >
+              <span>View All Vacancies</span>
+              <ArrowRightIcon className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {vacancies.slice(0, 3).map((vac) => (
+              <VacancyCard key={vac.id} vacancy={vac} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* COVERAGE AREAS ACROSS ADDIS ABABA */}
       <section className="bg-slate-900 text-white py-12">

@@ -1091,7 +1091,7 @@ export function getContentStudioTemplates(): TelegramStudioTemplate[] {
       target_url_path: '/request-tutor',
       default_campaign: 'tg_success_story',
       default_caption_en:
-        '🌟 STUDENT PROGRESS HIGHLIGHT (Addis Ababa)\n\n"Within 3 months of working with Teacher Dagmawi on Grade 10 physics and algebra, our son went from scoring 58% to 88% on his midterm assessments. The patience and active recall exercises made all the difference."\n— Woizero Aster, Bole\n\nWe celebrate our dedicated tutors and hard-working students!\n\n👉 Request a verified educator: {{TARGET_URL}}',
+        '🌟 BRUH TESFA EDUCATION COMMITMENT (Addis Ababa)\n\nAt Bruh Tesfa, quality is our foundation. Every student is paired with a mentor who focuses on conceptual understanding, disciplined study habits, and consistent academic progress.\n\n• In-person home tutoring with parental visibility\n• National Curriculum (Grade 8 & EUEE) and Cambridge support\n• 14-day placement safeguard\n\nBuilding brighter futures, one lesson at a time.\n\n👉 Request a verified educator: {{TARGET_URL}}',
     },
     {
       id: 'tpl-11',
@@ -1102,7 +1102,7 @@ export function getContentStudioTemplates(): TelegramStudioTemplate[] {
       target_url_path: '/tutors',
       default_campaign: 'tg_new_tutors',
       default_caption_en:
-        '👏 WELCOME TO OUR NEWEST VERIFIED EDUCATORS!\n\nThis week, 8 new educators completed qualification checks and background screening in:\n• Advanced Mathematics & Calculus\n• University Entrance Physics & Chemistry\n• Cambridge International Primary & Secondary\n\nAvailable across Bole, Yeka, Kirkos, and online!\n\n👉 View verified tutor profiles: {{TARGET_URL}}',
+        '👏 JOIN THE BRUH TESFA TUTORING NETWORK!\n\nAre you a university graduate or high-achieving educator in Addis Ababa? Bruh Tesfa is actively onboarding dedicated tutors for:\n• Primary Foundational Literacy & Numeracy\n• Secondary STEM (Mathematics, Physics, Chemistry)\n• English Language & International Curriculums\n\nFair rates, prompt settlements, and respected partnerships.\n\n👉 Apply to become a tutor: {{TARGET_URL}}',
     },
     {
       id: 'tpl-12',

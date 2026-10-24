@@ -182,7 +182,7 @@ export default async function TutorsPage({ searchParams }: TutorsPageProps) {
             <TutorCard key={tutor.id} tutor={tutor} />
           ))}
         </div>
-      ) : (
+      ) : params.subject || params.grade || params.modality || params.subCity || params.search ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-8 sm:p-12 text-center max-w-xl mx-auto space-y-4">
           <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
             <SearchIcon className="w-6 h-6" />
@@ -200,6 +200,38 @@ export default async function TutorsPage({ searchParams }: TutorsPageProps) {
             >
               <span>Submit a Parent Tutoring Request</span>
               <ArrowRightIcon className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-8 sm:p-12 text-center max-w-2xl mx-auto space-y-5 shadow-xs">
+          <div className="w-14 h-14 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center mx-auto">
+            <SearchIcon className="w-7 h-7" />
+          </div>
+          <div className="space-y-2">
+            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-widest bg-amber-50 border border-amber-200/60 px-3 py-1 rounded-full">
+              Inaugural Cohort Under Verification
+            </span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+              Verified Tutors Onboarding in Progress
+            </h2>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-lg mx-auto">
+            Bruh Tesfa is currently conducting in-person academic credential, National ID (Fayda/Kebele), and pedagogical screening for our inaugural Addis Ababa tutor cohort. To safeguard student wellbeing and maintain our standard of excellence, we strictly never display unverified profiles.
+          </p>
+          <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/request-tutor"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-amber-600 hover:bg-amber-700 shadow-sm transition-all"
+            >
+              <span>Find a Tutor for Your Child</span>
+              <ArrowRightIcon className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/become-a-tutor"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-xs sm:text-sm text-slate-800 bg-slate-100 hover:bg-slate-200 transition-all"
+            >
+              <span>Apply to Join as a Tutor</span>
             </Link>
           </div>
         </div>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   DEFAULT_TELEGRAM_COMMUNITY_URL,
   DEFAULT_SUPPORT_PHONE,
+  SECONDARY_SUPPORT_PHONE,
   DEFAULT_SUPPORT_EMAIL,
   DEFAULT_OFFICE_LOCATION,
 } from '@/lib/constants';
@@ -38,7 +39,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2.5">
                 <PhoneIcon className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>{DEFAULT_SUPPORT_PHONE}</span>
+                <span>{DEFAULT_SUPPORT_PHONE} | {SECONDARY_SUPPORT_PHONE}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <MailIcon className="w-4 h-4 text-amber-400 shrink-0" />

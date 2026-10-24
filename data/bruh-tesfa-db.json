@@ -1,736 +1,9 @@
 {
-  "tutors": [
-    {
-      "id": "tut-001",
-      "reference_number": "BT-TUT-2026-0001",
-      "full_legal_name": "Dagmawi Yosef Mesfin",
-      "public_display_name": "Teacher Dagmawi",
-      "phone": "+251 91 189 4521",
-      "email": "dagmawi.yosef@example.com",
-      "preferred_contact_channel": "Telegram",
-      "city": "Addis Ababa",
-      "sub_city": "Bole",
-      "specific_neighborhood": "Bole Brass / Medhanialem",
-      "subjects": [
-        "Physics",
-        "Mathematics",
-        "SQ3R Study Skills & Exam Strategy"
-      ],
-      "grade_levels": [
-        "Grades 9-10 (Secondary School)",
-        "Grades 11-12 (University Entrance / EUEE Prep)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum",
-        "Cambridge International (IGCSE / A-Levels)"
-      ],
-      "education_level": "B.Sc. Mechanical Engineering",
-      "institution": "Addis Ababa University (AAU - 5 Kilo Institute of Technology)",
-      "field_of_study": "Mechanical Engineering & Applied Mechanics",
-      "years_of_experience": 5,
-      "teaching_approach": "I emphasize active retrieval, concept visualization, and the SQ3R study system. Students do not just memorize formulas; they understand the physical intuition and solve past national exam questions under real timing constraints.",
-      "bio": "Senior STEM educator with 5+ years experience tutoring Addis Ababa high schoolers for the EUEE and Cambridge IGCSE. Consistently helped over 35 students achieve scores above 550+ on the Ethiopian University Entrance Examination.",
-      "teaching_languages": [
-        "English",
-        "Amharic (አማርኛ)"
-      ],
-      "available_days": [
-        "Monday",
-        "Tuesday"
-      ],
-      "available_time_windows": [
-        "Afternoon (4:00 PM - 7:00 PM)",
-        "Saturday Morning (9:00 AM - 1:00 PM)"
-      ],
-      "weekly_availability": {
-        "timezone": "Africa/Addis_Ababa",
-        "schedule": {
-          "Monday": [
-            {
-              "start": "14:00",
-              "end": "17:30",
-              "mode": "in_person"
-            }
-          ],
-          "Tuesday": [
-            {
-              "start": "17:00",
-              "end": "19:00",
-              "mode": "online"
-            }
-          ]
-        },
-        "min_lesson_duration_minutes": 60,
-        "max_lesson_duration_minutes": 120,
-        "max_weekly_hours": 20,
-        "blackout_dates": [
-          "2026-05-15",
-          "2026-05-16"
-        ],
-        "extra_dates": [],
-        "updated_at": "2026-10-24T18:28:58.295Z"
-      },
-      "teaching_modes": [
-        "in_person",
-        "online"
-      ],
-      "travel_areas": [
-        "Bole",
-        "Yeka",
-        "Kirkos",
-        "CMC",
-        "Sarbet"
-      ],
-      "hourly_rate_etb": 450,
-      "national_id_doc_path": "private/id/dagmawi_fayda_id.pdf",
-      "degree_cert_doc_path": "private/degrees/aau_bsc_certificate.pdf",
-      "avatar_url": "/avatars/tutor_dagmawi.png",
-      "privacy_consent": true,
-      "code_of_conduct_agreed": true,
-      "status": "approved",
-      "admin_review_notes": "Verified against AAU Degree Certificate and Fayda National ID. Strong track record in university prep.",
-      "reviewed_by": "Bruh Tesfa Staff Admin",
-      "reviewed_at": "2026-02-10T14:30:00Z",
-      "referral_source": "Telegram Channel or Group",
-      "created_at": "2026-02-08T09:15:00Z",
-      "updated_at": "2026-10-24T18:28:58.298Z",
-      "blackout_dates": [
-        "2026-05-15",
-        "2026-05-16"
-      ],
-      "availability_confirmed_at": "2026-10-24T18:28:58.298Z",
-      "availability_notes": "Verified with Dagmawi over phone call"
-    },
-    {
-      "id": "tut-002",
-      "reference_number": "BT-TUT-2026-0002",
-      "full_legal_name": "Bethlehem Tadesse Haile",
-      "public_display_name": "Bethlehem T.",
-      "phone": "+251 92 345 6789",
-      "email": "bethlehem.tadesse@example.com",
-      "preferred_contact_channel": "Phone",
-      "city": "Addis Ababa",
-      "sub_city": "Yeka",
-      "specific_neighborhood": "Megenagna / Signal",
-      "subjects": [
-        "Chemistry",
-        "Biology",
-        "General Science (Grades 7-8)"
-      ],
-      "grade_levels": [
-        "Grades 7-8 (Middle School / Ministry Prep)",
-        "Grades 9-10 (Secondary School)",
-        "Grades 11-12 (University Entrance / EUEE Prep)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum"
-      ],
-      "education_level": "B.Sc. Applied Chemistry",
-      "institution": "Addis Ababa Science and Technology University (ASTU)",
-      "field_of_study": "Applied Chemistry & Bio-analytical Sciences",
-      "years_of_experience": 4,
-      "teaching_approach": "Structured step-by-step problem sets, diagnostic quizzes at the start of every session, and tailored mnemonics for biological pathways and chemical reaction balancing.",
-      "bio": "ASTU graduate with deep experience preparing middle and secondary school students for regional ministry examinations and the EUEE. Patient, clear, and highly focused on building student confidence in STEM.",
-      "teaching_languages": [
-        "Amharic (አማርኛ)",
-        "English"
-      ],
-      "available_days": [
-        "Tuesday",
-        "Thursday",
-        "Saturday",
-        "Sunday"
-      ],
-      "available_time_windows": [
-        "Afternoon (4:30 PM - 7:30 PM)",
-        "Sunday Full Day"
-      ],
-      "weekly_availability": {
-        "timezone": "Africa/Addis_Ababa",
-        "schedule": {
-          "Tuesday": [
-            {
-              "start": "16:30",
-              "end": "19:30",
-              "mode": "in_person",
-              "is_preferred": true
-            }
-          ],
-          "Thursday": [
-            {
-              "start": "16:30",
-              "end": "19:30",
-              "mode": "in_person",
-              "is_preferred": true
-            }
-          ],
-          "Saturday": [
-            {
-              "start": "14:00",
-              "end": "18:00",
-              "mode": "in_person",
-              "is_preferred": true
-            }
-          ],
-          "Sunday": [
-            {
-              "start": "10:00",
-              "end": "16:00",
-              "mode": "in_person",
-              "is_preferred": false
-            }
-          ]
-        },
-        "min_lesson_duration_minutes": 60,
-        "max_lesson_duration_minutes": 120,
-        "max_weekly_hours": 18
-      },
-      "teaching_modes": [
-        "in_person"
-      ],
-      "travel_areas": [
-        "Yeka",
-        "Bole",
-        "Lemi Kura",
-        "CMC",
-        "Ayat"
-      ],
-      "hourly_rate_etb": 400,
-      "national_id_doc_path": "private/id/bethlehem_id.pdf",
-      "degree_cert_doc_path": "private/degrees/astu_bsc_chemistry.pdf",
-      "avatar_url": "/avatars/tutor_bethlehem.png",
-      "privacy_consent": true,
-      "code_of_conduct_agreed": true,
-      "status": "approved",
-      "admin_review_notes": "ASTU degree authenticated. Thorough pedagogy for Grade 8 and Grade 12.",
-      "reviewed_by": "Bruh Tesfa Staff Admin",
-      "reviewed_at": "2026-02-12T11:00:00Z",
-      "referral_source": "Friend or Family Recommendation",
-      "created_at": "2026-02-11T10:00:00Z",
-      "updated_at": "2026-02-12T11:00:00Z"
-    },
-    {
-      "id": "tut-003",
-      "reference_number": "BT-TUT-2026-0003",
-      "full_legal_name": "Natnael Alemayehu Bekele",
-      "public_display_name": "Natnael A.",
-      "phone": "+251 93 456 7890",
-      "email": "natnael.alemayehu@example.com",
-      "preferred_contact_channel": "Telegram",
-      "city": "Addis Ababa",
-      "sub_city": "Kirkos",
-      "specific_neighborhood": "Sarbet / AU Area",
-      "subjects": [
-        "English Language & Literature",
-        "Amharic (አማርኛ)",
-        "Social Studies (Grades 7-8)"
-      ],
-      "grade_levels": [
-        "Grades 1-4 (Foundational Primary)",
-        "Grades 5-6 (Upper Primary)",
-        "Grades 7-8 (Middle School / Ministry Prep)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum",
-        "Cambridge International (IGCSE / A-Levels)"
-      ],
-      "education_level": "B.Ed. English Language Teaching",
-      "institution": "Kotebe Metropolitan University (KMU)",
-      "field_of_study": "Curriculum & English Language Education",
-      "years_of_experience": 6,
-      "teaching_approach": "Interactive conversational grammar, phonetics, essay outlining, and reading comprehension workshops designed to foster a love for reading.",
-      "bio": "Professional educator with 6 years classroom and private tutoring experience. Expert in helping young learners overcome reading hesitation and master both English and Amharic writing skills.",
-      "teaching_languages": [
-        "English",
-        "Amharic (አማርኛ)"
-      ],
-      "available_days": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday"
-      ],
-      "available_time_windows": [
-        "After school (3:30 PM - 6:30 PM)"
-      ],
-      "teaching_modes": [
-        "in_person",
-        "online"
-      ],
-      "travel_areas": [
-        "Kirkos",
-        "Lideta",
-        "Bole",
-        "Nifas Silk-Lafto",
-        "Sarbet",
-        "Bisrate Gabriel"
-      ],
-      "hourly_rate_etb": 380,
-      "national_id_doc_path": "private/id/natnael_id.pdf",
-      "degree_cert_doc_path": "private/degrees/kmu_bed_certificate.pdf",
-      "avatar_url": "/avatars/tutor_natnael.png",
-      "privacy_consent": true,
-      "code_of_conduct_agreed": true,
-      "status": "approved",
-      "admin_review_notes": "Verified teaching credential and excellent background references.",
-      "reviewed_by": "Bruh Tesfa Staff Admin",
-      "reviewed_at": "2026-02-15T16:00:00Z",
-      "referral_source": "School Community / Teacher",
-      "created_at": "2026-02-14T08:30:00Z",
-      "updated_at": "2026-02-15T16:00:00Z"
-    },
-    {
-      "id": "tut-004",
-      "reference_number": "BT-TUT-2026-0004",
-      "full_legal_name": "Rahel Hailu Wolde",
-      "public_display_name": "Rahel H.",
-      "phone": "+251 94 567 8901",
-      "email": "rahel.hailu@example.com",
-      "preferred_contact_channel": "Telegram",
-      "city": "Addis Ababa",
-      "sub_city": "Nifas Silk-Lafto",
-      "specific_neighborhood": "Lebu Varnero",
-      "subjects": [
-        "Mathematics",
-        "ICT & Computer Programming",
-        "General Science (Grades 7-8)"
-      ],
-      "grade_levels": [
-        "Grades 7-8 (Middle School / Ministry Prep)",
-        "Grades 9-10 (Secondary School)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum"
-      ],
-      "education_level": "B.Sc. Software Engineering",
-      "institution": "Addis Ababa University (AAU - 4 Kilo Faculty of Natural Sciences)",
-      "field_of_study": "Computer Science & Software Development",
-      "years_of_experience": 3,
-      "teaching_approach": "Clear logic trees, practical math exercises linked to real-world coding problems, and gentle encouragement for students with math anxiety.",
-      "bio": "Software engineer and dedicated youth mentor. Specializes in transforming mathematics from an intimidating hurdle into an intuitive and enjoyable subject for grades 7 to 10.",
-      "teaching_languages": [
-        "English",
-        "Amharic (አማርኛ)",
-        "Afaan Oromoo"
-      ],
-      "available_days": [
-        "Wednesday",
-        "Friday",
-        "Saturday",
-        "Sunday"
-      ],
-      "available_time_windows": [
-        "Weekend Morning",
-        "Weekday Late Afternoon"
-      ],
-      "teaching_modes": [
-        "in_person",
-        "online"
-      ],
-      "travel_areas": [
-        "Nifas Silk-Lafto",
-        "Lebu",
-        "Lideta",
-        "Kirkos",
-        "Sarbet"
-      ],
-      "hourly_rate_etb": 400,
-      "national_id_doc_path": "private/id/rahel_id.pdf",
-      "degree_cert_doc_path": "private/degrees/aau_cs_cert.pdf",
-      "avatar_url": "/avatars/tutor_rahel.png",
-      "privacy_consent": true,
-      "code_of_conduct_agreed": true,
-      "status": "approved",
-      "admin_review_notes": "Trilingual (English, Amharic, Afaan Oromoo). High parent satisfaction rating.",
-      "reviewed_by": "Bruh Tesfa Staff Admin",
-      "reviewed_at": "2026-02-18T10:00:00Z",
-      "referral_source": "University Campus Flyer / Noticeboard",
-      "created_at": "2026-02-17T12:00:00Z",
-      "updated_at": "2026-02-18T10:00:00Z"
-    },
-    {
-      "id": "tut-005",
-      "reference_number": "BT-TUT-2026-0005",
-      "full_legal_name": "Yohannes Bekele Tufa",
-      "public_display_name": "Yohannes B.",
-      "phone": "+251 95 678 9012",
-      "email": "yohannes.bekele@example.com",
-      "preferred_contact_channel": "Phone",
-      "city": "Addis Ababa",
-      "sub_city": "Gullele",
-      "specific_neighborhood": "Shiro Meda",
-      "subjects": [
-        "Mathematics",
-        "Physics"
-      ],
-      "grade_levels": [
-        "Grades 11-12 (University Entrance / EUEE Prep)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum"
-      ],
-      "education_level": "M.Sc. Physics Candidate",
-      "institution": "Addis Ababa University",
-      "field_of_study": "Theoretical & Applied Physics",
-      "years_of_experience": 2,
-      "teaching_approach": "Derivation from fundamental physical laws followed by rigorous timed drill sessions with 10-year archive of Ethiopian Ministry exams.",
-      "bio": "AAU Physics researcher passionate about high-performing students aiming for top Ethiopian university placements in medicine and engineering.",
-      "teaching_languages": [
-        "Amharic (አማርኛ)",
-        "English"
-      ],
-      "available_days": [
-        "Saturday",
-        "Sunday"
-      ],
-      "available_time_windows": [
-        "Morning (8:00 AM - 12:00 PM)"
-      ],
-      "teaching_modes": [
-        "in_person"
-      ],
-      "travel_areas": [
-        "Gullele",
-        "Arada",
-        "Yeka"
-      ],
-      "hourly_rate_etb": 350,
-      "national_id_doc_path": "private/id/yohannes_id.pdf",
-      "degree_cert_doc_path": "private/degrees/aau_physics.pdf",
-      "avatar_url": "/avatars/tutor_yohannes.png",
-      "privacy_consent": true,
-      "code_of_conduct_agreed": true,
-      "status": "under_review",
-      "admin_review_notes": "Phone interview scheduled. Pending degree authentication scan.",
-      "referral_source": "Telegram Channel or Group",
-      "created_at": "2026-03-01T15:20:00Z",
-      "updated_at": "2026-03-01T15:20:00Z"
-    }
-  ],
-  "public_profiles": [
-    {
-      "id": "tut-001",
-      "slug": "teacher-dagmawi",
-      "display_name": "Teacher Dagmawi",
-      "bio": "Senior STEM educator with 5+ years experience tutoring Addis Ababa high schoolers for the EUEE and Cambridge IGCSE. Consistently helped over 35 students achieve scores above 550+ on the Ethiopian University Entrance Examination.",
-      "teaching_approach": "I emphasize active retrieval, concept visualization, and the SQ3R study system. Students do not just memorize formulas; they understand the physical intuition and solve past national exam questions under real timing constraints.",
-      "education_summary": "B.Sc. Mechanical Engineering • Addis Ababa University (AAU - 5 Kilo Institute of Technology)",
-      "subjects": [
-        "Physics",
-        "Mathematics",
-        "SQ3R Study Skills & Exam Strategy"
-      ],
-      "grade_levels": [
-        "Grades 9-10 (Secondary School)",
-        "Grades 11-12 (University Entrance / EUEE Prep)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum",
-        "Cambridge International (IGCSE / A-Levels)"
-      ],
-      "teaching_modes": [
-        "in_person",
-        "online"
-      ],
-      "service_areas": [
-        "Bole",
-        "Yeka",
-        "Kirkos",
-        "CMC",
-        "Sarbet"
-      ],
-      "hourly_rate_etb": 450,
-      "languages": [
-        "English",
-        "Amharic (አማርኛ)"
-      ],
-      "avatar_url": "/avatars/tutor_dagmawi.png",
-      "is_verified": true,
-      "badge": "Verified Tutor",
-      "total_lessons_placed": 42,
-      "created_at": "2026-02-08T09:15:00Z",
-      "updated_at": "2026-10-24T18:28:58.295Z",
-      "available_days": [
-        "Monday",
-        "Tuesday"
-      ],
-      "weekly_summary": "Monday: 14:00 - 17:30 | Tuesday: 17:00 - 19:00"
-    },
-    {
-      "id": "tut-002",
-      "slug": "bethlehem-t",
-      "display_name": "Bethlehem T.",
-      "bio": "ASTU graduate with deep experience preparing middle and secondary school students for regional ministry examinations and the EUEE. Patient, clear, and highly focused on building student confidence in STEM.",
-      "teaching_approach": "Structured step-by-step problem sets, diagnostic quizzes at the start of every session, and tailored mnemonics for biological pathways and chemical reaction balancing.",
-      "education_summary": "B.Sc. Applied Chemistry • Addis Ababa Science and Technology University (ASTU)",
-      "subjects": [
-        "Chemistry",
-        "Biology",
-        "General Science (Grades 7-8)"
-      ],
-      "grade_levels": [
-        "Grades 7-8 (Middle School / Ministry Prep)",
-        "Grades 9-10 (Secondary School)",
-        "Grades 11-12 (University Entrance / EUEE Prep)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum"
-      ],
-      "teaching_modes": [
-        "in_person"
-      ],
-      "service_areas": [
-        "Yeka",
-        "Bole",
-        "Lemi Kura",
-        "CMC",
-        "Ayat"
-      ],
-      "hourly_rate_etb": 400,
-      "languages": [
-        "Amharic (አማርኛ)",
-        "English"
-      ],
-      "avatar_url": "/avatars/tutor_bethlehem.png",
-      "is_verified": true,
-      "badge": "Verified Tutor",
-      "total_lessons_placed": 28,
-      "created_at": "2026-02-11T10:00:00Z",
-      "updated_at": "2026-02-12T11:00:00Z"
-    },
-    {
-      "id": "tut-003",
-      "slug": "natnael-a",
-      "display_name": "Natnael A.",
-      "bio": "Professional educator with 6 years classroom and private tutoring experience. Expert in helping young learners overcome reading hesitation and master both English and Amharic writing skills.",
-      "teaching_approach": "Interactive conversational grammar, phonetics, essay outlining, and reading comprehension workshops designed to foster a love for reading.",
-      "education_summary": "B.Ed. English Language Teaching • Kotebe Metropolitan University (KMU)",
-      "subjects": [
-        "English Language & Literature",
-        "Amharic (አማርኛ)",
-        "Social Studies (Grades 7-8)"
-      ],
-      "grade_levels": [
-        "Grades 1-4 (Foundational Primary)",
-        "Grades 5-6 (Upper Primary)",
-        "Grades 7-8 (Middle School / Ministry Prep)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum",
-        "Cambridge International (IGCSE / A-Levels)"
-      ],
-      "teaching_modes": [
-        "in_person",
-        "online"
-      ],
-      "service_areas": [
-        "Kirkos",
-        "Lideta",
-        "Bole",
-        "Nifas Silk-Lafto",
-        "Sarbet",
-        "Bisrate Gabriel"
-      ],
-      "hourly_rate_etb": 380,
-      "languages": [
-        "English",
-        "Amharic (አማርኛ)"
-      ],
-      "avatar_url": "/avatars/tutor_natnael.png",
-      "is_verified": true,
-      "badge": "Verified Tutor",
-      "total_lessons_placed": 19,
-      "created_at": "2026-02-14T08:30:00Z",
-      "updated_at": "2026-02-15T16:00:00Z"
-    },
-    {
-      "id": "tut-004",
-      "slug": "rahel-h",
-      "display_name": "Rahel H.",
-      "bio": "Software engineer and dedicated youth mentor. Specializes in transforming mathematics from an intimidating hurdle into an intuitive and enjoyable subject for grades 7 to 10.",
-      "teaching_approach": "Clear logic trees, practical math exercises linked to real-world coding problems, and gentle encouragement for students with math anxiety.",
-      "education_summary": "B.Sc. Software Engineering • Addis Ababa University (AAU - 4 Kilo Faculty of Natural Sciences)",
-      "subjects": [
-        "Mathematics",
-        "ICT & Computer Programming",
-        "General Science (Grades 7-8)"
-      ],
-      "grade_levels": [
-        "Grades 7-8 (Middle School / Ministry Prep)",
-        "Grades 9-10 (Secondary School)"
-      ],
-      "curricula": [
-        "Ethiopian National Curriculum"
-      ],
-      "teaching_modes": [
-        "in_person",
-        "online"
-      ],
-      "service_areas": [
-        "Nifas Silk-Lafto",
-        "Lebu",
-        "Lideta",
-        "Kirkos",
-        "Sarbet"
-      ],
-      "hourly_rate_etb": 400,
-      "languages": [
-        "English",
-        "Amharic (አማርኛ)",
-        "Afaan Oromoo"
-      ],
-      "avatar_url": "/avatars/tutor_rahel.png",
-      "is_verified": true,
-      "badge": "Verified Tutor",
-      "total_lessons_placed": 19,
-      "created_at": "2026-02-17T12:00:00Z",
-      "updated_at": "2026-02-18T10:00:00Z"
-    }
-  ],
-  "parent_requests": [
-    {
-      "id": "req-001",
-      "reference_number": "BT-REQ-2026-0001",
-      "parent_name": "W/ro Selamawit Kebede",
-      "phone": "+251 91 144 8822",
-      "email": "selamawit.k@example.com",
-      "preferred_contact_method": "Phone",
-      "city": "Addis Ababa",
-      "sub_city": "Bole",
-      "general_area": "Bole Medhanialem / Rwanda",
-      "subjects": [
-        "Physics",
-        "Mathematics"
-      ],
-      "grade_level": "Grades 11-12 (University Entrance / EUEE Prep)",
-      "curriculum": "Ethiopian National Curriculum",
-      "teaching_mode": "in_person",
-      "schedule_preference": "Weekday late afternoons (3 days/week)",
-      "preferred_days": [
-        "Monday",
-        "Wednesday",
-        "Friday"
-      ],
-      "preferred_time_windows": [
-        "Afternoon (14:00 - 17:00)",
-        "Evening (17:00 - 20:00)"
-      ],
-      "schedule_flexibility": "flexible_windows",
-      "earliest_start_date": "2026-03-10",
-      "hours_per_session": 1.5,
-      "lessons_per_week": 3,
-      "lesson_frequency": "3 days per week (standard recommendation)",
-      "budget_range_min": 400,
-      "budget_range_max": 550,
-      "preferred_language": "English & Amharic",
-      "learning_goals": "Our 12th-grade son needs thorough preparation for the national university entrance exam (EUEE), specifically mastering calculus problems and mechanics in physics.",
-      "status": "new",
-      "admin_notes": "High urgency — national exam in 4 months. Needs experienced tutor in Bole.",
-      "privacy_consent": true,
-      "referral_source": "Friend or Family Recommendation",
-      "created_at": "2026-03-02T10:15:00Z",
-      "updated_at": "2026-03-02T10:15:00Z"
-    },
-    {
-      "id": "req-002",
-      "reference_number": "BT-REQ-2026-0002",
-      "parent_name": "Ato Henok Girma",
-      "phone": "+251 92 233 7711",
-      "email": "henok.girma@example.com",
-      "preferred_contact_method": "Telegram",
-      "city": "Addis Ababa",
-      "sub_city": "Yeka",
-      "general_area": "CMC Road / Sunshine Real Estate",
-      "subjects": [
-        "Chemistry",
-        "General Science (Grades 7-8)"
-      ],
-      "grade_level": "Grades 7-8 (Middle School / Ministry Prep)",
-      "curriculum": "Ethiopian National Curriculum",
-      "teaching_mode": "in_person",
-      "schedule_preference": "Tuesday, Thursday & Saturday afternoon",
-      "preferred_days": [
-        "Tuesday",
-        "Thursday",
-        "Saturday"
-      ],
-      "preferred_time_windows": [
-        "Afternoon (14:00 - 17:00)"
-      ],
-      "schedule_flexibility": "strict_times",
-      "earliest_start_date": "2026-03-08",
-      "hours_per_session": 1.5,
-      "lessons_per_week": 3,
-      "lesson_frequency": "3 days per week (standard recommendation)",
-      "budget_range_min": 350,
-      "budget_range_max": 450,
-      "preferred_language": "Amharic (አማርኛ)",
-      "learning_goals": "Support for Grade 8 student preparing for regional ministry examinations. Focus on chemistry foundation and SQ3R study routines.",
-      "status": "reviewing",
-      "admin_notes": "Initial parent call completed. Ready to shortlist candidates.",
-      "privacy_consent": true,
-      "referral_source": "Telegram Channel or Group",
-      "created_at": "2026-03-03T14:40:00Z",
-      "updated_at": "2026-03-03T14:40:00Z"
-    }
-  ],
-  "matches": [
-    {
-      "id": "match-001",
-      "request_id": "req-001",
-      "tutor_id": "tut-001",
-      "match_score": 95,
-      "match_breakdown": {
-        "subject_score": 30,
-        "grade_score": 20,
-        "modality_score": 15,
-        "location_score": 15,
-        "language_score": 10,
-        "budget_score": 10,
-        "reasons": [
-          "+30 pts: Teaches Physics & Mathematics",
-          "+20 pts: EUEE University Entrance prep specialist",
-          "+15 pts: In-person in Bole area",
-          "+10 pts: Fluent in English & Amharic",
-          "+10 pts: Within 400-550 ETB budget (450 ETB/hr)"
-        ]
-      },
-      "proposed_at": "2026-03-02T12:00:00Z",
-      "tutor_response": "accepted",
-      "parent_response": "accepted",
-      "status": "confirmed",
-      "notes": "Parent and tutor spoke via phone. First introductory lesson scheduled.",
-      "created_at": "2026-03-02T12:00:00Z",
-      "updated_at": "2026-03-02T16:00:00Z"
-    }
-  ],
-  "placements": [
-    {
-      "id": "plc-001",
-      "match_id": "match-001",
-      "request_id": "req-001",
-      "tutor_id": "tut-001",
-      "contract_type": "first_month_recurring",
-      "agreed_rate_etb": 450,
-      "total_contract_value_etb": 8100,
-      "commission_percentage": 60,
-      "commission_amount_etb": 4860,
-      "commission_basis_description": "60% one-time placement commission on first month recurring contract (18 hours)",
-      "terms_accepted_date": "2026-03-02T16:30:00Z",
-      "terms_version": "v1.0-2026",
-      "payment_status": "paid",
-      "payment_reference": "CBE-TX-99882211",
-      "payment_method": "CBE Birr",
-      "payment_received_at": "2026-03-04T10:00:00Z",
-      "start_date": "2026-03-05",
-      "replacement_guarantee_valid_until": "2026-03-19",
-      "follow_up_status": "first_lesson_completed",
-      "follow_up_notes": "Parent confirmed Dagmawi arrived punctually. Student very pleased with physics explanation.",
-      "created_at": "2026-03-02T16:30:00Z",
-      "updated_at": "2026-03-06T09:00:00Z"
-    }
-  ],
+  "tutors": [],
+  "public_profiles": [],
+  "parent_requests": [],
+  "matches": [],
+  "placements": [],
   "fee_config": {
     "id": "fc-default-01",
     "default_commission_percentage": 60,
@@ -740,225 +13,7 @@
     "effective_from": "2026-01-01T00:00:00Z",
     "is_active": true
   },
-  "complaints": [],
-  "audit_logs": [
-    {
-      "id": "log-001",
-      "actor": "system",
-      "role": "system",
-      "action": "system_initialized",
-      "resource_type": "database",
-      "resource_id": "root",
-      "details": {
-        "message": "BRUH TESFA local database initialized with production seeds"
-      },
-      "created_at": "2026-10-24T18:16:40.232Z"
-    },
-    {
-      "id": "log-1792871393689-c0e2c",
-      "actor": "Staff Admin",
-      "role": "admin",
-      "action": "vacancy_created",
-      "resource_type": "tutoring_vacancy",
-      "resource_id": "vac-1792871393688-qbyig",
-      "details": {
-        "vacancy_code": "BT-VAC-2026-0005",
-        "title": "Test State Machine Vacancy"
-      },
-      "created_at": "2026-10-24T19:49:53.688Z"
-    },
-    {
-      "id": "log-1792871393691-jqgko",
-      "actor": "Test Tutor Solomon",
-      "role": "tutor_applicant",
-      "action": "vacancy_application_submitted",
-      "resource_type": "vacancy_application",
-      "resource_id": "vapp-1792871393691-o0xry",
-      "details": {
-        "vacancy_code": "BT-VAC-2026-0005",
-        "applicant_phone": "+251 91 999 0011"
-      },
-      "created_at": "2026-10-24T19:49:53.691Z"
-    },
-    {
-      "id": "log-1792871393697-pm7nm",
-      "actor": "Test Tutor Solomon",
-      "role": "tutor_applicant",
-      "action": "vacancy_application_submitted",
-      "resource_type": "vacancy_application",
-      "resource_id": "vapp-1792871393697-58ums",
-      "details": {
-        "vacancy_code": "BT-VAC-2026-0005",
-        "applicant_phone": "+251 91 999 0011"
-      },
-      "created_at": "2026-10-24T19:49:53.697Z"
-    }
-  ],
-  "data_deletion_requests": [],
   "vacancies": [
-    {
-      "id": "vac-001",
-      "vacancy_code": "BT-VAC-2026-0001",
-      "title": "Grade 8 Physics & Mathematics Home Tutor",
-      "parent_request_id": "req-002",
-      "city": "Addis Ababa",
-      "sub_city": "Bole",
-      "general_area": "Bole Medhanialem / Rwanda Area",
-      "grade_level": "Grades 7-8 (Middle School / Ministry Prep)",
-      "curriculum": "Ethiopian National Curriculum",
-      "subjects": [
-        "Physics",
-        "Mathematics"
-      ],
-      "teaching_format": "in_person",
-      "schedule_days": [
-        "Tuesday",
-        "Thursday",
-        "Saturday"
-      ],
-      "time_window": "Late Afternoon (4:30 PM - 6:00 PM)",
-      "lesson_frequency": "3 days per week (1.5 hrs each)",
-      "hours_per_session": 1.5,
-      "expected_duration_months": 4,
-      "hourly_rate_etb": 450,
-      "total_estimated_budget_etb": 8100,
-      "required_qualifications": "B.Sc. in STEM / Engineering or certified middle school educator with proven Grade 8 ministry exam preparation experience.",
-      "languages": [
-        "English",
-        "Amharic (አማርኛ)"
-      ],
-      "parent_preferences": "Patient educator skilled in SQ3R active recall and past ministry exam drills.",
-      "application_deadline": "2026-04-15",
-      "application_instructions": "Submit your profile and brief statement of methodology. Shortlisted candidates are invited for an introductory family interview.",
-      "status": "open",
-      "view_count": 142,
-      "application_count": 3,
-      "telegram_message_id": "9841",
-      "telegram_published_at": "2026-03-10T09:00:00Z",
-      "published_at": "2026-03-10T09:00:00Z",
-      "created_at": "2026-03-09T14:00:00Z",
-      "updated_at": "2026-03-10T09:00:00Z"
-    },
-    {
-      "id": "vac-002",
-      "vacancy_code": "BT-VAC-2026-0002",
-      "title": "Grade 12 EUEE University Entrance STEM Mentor",
-      "parent_request_id": "req-001",
-      "city": "Addis Ababa",
-      "sub_city": "Yeka",
-      "general_area": "CMC Road / Sunshine Real Estate",
-      "grade_level": "Grades 11-12 (University Entrance / EUEE Prep)",
-      "curriculum": "Ethiopian National Curriculum",
-      "subjects": [
-        "Mathematics",
-        "Physics",
-        "SQ3R Study Skills & Exam Strategy"
-      ],
-      "teaching_format": "in_person",
-      "schedule_days": [
-        "Monday",
-        "Wednesday",
-        "Friday"
-      ],
-      "time_window": "5:00 PM - 7:00 PM",
-      "lesson_frequency": "3 days per week (2 hrs each)",
-      "hours_per_session": 2,
-      "expected_duration_months": 5,
-      "hourly_rate_etb": 500,
-      "total_estimated_budget_etb": 12000,
-      "required_qualifications": "AAU / ASTU engineering or physics graduate who scored 550+ on the Ethiopian University Entrance Examination.",
-      "languages": [
-        "English",
-        "Amharic (አማርኛ)"
-      ],
-      "parent_preferences": "High focus on calculus derivatives, electromagnetism, and timed exam simulation sets.",
-      "application_deadline": "2026-04-10",
-      "application_instructions": "Include your university major and past EUEE results or student pass track record.",
-      "status": "open",
-      "view_count": 218,
-      "application_count": 5,
-      "telegram_message_id": "9845",
-      "telegram_published_at": "2026-03-11T11:30:00Z",
-      "published_at": "2026-03-11T11:30:00Z",
-      "created_at": "2026-03-11T10:00:00Z",
-      "updated_at": "2026-03-11T11:30:00Z"
-    },
-    {
-      "id": "vac-003",
-      "vacancy_code": "BT-VAC-2026-0003",
-      "title": "Cambridge IGCSE Chemistry & Biology Specialist",
-      "city": "Addis Ababa",
-      "sub_city": "Kirkos",
-      "general_area": "Sarbet / AU Area",
-      "grade_level": "Cambridge IGCSE / O-Levels",
-      "curriculum": "Cambridge International (IGCSE / A-Levels)",
-      "subjects": [
-        "Chemistry",
-        "Biology"
-      ],
-      "teaching_format": "in_person",
-      "schedule_days": [
-        "Tuesday",
-        "Thursday"
-      ],
-      "time_window": "4:30 PM - 6:30 PM",
-      "lesson_frequency": "2 days per week (2 hrs each)",
-      "hours_per_session": 2,
-      "expected_duration_months": 6,
-      "hourly_rate_etb": 650,
-      "total_estimated_budget_etb": 10400,
-      "required_qualifications": "Deep familiarity with Cambridge International syllabus 0620 (Chemistry) and 0610 (Biology) and mark schemes.",
-      "languages": [
-        "English"
-      ],
-      "parent_preferences": "Strictly English medium instruction. Assistance with Paper 4 theory and Paper 6 alternative to practical.",
-      "application_deadline": "2026-04-05",
-      "status": "closing_soon",
-      "view_count": 95,
-      "application_count": 2,
-      "published_at": "2026-03-12T15:00:00Z",
-      "created_at": "2026-03-12T14:00:00Z",
-      "updated_at": "2026-03-12T15:00:00Z"
-    },
-    {
-      "id": "vac-004",
-      "vacancy_code": "BT-VAC-2026-0004",
-      "title": "Foundational Primary Literacy & Numeracy Tutor",
-      "city": "Addis Ababa",
-      "sub_city": "Nifas Silk-Lafto",
-      "general_area": "Lebu Varnero",
-      "grade_level": "Grades 1-4 (Foundational Primary)",
-      "curriculum": "Ethiopian National Curriculum",
-      "subjects": [
-        "English Language & Literature",
-        "Amharic (አማርኛ)",
-        "Mathematics"
-      ],
-      "teaching_format": "in_person",
-      "schedule_days": [
-        "Monday",
-        "Wednesday",
-        "Friday"
-      ],
-      "time_window": "3:30 PM - 5:00 PM",
-      "lesson_frequency": "3 days per week",
-      "hours_per_session": 1.5,
-      "expected_duration_months": 3,
-      "hourly_rate_etb": 380,
-      "total_estimated_budget_etb": 6840,
-      "required_qualifications": "B.Ed. primary educator or experienced foundational reading mentor.",
-      "languages": [
-        "Amharic (አማርኛ)",
-        "English"
-      ],
-      "status": "filled",
-      "view_count": 87,
-      "application_count": 4,
-      "published_at": "2026-03-01T10:00:00Z",
-      "closed_at": "2026-03-08T16:00:00Z",
-      "created_at": "2026-02-28T09:00:00Z",
-      "updated_at": "2026-03-08T16:00:00Z"
-    },
     {
       "id": "vac-005",
       "vacancy_code": "BT-VAC-2026-0005",
@@ -999,124 +54,156 @@
       "published_at": "2026-03-14T08:00:00Z",
       "created_at": "2026-03-14T08:00:00Z",
       "updated_at": "2026-03-14T08:00:00Z"
+    },
+    {
+      "title": "Test",
+      "city": "AA",
+      "sub_city": "Kirkos",
+      "grade_level": "G1",
+      "curriculum": "Nat",
+      "subjects": [
+        "Math"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Mon"
+      ],
+      "time_window": "4PM",
+      "lesson_frequency": "1/wk",
+      "hours_per_session": 1,
+      "expected_duration_months": 1,
+      "hourly_rate_etb": 100,
+      "required_qualifications": "None",
+      "languages": [
+        "Amharic"
+      ],
+      "status": "filled",
+      "id": "vac-1792877020519-qa7ft",
+      "vacancy_code": "BT-VAC-2026-0002",
+      "view_count": 0,
+      "application_count": 1,
+      "created_at": "2026-10-24T21:23:40.519Z",
+      "updated_at": "2026-10-24T21:23:40.530Z",
+      "closed_at": "2026-10-24T21:23:40.536Z"
+    },
+    {
+      "title": "G6",
+      "city": "AA",
+      "sub_city": "Nifas",
+      "grade_level": "G5-6",
+      "curriculum": "Nat",
+      "subjects": [
+        "Math"
+      ],
+      "teaching_format": "in_person",
+      "schedule_days": [
+        "Mon"
+      ],
+      "time_window": "4PM",
+      "lesson_frequency": "2/wk",
+      "hours_per_session": 1.5,
+      "expected_duration_months": 3,
+      "hourly_rate_etb": 400,
+      "required_qualifications": "Degree",
+      "languages": [
+        "English"
+      ],
+      "status": "filled",
+      "id": "vac-1792877174139-l2i1v",
+      "vacancy_code": "BT-VAC-2026-0003",
+      "view_count": 0,
+      "application_count": 1,
+      "created_at": "2026-10-24T21:26:14.139Z",
+      "updated_at": "2026-10-24T21:26:14.149Z",
+      "closed_at": "2026-10-24T21:26:14.157Z"
     }
   ],
   "vacancy_applications": [
     {
-      "id": "vapp-001",
-      "vacancy_id": "vac-001",
-      "tutor_id": "tut-001",
-      "applicant_name": "Dagmawi Yosef Mesfin",
-      "applicant_phone": "+251 91 189 4521",
-      "applicant_email": "dagmawi.yosef@example.com",
-      "applicant_education": "B.Sc. Mechanical Engineering",
-      "applicant_institution": "Addis Ababa University (AAU)",
-      "years_of_experience": 5,
-      "proposed_rate_etb": 450,
-      "available_schedule": "Available on all requested Tuesday, Thursday & Saturday afternoon windows",
-      "cover_note": "I have 5 years experience preparing middle school students for Grade 8 physics and algebra. I live in Bole Brass and can walk to the home punctually.",
-      "status": "shortlisted",
-      "admin_review_notes": "Verified AAU degree and background. Candidate lives 10 mins away from family.",
-      "referral_source": "Telegram Channel",
-      "created_at": "2026-03-10T12:00:00Z",
-      "updated_at": "2026-03-11T09:00:00Z"
+      "vacancy_id": "vac-1792877020519-qa7ft",
+      "applicant_name": "App",
+      "applicant_phone": "0911",
+      "applicant_education": "Ed",
+      "applicant_institution": "Inst",
+      "years_of_experience": 1,
+      "proposed_rate_etb": 100,
+      "cover_note": "note",
+      "id": "vapp-1792877020530-ws3mm",
+      "status": "selected",
+      "created_at": "2026-10-24T21:23:40.530Z",
+      "updated_at": "2026-10-24T21:23:40.536Z"
     },
     {
-      "id": "vapp-002",
-      "vacancy_id": "vac-001",
-      "tutor_id": "tut-002",
-      "applicant_name": "Bethlehem Tadesse Haile",
-      "applicant_phone": "+251 92 345 6789",
-      "applicant_email": "bethlehem.tadesse@example.com",
-      "applicant_education": "B.Sc. Applied Chemistry",
-      "applicant_institution": "ASTU",
-      "years_of_experience": 4,
+      "vacancy_id": "vac-1792877174139-l2i1v",
+      "applicant_name": "Beth",
+      "applicant_phone": "0923334455",
+      "applicant_education": "BEd",
+      "applicant_institution": "KMU",
+      "years_of_experience": 3,
       "proposed_rate_etb": 400,
-      "available_schedule": "Tuesday & Thursday afternoons available",
-      "cover_note": "Strong chemistry pedagogy. Have tutored 12 middle school students for regional exams with a 100% pass rate.",
-      "status": "submitted",
-      "referral_source": "Website Board",
-      "created_at": "2026-03-10T14:30:00Z",
-      "updated_at": "2026-03-10T14:30:00Z"
-    },
-    {
-      "vacancy_id": "vac-1792871393688-qbyig",
-      "applicant_name": "Test Tutor Solomon",
-      "applicant_phone": "+251 91 999 0011",
-      "applicant_email": "solomon@example.com",
-      "applicant_education": "B.Sc. Mathematics",
-      "applicant_institution": "AAU Arat Kilo",
-      "years_of_experience": 3,
-      "tutor_id": "tut-001",
-      "cover_note": "I am highly qualified for this position.",
-      "proposed_rate_etb": 450,
-      "available_schedule": "Saturday & Sunday mornings",
-      "id": "vapp-1792871393691-o0xry",
-      "status": "withdrawn",
-      "created_at": "2026-10-24T19:49:53.691Z",
-      "updated_at": "2026-10-24T19:49:53.694Z",
-      "admin_review_notes": "Tutor has a schedule conflict"
-    },
-    {
-      "vacancy_id": "vac-1792871393688-qbyig",
-      "applicant_name": "Test Tutor Solomon",
-      "applicant_phone": "+251 91 999 0011",
-      "applicant_email": "solomon@example.com",
-      "applicant_education": "B.Sc. Mathematics",
-      "applicant_institution": "AAU Arat Kilo",
-      "years_of_experience": 3,
-      "tutor_id": "tut-001",
-      "cover_note": "Schedule conflict resolved, re-applying.",
-      "proposed_rate_etb": 450,
-      "available_schedule": "Saturday & Sunday mornings",
-      "id": "vapp-1792871393697-58ums",
-      "status": "submitted",
-      "created_at": "2026-10-24T19:49:53.697Z",
-      "updated_at": "2026-10-24T19:49:53.697Z"
+      "cover_note": "Note",
+      "id": "vapp-1792877174149-d9k70",
+      "status": "selected",
+      "created_at": "2026-10-24T21:26:14.149Z",
+      "updated_at": "2026-10-24T21:26:14.157Z",
+      "admin_review_notes": "Agreed"
     }
   ],
-  "telegram_subscribers": [
+  "complaints": [],
+  "audit_logs": [
     {
-      "id": "sub-001",
-      "chat_id": 108923481,
-      "username": "yohannes_math",
-      "first_name": "Yohannes",
-      "is_active": true,
-      "subjects": [
-        "Mathematics",
-        "Physics"
-      ],
-      "grade_levels": [
-        "Grades 9-10 (Secondary School)",
-        "Grades 11-12 (University Entrance / EUEE Prep)"
-      ],
-      "sub_cities": [
-        "Bole",
-        "Yeka"
-      ],
-      "teaching_format": "either",
-      "created_at": "2026-03-01T10:00:00Z",
-      "updated_at": "2026-03-01T10:00:00Z"
+      "id": "log-1792877020521-nb4eh",
+      "actor": "Staff Admin",
+      "role": "admin",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792877020519-qa7ft",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0002",
+        "title": "Test"
+      },
+      "created_at": "2026-10-24T21:23:40.519Z"
     },
     {
-      "id": "sub-002",
-      "chat_id": 209847123,
-      "username": "selam_english",
-      "first_name": "Selamawit",
-      "is_active": true,
-      "subjects": [
-        "English Language & Literature"
-      ],
-      "grade_levels": [
-        "Grades 7-8 (Middle School / Ministry Prep)"
-      ],
-      "sub_cities": [
-        "Kirkos"
-      ],
-      "teaching_format": "in_person",
-      "created_at": "2026-03-05T14:30:00Z",
-      "updated_at": "2026-03-05T14:30:00Z"
+      "id": "log-1792877020530-t1x0o",
+      "actor": "App",
+      "role": "tutor_applicant",
+      "action": "vacancy_application_submitted",
+      "resource_type": "vacancy_application",
+      "resource_id": "vapp-1792877020530-ws3mm",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0002",
+        "applicant_phone": "0911"
+      },
+      "created_at": "2026-10-24T21:23:40.530Z"
+    },
+    {
+      "id": "log-1792877174141-uwp0l",
+      "actor": "Staff Admin",
+      "role": "admin",
+      "action": "vacancy_created",
+      "resource_type": "tutoring_vacancy",
+      "resource_id": "vac-1792877174139-l2i1v",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0003",
+        "title": "G6"
+      },
+      "created_at": "2026-10-24T21:26:14.139Z"
+    },
+    {
+      "id": "log-1792877174149-e980s",
+      "actor": "Beth",
+      "role": "tutor_applicant",
+      "action": "vacancy_application_submitted",
+      "resource_type": "vacancy_application",
+      "resource_id": "vapp-1792877174149-d9k70",
+      "details": {
+        "vacancy_code": "BT-VAC-2026-0003",
+        "applicant_phone": "0923334455"
+      },
+      "created_at": "2026-10-24T21:26:14.149Z"
     }
   ],
+  "telegram_subscribers": [],
   "telegram_broadcast_logs": []
 }

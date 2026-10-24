@@ -1,10 +1,12 @@
 import React from 'react';
 import {
   DEFAULT_SUPPORT_PHONE,
+  SECONDARY_SUPPORT_PHONE,
   DEFAULT_SUPPORT_EMAIL,
   DEFAULT_OFFICE_LOCATION,
   DEFAULT_TELEGRAM_COMMUNITY_URL,
   DEFAULT_TELEGRAM_CHANNEL_URL,
+  DEFAULT_TELEGRAM_ADMIN_USERNAME,
 } from '@/lib/constants';
 import { PhoneIcon, MailIcon, MapPinIcon, TelegramIcon } from '@/components/Icons';
 
@@ -35,9 +37,15 @@ export default function ContactPage() {
               <PhoneIcon className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
               <div>
                 <strong className="block text-slate-900">Telephone / SMS Coordination</strong>
-                <a href={`tel:${DEFAULT_SUPPORT_PHONE}`} className="text-amber-700 font-semibold hover:underline">
-                  {DEFAULT_SUPPORT_PHONE}
-                </a>
+                <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                  <a href={`tel:${DEFAULT_SUPPORT_PHONE}`} className="text-amber-700 font-semibold hover:underline">
+                    {DEFAULT_SUPPORT_PHONE}
+                  </a>
+                  <span className="text-slate-300">|</span>
+                  <a href={`tel:${SECONDARY_SUPPORT_PHONE}`} className="text-amber-700 font-semibold hover:underline">
+                    {SECONDARY_SUPPORT_PHONE}
+                  </a>
+                </div>
                 <span className="block text-xs text-slate-500 mt-0.5">Monday – Saturday: 8:30 AM – 7:00 PM</span>
               </div>
             </div>
@@ -75,20 +83,20 @@ export default function ContactPage() {
 
             <div className="space-y-2.5 pt-2">
               <a
+                href={`https://t.me/${DEFAULT_TELEGRAM_ADMIN_USERNAME}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block p-3 rounded-xl bg-sky-500/30 hover:bg-sky-500/40 border border-sky-400/40 text-xs font-semibold text-white transition-colors"
+              >
+                &rarr; Direct Coordinator Telegram Desk: @{DEFAULT_TELEGRAM_ADMIN_USERNAME}
+              </a>
+              <a
                 href={DEFAULT_TELEGRAM_COMMUNITY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition-colors"
               >
-                &rarr; Community Discussion Group
-              </a>
-              <a
-                href={DEFAULT_TELEGRAM_CHANNEL_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition-colors"
-              >
-                &rarr; Broadcast Announcements & Vacancies
+                &rarr; Community & Vacancies: t.me/bruh_tesfa_tutoring_ethiopia
               </a>
             </div>
           </div>

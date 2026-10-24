@@ -132,7 +132,7 @@ export default function TutorApplicationForm() {
         return false;
       }
       if (!formData.public_display_name.trim() || formData.public_display_name.trim().length < 2) {
-        setErrorMessage('Please provide a preferred public display name (e.g. Teacher Dagmawi).');
+        setErrorMessage('Please provide a preferred public display name (e.g. Teacher Abebe).');
         return false;
       }
       if (!formData.phone.trim() || formData.phone.trim().length < 9) {
@@ -316,7 +316,7 @@ export default function TutorApplicationForm() {
                   type="text"
                   value={formData.public_display_name}
                   onChange={(e) => updateField('public_display_name', e.target.value)}
-                  placeholder="e.g. Teacher Dagmawi or Dagmawi Y."
+                  placeholder="e.g. Teacher Abebe or Abebe T."
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
                   required
                 />
@@ -331,7 +331,7 @@ export default function TutorApplicationForm() {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => updateField('phone', e.target.value)}
-                  placeholder="e.g. +251 91 123 4567"
+                  placeholder="e.g. 0911223344 or 0931736692"
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
                   required
                 />

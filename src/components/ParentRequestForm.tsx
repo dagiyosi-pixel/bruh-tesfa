@@ -654,7 +654,7 @@ export default function ParentRequestForm({ initialTutorId, initialTutorName }: 
                   type="text"
                   value={formData.parent_name}
                   onChange={(e) => setFormData({ ...formData, parent_name: e.target.value })}
-                  placeholder="e.g. W/ro Selamawit Kebede"
+                  placeholder="e.g. Abebe / Genet Tadesse"
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
                   required
                 />
@@ -668,7 +668,7 @@ export default function ParentRequestForm({ initialTutorId, initialTutorName }: 
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="e.g. +251 91 123 4567"
+                  placeholder="e.g. 0911223344 or 0931736692"
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500"
                   required
                 />

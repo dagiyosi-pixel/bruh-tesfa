@@ -115,7 +115,7 @@ export default function VacancyApplicationForm({ vacancy }: VacancyApplicationFo
               type="text"
               value={formData.applicant_name}
               onChange={(e) => setFormData({ ...formData, applicant_name: e.target.value })}
-              placeholder="e.g. Teacher Dagmawi"
+              placeholder="e.g. Teacher Abebe"
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 text-sm"
               required
             />
@@ -129,7 +129,7 @@ export default function VacancyApplicationForm({ vacancy }: VacancyApplicationFo
               type="tel"
               value={formData.applicant_phone}
               onChange={(e) => setFormData({ ...formData, applicant_phone: e.target.value })}
-              placeholder="e.g. +251 91 123 4567"
+              placeholder="e.g. 0911223344 or 0931736692"
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 text-sm"
               required
             />
