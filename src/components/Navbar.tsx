@@ -80,12 +80,21 @@ export default function Navbar() {
                 <span>Portal ({tutorSession.displayName})</span>
               </Link>
             ) : (
-              <Link
-                href="/tutors/schedule"
-                className="text-slate-300 hover:text-white font-medium"
-              >
-                Tutor Portal
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="text-slate-300 hover:text-white font-medium"
+                >
+                  Sign In
+                </Link>
+                <span className="text-slate-700">|</span>
+                <Link
+                  href="/signup"
+                  className="text-amber-300 hover:text-amber-200 font-semibold"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -135,7 +144,7 @@ export default function Navbar() {
           </nav>
 
           {/* Primary CTA and Actions */}
-          <div className="hidden md:flex items-center gap-2.5">
+          <div className="hidden md:flex items-center gap-2">
             {tutorSession ? (
               <Link
                 href="/tutors/schedule"
@@ -145,17 +154,25 @@ export default function Navbar() {
                 <span>My Portal</span>
               </Link>
             ) : (
-              <Link
-                href="/tutors/schedule"
-                className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all"
-              >
-                Tutor Login
-              </Link>
+              <>
+                <Link
+                  href="/login"
+                  className="px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-all"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300/80 transition-all"
+                >
+                  Sign Up
+                </Link>
+              </>
             )}
 
             <Link
               href="/request-tutor"
-              className="inline-flex items-center justify-center px-4 py-2 rounded-xl font-bold text-xs text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 shadow-sm shadow-amber-600/30 transition-all"
+              className="inline-flex items-center justify-center px-4 py-2 rounded-xl font-bold text-xs text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 shadow-sm shadow-amber-600/30 transition-all ml-1"
             >
               Request a Tutor
             </Link>
@@ -212,13 +229,32 @@ export default function Navbar() {
             >
               Request a Tutor
             </Link>
-            <Link
-              href="/tutors/schedule"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2.5 rounded-xl font-semibold text-xs text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200"
-            >
-              {tutorSession ? `Tutor Portal (${tutorSession.displayName})` : 'Tutor Portal & Schedule'}
-            </Link>
+            {tutorSession ? (
+              <Link
+                href="/tutors/schedule"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 rounded-xl font-semibold text-xs text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200"
+              >
+                Tutor Portal ({tutorSession.displayName})
+              </Link>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-2.5 rounded-xl font-bold text-xs text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-2.5 rounded-xl font-bold text-xs text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
             <a
               href={DEFAULT_TELEGRAM_COMMUNITY_URL}
               target="_blank"

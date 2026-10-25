@@ -46,6 +46,7 @@ interface SubmittedApplication {
 
 export default function TutorSchedulePortalPage() {
   const [activeTab, setActiveTab] = useState<'schedule' | 'applications' | 'security'>('schedule');
+  const [authTab, setAuthTab] = useState<'signin' | 'signup'>('signin');
   const [loginMethod, setLoginMethod] = useState<'password' | 'code'>('password');
   
   // Login form state
@@ -272,153 +273,241 @@ export default function TutorSchedulePortalPage() {
       </div>
 
       {/* =========================================================================
-          GUEST VIEW: AUTHENTICATION CARD
+          GUEST VIEW: AUTHENTICATION CARD (SIGN IN & SIGN UP)
          ========================================================================= */}
       {!tutorData ? (
-        <div className="max-w-md mx-auto bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-5">
-          {/* Method Switcher */}
-          <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-2xl text-xs font-bold">
+        <div className="max-w-md mx-auto bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          {/* Main Top Switcher: Sign In (Log In) vs Sign Up (Register) */}
+          <div className="grid grid-cols-2 border-b border-slate-200 bg-slate-50/70">
             <button
               type="button"
               onClick={() => {
-                setLoginMethod('password');
+                setAuthTab('signin');
                 setAuthError(null);
               }}
-              className={`py-2 rounded-xl transition-all ${
-                loginMethod === 'password'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              className={`py-3.5 text-xs sm:text-sm font-bold text-center transition-all ${
+                authTab === 'signin'
+                  ? 'bg-white text-slate-900 border-b-2 border-amber-600 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/50'
               }`}
             >
-              Sign In with Password
+              Sign In (Log In)
             </button>
             <button
               type="button"
               onClick={() => {
-                setLoginMethod('code');
+                setAuthTab('signup');
                 setAuthError(null);
               }}
-              className={`py-2 rounded-xl transition-all ${
-                loginMethod === 'code'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              className={`py-3.5 text-xs sm:text-sm font-bold text-center transition-all ${
+                authTab === 'signup'
+                  ? 'bg-white text-slate-900 border-b-2 border-amber-600 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/50'
               }`}
             >
-              Reference & Phone
+              Sign Up (Register)
             </button>
           </div>
 
-          {authError && (
-            <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-start gap-2">
-              <AlertTriangleIcon className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-              <span>{authError}</span>
-            </div>
-          )}
+          <div className="p-6 sm:p-8 space-y-5">
+            {authTab === 'signup' ? (
+              <div className="space-y-5 text-left">
+                <div className="space-y-2">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center font-bold">
+                    <GraduationCapIcon className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <h2 className="text-lg font-extrabold text-slate-900">
+                    Create Your Educator Account
+                  </h2>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Join Bruh Tesfa as a private home or online tutor in Addis Ababa. Submit your credentials (degree & Kebele/Fayda ID) to get approved.
+                  </p>
+                </div>
 
-          {loginMethod === 'password' ? (
-            <form onSubmit={handlePasswordLogin} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Phone, Email, or Reference Code
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="e.g. +251 91 123 4567 or BT-TUT-2026-0001"
-                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 font-medium"
-                />
+                <div className="space-y-2.5 bg-amber-50/60 p-3.5 rounded-2xl border border-amber-200/80 text-xs text-slate-700">
+                  <div className="font-bold text-amber-950 flex items-center gap-1.5">
+                    <CheckCircleIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>How it works for new tutors:</span>
+                  </div>
+                  <ol className="list-decimal pl-4 space-y-1 text-slate-600">
+                    <li>Complete the online application form</li>
+                    <li>Coordinator verifies your degree & Kebele ID</li>
+                    <li>Access your scheduling portal & apply for vacancies</li>
+                    <li>Keep 100% of continuing lesson earnings after month 1</li>
+                  </ol>
+                </div>
+
+                <div className="space-y-2 pt-1">
+                  <Link
+                    href="/become-a-tutor"
+                    className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-bold text-sm text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 shadow-sm transition-all"
+                  >
+                    <span>Start Tutor Registration &rarr;</span>
+                  </Link>
+
+                  <div className="pt-2 text-center text-xs text-slate-500">
+                    <span>Looking for a tutor for your child instead? </span>
+                    <Link href="/request-tutor" className="font-bold text-amber-700 hover:underline">
+                      Request a tutor
+                    </Link>
+                  </div>
+                </div>
               </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Account Password
-                  </label>
+            ) : (
+              <>
+                {/* Method Switcher for Sign In */}
+                <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-2xl text-xs font-bold">
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-[11px] text-amber-700 hover:underline font-semibold"
+                    onClick={() => {
+                      setLoginMethod('password');
+                      setAuthError(null);
+                    }}
+                    className={`py-2 rounded-xl transition-all ${
+                      loginMethod === 'password'
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
                   >
-                    {showPassword ? 'Hide' : 'Show'}
+                    Sign In with Password
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginMethod('code');
+                      setAuthError(null);
+                    }}
+                    className={`py-2 rounded-xl transition-all ${
+                      loginMethod === 'code'
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Reference & Phone
                   </button>
                 </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password..."
-                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 font-medium"
-                />
-              </div>
 
-              <div className="flex items-center justify-between text-xs">
-                <label className="flex items-center gap-2 cursor-pointer text-slate-600 select-none">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500"
-                  />
-                  <span>Stay signed in for 30 days</span>
-                </label>
-              </div>
+                {authError && (
+                  <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-start gap-2">
+                    <AlertTriangleIcon className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                    <span>{authError}</span>
+                  </div>
+                )}
 
-              <button
-                type="submit"
-                disabled={isAuthenticating}
-                className="w-full py-3 rounded-xl font-bold text-sm bg-amber-600 hover:bg-amber-700 text-white shadow-sm disabled:opacity-50 transition-all cursor-pointer"
-              >
-                {isAuthenticating ? 'Signing In...' : 'Sign In to Portal &rarr;'}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleCodeLookup} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Application Reference Number
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={referenceNumber}
-                  onChange={(e) => setReferenceNumber(e.target.value)}
-                  placeholder="e.g. BT-TUT-2026-0001"
-                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 font-mono font-medium"
-                />
-              </div>
+                {loginMethod === 'password' ? (
+                  <form onSubmit={handlePasswordLogin} className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Phone, Email, or Reference Code
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
+                        placeholder="e.g. +251 91 123 4567 or BT-TUT-2026-0001"
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 font-medium"
+                      />
+                    </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Registered Phone Number
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g. +251 91 189 4521"
-                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 font-medium"
-                />
-              </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                          Account Password
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="text-[11px] text-amber-700 hover:underline font-semibold"
+                        >
+                          {showPassword ? 'Hide' : 'Show'}
+                        </button>
+                      </div>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password..."
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 font-medium"
+                      />
+                    </div>
 
-              <button
-                type="submit"
-                disabled={isAuthenticating}
-                className="w-full py-3 rounded-xl font-bold text-sm bg-amber-600 hover:bg-amber-700 text-white shadow-sm disabled:opacity-50 transition-all cursor-pointer"
-              >
-                {isAuthenticating ? 'Verifying...' : 'Access My Schedule &rarr;'}
-              </button>
-            </form>
-          )}
+                    <div className="flex items-center justify-between text-xs">
+                      <label className="flex items-center gap-2 cursor-pointer text-slate-600 select-none">
+                        <input
+                          type="checkbox"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                          className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500"
+                        />
+                        <span>Stay signed in for 30 days</span>
+                      </label>
+                    </div>
 
-          <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">
-            <span>New to Bruh Tesfa? </span>
-            <Link href="/become-a-tutor" className="font-bold text-amber-700 hover:underline">
-              Apply to become a tutor &rarr;
-            </Link>
+                    <button
+                      type="submit"
+                      disabled={isAuthenticating}
+                      className="w-full py-3 rounded-xl font-bold text-sm bg-amber-600 hover:bg-amber-700 text-white shadow-sm disabled:opacity-50 transition-all cursor-pointer"
+                    >
+                      {isAuthenticating ? 'Signing In...' : 'Sign In to Portal &rarr;'}
+                    </button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleCodeLookup} className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Application Reference Number
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={referenceNumber}
+                        onChange={(e) => setReferenceNumber(e.target.value)}
+                        placeholder="e.g. BT-TUT-2026-0001"
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 font-mono font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Registered Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="e.g. +251 91 189 4521"
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 font-medium"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isAuthenticating}
+                      className="w-full py-3 rounded-xl font-bold text-sm bg-amber-600 hover:bg-amber-700 text-white shadow-sm disabled:opacity-50 transition-all cursor-pointer"
+                    >
+                      {isAuthenticating ? 'Verifying...' : 'Access My Schedule &rarr;'}
+                    </button>
+                  </form>
+                )}
+
+                <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">
+                  <span>Don&apos;t have an account yet? </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthTab('signup');
+                      setAuthError(null);
+                    }}
+                    className="font-bold text-amber-700 hover:underline"
+                  >
+                    Sign up (Register) &rarr;
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       ) : (
