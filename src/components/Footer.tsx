@@ -148,15 +148,15 @@ export default function Footer() {
 
         {/* Bottom Disclaimers & Copyright */}
         <div className="mt-12 pt-8 border-t border-slate-800 text-xs text-slate-500 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p>
-            &copy; {new Date().getFullYear()} BRUH TESFA (ብሩህ ተስፋ). All rights reserved. Addis Ababa, Ethiopia
+          <p className="flex items-center gap-1">
+            <span>&copy; {new Date().getFullYear()} BRUH TESFA (ብሩህ ተስፋ). All rights reserved. Addis Ababa, Ethiopia</span>
             <Link
               href="/admin/login"
-              className="text-slate-500 hover:text-amber-500 transition-colors select-none font-bold"
+              className="text-slate-600 hover:text-amber-400 transition-colors select-none font-bold px-1"
               aria-label="Staff Portal Doorway"
-              title=""
+              title="Staff Desk Portal"
             >
-              .
+              •
             </Link>
           </p>
           <p className="text-[11px] text-slate-500 text-center md:text-right max-w-xl">
