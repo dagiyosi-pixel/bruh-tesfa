@@ -31,11 +31,19 @@ export default async function SingleVacancyPage({ params }: VacancyPageProps) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 space-y-8">
-      {/* Back button */}
-      <div>
+      {/* Breadcrumb & Back button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
+        <nav className="flex items-center gap-1.5 text-xs text-slate-500">
+          <Link href="/" className="hover:text-slate-800">Home</Link>
+          <span>/</span>
+          <Link href="/vacancies" className="hover:text-slate-800">Vacancies</Link>
+          <span>/</span>
+          <span className="text-slate-900 font-semibold">{vacancy.vacancy_code}</span>
+        </nav>
+
         <Link
           href="/vacancies"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 transition-colors"
         >
           <span>&larr; Back to all vacancies</span>
         </Link>

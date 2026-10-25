@@ -35,6 +35,14 @@ export default function HomeQuickFinder() {
     setShowSeferSuggestions(false);
   };
 
+  const hasSelections = Boolean(selectedSubject || selectedGrade || seferInput || selectedSubCity);
+  const handleReset = () => {
+    setSelectedSubject('');
+    setSelectedGrade('');
+    setSeferInput('');
+    setSelectedSubCity('');
+  };
+
   const handleQuickSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
@@ -50,9 +58,20 @@ export default function HomeQuickFinder() {
     <div className="bg-white rounded-2xl shadow-xl shadow-amber-900/5 border border-slate-200/90 p-4 sm:p-6 text-left">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
         <div>
-          <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">
-            Quick Tutor Match
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">
+              Quick Tutor Match
+            </span>
+            {hasSelections && (
+              <button
+                type="button"
+                onClick={handleReset}
+                className="text-[10px] font-bold text-red-600 hover:text-red-700 underline"
+              >
+                Reset choices
+              </button>
+            )}
+          </div>
           <h2 className="text-base sm:text-lg font-bold text-slate-900">
             Find the Right Home Tutor in Seconds
           </h2>

@@ -201,17 +201,46 @@ export default function TutorApplicationForm() {
     return true;
   };
 
+  const goToStep = (stepNumber: number, pushToHistory = true) => {
+    setErrorMessage(null);
+    setCurrentStep(stepNumber);
+    if (pushToHistory && typeof window !== 'undefined') {
+      window.history.pushState({ tutorStep: stepNumber }, '', `#step-${stepNumber}`);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({ tutorStep: currentStep }, '', `#step-${currentStep}`);
+
+      const onPopState = (e: PopStateEvent) => {
+        if (e.state && typeof e.state.tutorStep === 'number') {
+          setCurrentStep(e.state.tutorStep);
+          setErrorMessage(null);
+        } else if (window.location.hash.startsWith('#step-')) {
+          const s = parseInt(window.location.hash.replace('#step-', ''), 10);
+          if (s >= 1 && s <= 5) {
+            setCurrentStep(s);
+            setErrorMessage(null);
+          }
+        }
+      };
+
+      window.addEventListener('popstate', onPopState);
+      return () => window.removeEventListener('popstate', onPopState);
+    }
+  }, []);
+
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, 5));
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      goToStep(Math.min(currentStep + 1, 5));
     }
   };
 
   const handlePrev = () => {
     setErrorMessage(null);
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    goToStep(Math.max(currentStep - 1, 1));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -250,11 +279,22 @@ export default function TutorApplicationForm() {
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-sm max-w-3xl mx-auto">
-      {/* Multi-Step Progress Tracker */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
-          <span>Step {currentStep} of 5</span>
-          <span>
+      {/* Multi-Step Interactive Progress Tracker */}
+      <div className="mb-8 space-y-4">
+        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600">
+          <div className="flex items-center gap-2">
+            <span>Step {currentStep} of 5</span>
+            {currentStep > 1 && (
+              <button
+                type="button"
+                onClick={handlePrev}
+                className="text-amber-700 hover:text-amber-900 font-bold underline capitalize ml-1 cursor-pointer"
+              >
+                &larr; Back
+              </button>
+            )}
+          </div>
+          <span className="text-amber-700 font-extrabold">
             {currentStep === 1 && 'Personal & Contact'}
             {currentStep === 2 && 'Subjects & Grades'}
             {currentStep === 3 && 'Qualifications & Pedagogy'}
@@ -262,12 +302,101 @@ export default function TutorApplicationForm() {
             {currentStep === 5 && 'Safeguarding & Consent'}
           </span>
         </div>
-        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-          <div
-            className="bg-amber-600 h-full transition-all duration-300"
-            style={{ width: `${(currentStep / 5) * 100}%` }}
-          />
+
+        {/* Step Pills: Clickable to jump back to any previous step */}
+        <div className="grid grid-cols-5 gap-1 sm:gap-2">
+          {[
+            { step: 1, label: 'Personal' },
+            { step: 2, label: 'Subjects' },
+            { step: 3, label: 'Degrees' },
+            { step: 4, label: 'Rates' },
+            { step: 5, label: 'Consent' },
+          ].map((item) => {
+            const isCurrent = currentStep === item.step;
+            const isCompleted = currentStep > item.step;
+            return (
+              <button
+                key={item.step}
+                type="button"
+                onClick={() => {
+                  if (item.step < currentStep) goToStep(item.step);
+                  else if (item.step > currentStep && validateStep(currentStep)) goToStep(item.step);
+                }}
+                disabled={item.step > currentStep}
+                className={`py-2 px-1 rounded-xl text-[11px] font-bold text-center transition-all flex flex-col items-center justify-center gap-1 ${
+                  isCurrent
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : isCompleted
+                    ? 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 cursor-pointer border border-emerald-200'
+                    : 'bg-slate-100 text-slate-400 cursor-not-allowed opacity-60'
+                }`}
+              >
+                <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-extrabold ${
+                  isCurrent ? 'bg-white text-amber-700' : isCompleted ? 'bg-emerald-600 text-white' : 'bg-slate-300 text-slate-600'
+                }`}>
+                  {isCompleted ? '✓' : item.step}
+                </span>
+                <span className="truncate w-full">{item.label}</span>
+              </button>
+            );
+          })}
         </div>
+
+        {/* Selected Data Summary with Quick 1-Click Edit */}
+        {currentStep > 1 && (
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wide">
+              <span>Your Application Entries</span>
+              <span className="text-amber-700 font-semibold">Tap to edit</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {formData.full_legal_name && (
+                <button
+                  type="button"
+                  onClick={() => goToStep(1)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-800 text-[11px] font-medium hover:border-amber-400 transition-colors"
+                  title="Click to edit name/contact"
+                >
+                  <span className="font-bold text-slate-500">Name:</span> {formData.full_legal_name}
+                  <span className="text-amber-600 font-bold ml-1">✎</span>
+                </button>
+              )}
+              {formData.sub_city && (
+                <button
+                  type="button"
+                  onClick={() => goToStep(1)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-800 text-[11px] font-medium hover:border-amber-400 transition-colors"
+                  title="Click to edit sub-city"
+                >
+                  <span className="font-bold text-slate-500">Sub-city:</span> {formData.sub_city}
+                  <span className="text-amber-600 font-bold ml-1">✎</span>
+                </button>
+              )}
+              {formData.subjects.length > 0 && currentStep > 2 && (
+                <button
+                  type="button"
+                  onClick={() => goToStep(2)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-800 text-[11px] font-medium hover:border-amber-400 transition-colors"
+                  title="Click to edit subjects"
+                >
+                  <span className="font-bold text-slate-500">Subjects:</span> {formData.subjects.slice(0, 2).join(', ')}{formData.subjects.length > 2 ? ` +${formData.subjects.length - 2}` : ''}
+                  <span className="text-amber-600 font-bold ml-1">✎</span>
+                </button>
+              )}
+              {formData.institution && currentStep > 3 && (
+                <button
+                  type="button"
+                  onClick={() => goToStep(3)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-800 text-[11px] font-medium hover:border-amber-400 transition-colors"
+                  title="Click to edit university"
+                >
+                  <span className="font-bold text-slate-500">Edu:</span> {formData.institution}
+                  <span className="text-amber-600 font-bold ml-1">✎</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Error Alert */}

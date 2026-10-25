@@ -30,13 +30,21 @@ export default async function TutorProfilePage({ params }: TutorProfilePageProps
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 space-y-8">
-      {/* Back link */}
-      <div>
+      {/* Breadcrumb & Back link */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
+        <nav className="flex items-center gap-1.5 text-xs text-slate-500">
+          <Link href="/" className="hover:text-slate-800">Home</Link>
+          <span>/</span>
+          <Link href="/tutors" className="hover:text-slate-800">Tutors</Link>
+          <span>/</span>
+          <span className="text-slate-900 font-semibold">{tutor.display_name}</span>
+        </nav>
+
         <Link
           href="/tutors"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 transition-colors"
         >
-          <span>&larr; Back to all approved tutors</span>
+          <span>&larr; Back to all tutors</span>
         </Link>
       </div>
 

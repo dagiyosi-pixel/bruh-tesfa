@@ -165,17 +165,46 @@ export default function ParentRequestForm({
     return true;
   };
 
+  const goToStep = (stepNumber: number, pushToHistory = true) => {
+    setErrorMessage(null);
+    setCurrentStep(stepNumber);
+    if (pushToHistory && typeof window !== 'undefined') {
+      window.history.pushState({ step: stepNumber }, '', `#step-${stepNumber}`);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({ step: currentStep }, '', `#step-${currentStep}`);
+
+      const onPopState = (e: PopStateEvent) => {
+        if (e.state && typeof e.state.step === 'number') {
+          setCurrentStep(e.state.step);
+          setErrorMessage(null);
+        } else if (window.location.hash.startsWith('#step-')) {
+          const s = parseInt(window.location.hash.replace('#step-', ''), 10);
+          if (s >= 1 && s <= 4) {
+            setCurrentStep(s);
+            setErrorMessage(null);
+          }
+        }
+      };
+
+      window.addEventListener('popstate', onPopState);
+      return () => window.removeEventListener('popstate', onPopState);
+    }
+  }, []);
+
   const handleNext = () => {
     if (validateCurrentStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, 4));
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      goToStep(Math.min(currentStep + 1, 4));
     }
   };
 
   const handlePrev = () => {
     setErrorMessage(null);
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    goToStep(Math.max(currentStep - 1, 1));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -214,13 +243,24 @@ export default function ParentRequestForm({
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-sm max-w-2xl mx-auto overflow-hidden">
-      {/* Progress Bar Header */}
+      {/* Progress Bar Header & Interactive Step Navigation */}
       <div className="bg-gradient-to-r from-amber-500/10 via-amber-600/5 to-slate-50 border-b border-slate-200/80 p-5 sm:p-6">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-widest block">
-              Step {currentStep} of 4
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-amber-700 uppercase tracking-widest block">
+                Step {currentStep} of 4
+              </span>
+              {currentStep > 1 && (
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline decoration-amber-400"
+                >
+                  &larr; Back
+                </button>
+              )}
+            </div>
             <h2 className="text-xl font-bold text-slate-900 mt-0.5">
               {currentStep === 1 && 'Academics & Learning Goals'}
               {currentStep === 2 && 'Format & Addis Ababa Location'}
@@ -229,22 +269,129 @@ export default function ParentRequestForm({
             </h2>
           </div>
 
-          {/* Stepper Dots */}
+          {/* Stepper Dots (clickable to navigate back) */}
           <div className="flex items-center gap-1.5">
             {[1, 2, 3, 4].map((step) => (
-              <div
+              <button
                 key={step}
-                className={`h-2.5 rounded-full transition-all ${
+                type="button"
+                onClick={() => {
+                  if (step < currentStep) goToStep(step);
+                  else if (step > currentStep && validateCurrentStep(currentStep)) goToStep(step);
+                }}
+                disabled={step > currentStep}
+                title={`Go to Step ${step}`}
+                className={`h-2.5 rounded-full transition-all cursor-pointer ${
                   step === currentStep
                     ? 'w-7 bg-amber-600'
                     : step < currentStep
-                    ? 'w-2.5 bg-emerald-600'
-                    : 'w-2.5 bg-slate-200'
+                    ? 'w-2.5 bg-emerald-600 hover:w-4'
+                    : 'w-2.5 bg-slate-200 opacity-60'
                 }`}
               />
             ))}
           </div>
         </div>
+
+        {/* Interactive Step Pills (Tap to go back or forward) */}
+        <div className="grid grid-cols-4 gap-1.5 mt-4 pt-3 border-t border-slate-200/60">
+          {[
+            { step: 1, label: 'Academics' },
+            { step: 2, label: 'Location' },
+            { step: 3, label: 'Schedule' },
+            { step: 4, label: 'Contact' },
+          ].map((item) => {
+            const isCurrent = currentStep === item.step;
+            const isCompleted = currentStep > item.step;
+            return (
+              <button
+                key={item.step}
+                type="button"
+                onClick={() => {
+                  if (item.step < currentStep) goToStep(item.step);
+                  else if (item.step > currentStep && validateCurrentStep(currentStep)) goToStep(item.step);
+                }}
+                disabled={item.step > currentStep}
+                className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all text-center ${
+                  isCurrent
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : isCompleted
+                    ? 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 cursor-pointer border border-emerald-200/60'
+                    : 'bg-slate-100 text-slate-400 cursor-not-allowed opacity-60'
+                }`}
+              >
+                <span
+                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-extrabold ${
+                    isCurrent
+                      ? 'bg-white text-amber-700'
+                      : isCompleted
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-slate-300 text-slate-600'
+                  }`}
+                >
+                  {isCompleted ? '✓' : item.step}
+                </span>
+                <span className="truncate">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active Selections Summary Drawer with 1-click change */}
+        {currentStep > 1 && (
+          <div className="mt-3 p-3 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-1.5 text-xs">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wide">
+              <span>Your Chosen Preferences</span>
+              <span className="text-amber-700 font-semibold">Click any item to edit</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {formData.subjects.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => goToStep(1)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium hover:bg-amber-100 transition-colors"
+                  title="Click to change subjects"
+                >
+                  <span className="font-bold">Subject:</span> {formData.subjects.join(', ')}
+                  <span className="text-amber-600 ml-1 font-bold">✎</span>
+                </button>
+              )}
+              {formData.grade_level && (
+                <button
+                  type="button"
+                  onClick={() => goToStep(1)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium hover:bg-amber-100 transition-colors"
+                  title="Click to change grade"
+                >
+                  <span className="font-bold">Grade:</span> {formData.grade_level}
+                  <span className="text-amber-600 ml-1 font-bold">✎</span>
+                </button>
+              )}
+              {formData.sub_city && currentStep > 2 && (
+                <button
+                  type="button"
+                  onClick={() => goToStep(2)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                  title="Click to change location"
+                >
+                  <span className="font-bold">Area:</span> {formData.general_area || formData.sub_city}
+                  <span className="text-emerald-600 ml-1 font-bold">✎</span>
+                </button>
+              )}
+              {formData.preferred_days.length > 0 && currentStep > 3 && (
+                <button
+                  type="button"
+                  onClick={() => goToStep(3)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-50 border border-sky-200 text-sky-900 text-xs font-medium hover:bg-sky-100 transition-colors"
+                  title="Click to change schedule"
+                >
+                  <span className="font-bold">Schedule:</span> {formData.preferred_days.join(', ')}
+                  <span className="text-sky-600 ml-1 font-bold">✎</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {initialTutorName && (
           <div className="mt-4 p-3 rounded-2xl bg-amber-100/70 border border-amber-300/80 flex items-center justify-between text-xs text-amber-950">
